@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <g fill="none" fill-rule="evenodd">
+    <!-- Background circle -->
+    <circle cx="30" cy="30" r="30" fill="#F38020"/>
+    
+    <!-- D1 text -->
+    <text x="30" y="38" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="white">D1</text>
+    
+    <!-- Database icon -->
+    <g transform="translate(20, 8)">
+      <ellipse cx="10" cy="2" rx="10" ry="2" fill="white" opacity="0.8"/>
+      <rect x="0" y="2" width="20" height="8" fill="white" opacity="0.8"/>
+      <ellipse cx="10" cy="10" rx="10" ry="2" fill="white" opacity="0.8"/>
+    </g>
+  </g>
+</svg>
