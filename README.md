@@ -21,3 +21,9 @@ We need a node to interact with it as there is a supabase node and other nodes f
 ### AI modules
 
 Cloudflare offers many models for different applications via their ai services. This node must integrate with the most used models such as completions, image generation and transcription.
+
+## How to install
+
+I don't know really... [this guy](https://community.n8n.io/t/building-custom-nodes/58148/5) seems like the latest source for how to do it but it implies making a dockerfile and copying the dist into it, then building the image, and then using that image in the compose instead of the official, which are too many steps and awfully fragile for an already deployed project to be messing with their compose. 
+
+I did try copying the dist folder into the /custom folder that maps to the container but the container couldn't start bc it was missing the aws-sdk deps. That part seems understandable that you'd need to install the deps in the image... so for now we're stuck here.

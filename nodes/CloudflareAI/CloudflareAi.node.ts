@@ -8,7 +8,8 @@ import {
 	NodeOperationError,
 } from 'n8n-workflow';
 
-export class CloudflareAI implements INodeType {
+// was the I fucking up the loading of the custom node?
+export class CloudflareAi implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Cloudflare AI',
 		name: 'cloudflareAi',
