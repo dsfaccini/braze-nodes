@@ -4,21 +4,10 @@ import {
 	INodeType,
 	INodeTypeDescription,
 	NodeConnectionType,
+	NodeApiError,
 } from 'n8n-workflow';
 
-import {
-	S3Client,
-	ListBucketsCommand,
-	CreateBucketCommand,
-	DeleteBucketCommand,
-	ListObjectsV2Command,
-	GetObjectCommand,
-	PutObjectCommand,
-	DeleteObjectCommand,
-	CopyObjectCommand,
-} from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-
+import { AwsSignatureV4 } from './awsSignatureV4';
 import { bucketOperations, bucketFields } from './CloudflareR2BucketDescription';
 import { objectOperations, objectFields } from './CloudflareR2ObjectDescription';
 
@@ -86,34 +75,154 @@ export class CloudflareR2 implements INodeType {
 		const { CloudflareApi } = await import('../../credentials/CloudflareApi.credentials');
 		const r2Credentials = CloudflareApi.getR2Credentials(credentials);
 
-		// Create S3 client with R2 credentials
-		const s3Client = new S3Client({
-			region: 'auto',
-			endpoint: r2Credentials.endpoint,
-			credentials: {
-				accessKeyId: r2Credentials.accessKeyId,
-				secretAccessKey: r2Credentials.secretAccessKey,
-			},
-		});
+		// Helper functions
+		const node = this.getNode();
+		const makeR2Request = async (options: {
+			method: string;
+			path: string;
+			credentials: any;
+			headers?: Record<string, string>;
+			body?: Buffer | string;
+			returnRaw?: boolean;
+		}): Promise<any> => {
+			const { method, path, credentials, headers = {}, body, returnRaw } = options;
+			const url = `${credentials.endpoint}${path}`;
+
+			// Sign the request
+			const signedHeaders = AwsSignatureV4.sign({
+				method,
+				url,
+				headers,
+				body,
+				accessKeyId: credentials.accessKeyId,
+				secretAccessKey: credentials.secretAccessKey,
+				region: 'auto',
+				service: 's3',
+			});
+
+			// Make the request
+			const response = await fetch(url, {
+				method,
+				headers: signedHeaders,
+				body,
+			});
+
+			if (!response.ok) {
+				const errorText = await response.text();
+				const error = parseErrorResponse(errorText);
+				const errorMessage = error.message || `R2 Error: ${response.status} ${response.statusText}`;
+				const errorData: any = {
+					message: errorMessage,
+					httpCode: response.status.toString(),
+				};
+				if (error.code) {
+					errorData.description = error.code;
+				}
+				throw new NodeApiError(node, errorData);
+			}
+
+			if (returnRaw) {
+				return response;
+			}
+
+			const text = await response.text();
+			return { text, headers: response.headers };
+		};
+
+		const parseListBucketsResponse = (response: any): any => {
+			// Parse XML response
+			const bucketMatches = response.text.match(/<Bucket>[\s\S]*?<\/Bucket>/g) || [];
+			const buckets = bucketMatches.map((bucketXml: string) => {
+				const name = bucketXml.match(/<Name>(.*?)<\/Name>/)?.[1] || '';
+				const creationDate = bucketXml.match(/<CreationDate>(.*?)<\/CreationDate>/)?.[1] || '';
+				return { Name: name, CreationDate: creationDate };
+			});
+
+			const owner = response.text.match(/<Owner>[\s\S]*?<\/Owner>/)?.[0];
+			let ownerData = null;
+			if (owner) {
+				const id = owner.match(/<ID>(.*?)<\/ID>/)?.[1] || '';
+				const displayName = owner.match(/<DisplayName>(.*?)<\/DisplayName>/)?.[1] || '';
+				ownerData = { ID: id, DisplayName: displayName };
+			}
+
+			return {
+				buckets,
+				owner: ownerData,
+			};
+		};
+
+		const parseListObjectsV2Response = (response: any): any => {
+			// Parse XML response
+			const contentsMatches = response.text.match(/<Contents>[\s\S]*?<\/Contents>/g) || [];
+			const objects = contentsMatches.map((contentXml: string) => {
+				const key = contentXml.match(/<Key>(.*?)<\/Key>/)?.[1] || '';
+				const lastModified = contentXml.match(/<LastModified>(.*?)<\/LastModified>/)?.[1] || '';
+				const etag = contentXml.match(/<ETag>"?(.*?)"?<\/ETag>/)?.[1] || '';
+				const size = contentXml.match(/<Size>(.*?)<\/Size>/)?.[1] || '0';
+				const storageClass = contentXml.match(/<StorageClass>(.*?)<\/StorageClass>/)?.[1] || 'STANDARD';
+
+				return {
+					Key: key,
+					LastModified: lastModified,
+					ETag: etag.replace(/"/g, ''),
+					Size: parseInt(size, 10),
+					StorageClass: storageClass,
+				};
+			});
+
+			const name = response.text.match(/<Name>(.*?)<\/Name>/)?.[1] || '';
+			const keyCount = response.text.match(/<KeyCount>(.*?)<\/KeyCount>/)?.[1] || '0';
+			const isTruncated = response.text.match(/<IsTruncated>(.*?)<\/IsTruncated>/)?.[1] === 'true';
+
+			return {
+				name,
+				objects,
+				keyCount: parseInt(keyCount, 10),
+				isTruncated,
+			};
+		};
+
+		const parseCopyObjectResponse = (response: any): any => {
+			const etag = response.text.match(/<ETag>"?(.*?)"?<\/ETag>/)?.[1] || '';
+			const lastModified = response.text.match(/<LastModified>(.*?)<\/LastModified>/)?.[1] || '';
+
+			return {
+				ETag: etag.replace(/"/g, ''),
+				LastModified: lastModified,
+			};
+		};
+
+		const parseErrorResponse = (errorText: string): { code?: string; message?: string } => {
+			const code = errorText.match(/<Code>(.*?)<\/Code>/)?.[1];
+			const message = errorText.match(/<Message>(.*?)<\/Message>/)?.[1];
+
+			return {
+				code,
+				message: message || errorText,
+			};
+		};
 
 		for (let i = 0; i < items.length; i++) {
 			try {
 				if (resource === 'bucket') {
 					if (operation === 'list') {
-						const command = new ListBucketsCommand({});
-						const response = await s3Client.send(command);
+						const response = await makeR2Request({
+							method: 'GET',
+							path: '/',
+							credentials: r2Credentials,
+						});
+						const buckets = parseListBucketsResponse(response);
 						returnData.push({
-							json: {
-								buckets: response.Buckets || [],
-								owner: response.Owner,
-							},
+							json: buckets,
 						});
 					} else if (operation === 'create') {
 						const bucketName = this.getNodeParameter('bucketName', i) as string;
-						const command = new CreateBucketCommand({
-							Bucket: bucketName,
+						await makeR2Request({
+							method: 'PUT',
+							path: `/${bucketName}`,
+							credentials: r2Credentials,
 						});
-						await s3Client.send(command);
 						returnData.push({
 							json: {
 								success: true,
@@ -122,10 +231,11 @@ export class CloudflareR2 implements INodeType {
 						});
 					} else if (operation === 'delete') {
 						const bucketName = this.getNodeParameter('bucketName', i) as string;
-						const command = new DeleteBucketCommand({
-							Bucket: bucketName,
+						await makeR2Request({
+							method: 'DELETE',
+							path: `/${bucketName}`,
+							credentials: r2Credentials,
 						});
-						await s3Client.send(command);
 						returnData.push({
 							json: {
 								success: true,
@@ -134,17 +244,17 @@ export class CloudflareR2 implements INodeType {
 						});
 					} else if (operation === 'getInfo') {
 						const bucketName = this.getNodeParameter('bucketName', i) as string;
-						// List objects to get bucket info
-						const command = new ListObjectsV2Command({
-							Bucket: bucketName,
-							MaxKeys: 1,
+						const response = await makeR2Request({
+							method: 'GET',
+							path: `/${bucketName}?list-type=2&max-keys=1`,
+							credentials: r2Credentials,
 						});
-						const response = await s3Client.send(command);
+						const info = parseListObjectsV2Response(response);
 						returnData.push({
 							json: {
 								bucket: bucketName,
-								keyCount: response.KeyCount || 0,
-								name: response.Name,
+								keyCount: info.keyCount || 0,
+								name: info.name,
 							},
 						});
 					}
@@ -154,18 +264,22 @@ export class CloudflareR2 implements INodeType {
 						const prefix = this.getNodeParameter('prefix', i, '') as string;
 						const maxKeys = this.getNodeParameter('maxKeys', i, 1000) as number;
 
-						const command = new ListObjectsV2Command({
-							Bucket: bucketName,
-							Prefix: prefix || undefined,
-							MaxKeys: maxKeys,
+						const queryParams = new URLSearchParams({
+							'list-type': '2',
+							'max-keys': maxKeys.toString(),
 						});
-						const response = await s3Client.send(command);
+						if (prefix) {
+							queryParams.set('prefix', prefix);
+						}
+
+						const response = await makeR2Request({
+							method: 'GET',
+							path: `/${bucketName}?${queryParams.toString()}`,
+							credentials: r2Credentials,
+						});
+						const result = parseListObjectsV2Response(response);
 						returnData.push({
-							json: {
-								objects: response.Contents || [],
-								keyCount: response.KeyCount || 0,
-								isTruncated: response.IsTruncated || false,
-							},
+							json: result,
 						});
 					} else if (operation === 'upload') {
 						const bucketName = this.getNodeParameter('bucketName', i) as string;
@@ -183,17 +297,18 @@ export class CloudflareR2 implements INodeType {
 						// Handle bucket creation if needed
 						if (createBucketIfNotExists) {
 							try {
-								const listCommand = new ListObjectsV2Command({
-									Bucket: bucketName,
-									MaxKeys: 1,
+								await makeR2Request({
+									method: 'GET',
+									path: `/${bucketName}?list-type=2&max-keys=1`,
+									credentials: r2Credentials,
 								});
-								await s3Client.send(listCommand);
 							} catch (error: any) {
-								if (error.name === 'NoSuchBucket') {
-									const createCommand = new CreateBucketCommand({
-										Bucket: bucketName,
+								if (error.message.includes('NoSuchBucket')) {
+									await makeR2Request({
+										method: 'PUT',
+										path: `/${bucketName}`,
+										credentials: r2Credentials,
 									});
-									await s3Client.send(createCommand);
 								} else {
 									throw error;
 								}
@@ -207,19 +322,22 @@ export class CloudflareR2 implements INodeType {
 						);
 						const mimeType = items[i].binary![binaryPropertyName].mimeType;
 
-						const command = new PutObjectCommand({
-							Bucket: bucketName,
-							Key: objectKey,
-							Body: binaryData,
-							ContentType: mimeType,
+						const response = await makeR2Request({
+							method: 'PUT',
+							path: `/${bucketName}/${objectKey}`,
+							body: binaryData,
+							headers: {
+								'Content-Type': mimeType || 'application/octet-stream',
+							},
+							credentials: r2Credentials,
 						});
-						const response = await s3Client.send(command);
+
 						returnData.push({
 							json: {
 								success: true,
 								bucket: bucketName,
 								key: objectKey,
-								etag: response.ETag,
+								etag: response.headers.get('etag') || undefined,
 							},
 						});
 					} else if (operation === 'download') {
@@ -231,33 +349,30 @@ export class CloudflareR2 implements INodeType {
 							'data',
 						) as string;
 
-						const command = new GetObjectCommand({
-							Bucket: bucketName,
-							Key: objectKey,
+						const response = await makeR2Request({
+							method: 'GET',
+							path: `/${bucketName}/${objectKey}`,
+							credentials: r2Credentials,
+							returnRaw: true,
 						});
-						const response = await s3Client.send(command);
 
-						// Convert stream to buffer
-						const chunks: Uint8Array[] = [];
-						for await (const chunk of response.Body as any) {
-							chunks.push(chunk);
-						}
-						const buffer = Buffer.concat(chunks);
+						const buffer = Buffer.from(await response.arrayBuffer());
+						const contentType = response.headers.get('content-type') || 'application/octet-stream';
 
 						const binaryData = await this.helpers.prepareBinaryData(
 							buffer,
 							objectKey,
-							response.ContentType,
+							contentType,
 						);
 
 						returnData.push({
 							json: {
 								bucket: bucketName,
 								key: objectKey,
-								contentType: response.ContentType,
-								contentLength: response.ContentLength,
-								lastModified: response.LastModified,
-								etag: response.ETag,
+								contentType,
+								contentLength: response.headers.get('content-length'),
+								lastModified: response.headers.get('last-modified'),
+								etag: response.headers.get('etag'),
 							},
 							binary: {
 								[binaryPropertyName]: binaryData,
@@ -267,11 +382,11 @@ export class CloudflareR2 implements INodeType {
 						const bucketName = this.getNodeParameter('bucketName', i) as string;
 						const objectKey = this.getNodeParameter('objectKey', i) as string;
 
-						const command = new DeleteObjectCommand({
-							Bucket: bucketName,
-							Key: objectKey,
+						await makeR2Request({
+							method: 'DELETE',
+							path: `/${bucketName}/${objectKey}`,
+							credentials: r2Credentials,
 						});
-						await s3Client.send(command);
 						returnData.push({
 							json: {
 								success: true,
@@ -288,12 +403,16 @@ export class CloudflareR2 implements INodeType {
 						) as string;
 						const destinationKey = this.getNodeParameter('destinationKey', i) as string;
 
-						const command = new CopyObjectCommand({
-							CopySource: `${sourceBucket}/${sourceKey}`,
-							Bucket: destinationBucket,
-							Key: destinationKey,
+						const response = await makeR2Request({
+							method: 'PUT',
+							path: `/${destinationBucket}/${destinationKey}`,
+							headers: {
+								'x-amz-copy-source': `/${sourceBucket}/${sourceKey}`,
+							},
+							credentials: r2Credentials,
 						});
-						const response = await s3Client.send(command);
+
+						const copyResult = parseCopyObjectResponse(response);
 						returnData.push({
 							json: {
 								success: true,
@@ -301,7 +420,7 @@ export class CloudflareR2 implements INodeType {
 								sourceKey,
 								destinationBucket,
 								destinationKey,
-								copyResult: response.CopyObjectResult,
+								copyResult,
 							},
 						});
 					} else if (operation === 'getPresignedUrl') {
@@ -310,20 +429,18 @@ export class CloudflareR2 implements INodeType {
 						const urlOperation = this.getNodeParameter('urlOperation', i) as string;
 						const expiresIn = this.getNodeParameter('expiresIn', i, 3600) as number;
 
-						let command;
-						if (urlOperation === 'get') {
-							command = new GetObjectCommand({
-								Bucket: bucketName,
-								Key: objectKey,
-							});
-						} else {
-							command = new PutObjectCommand({
-								Bucket: bucketName,
-								Key: objectKey,
-							});
-						}
+						const method = urlOperation === 'get' ? 'GET' : 'PUT';
+						const url = AwsSignatureV4.signUrl({
+							method,
+							url: `${r2Credentials.endpoint}/${bucketName}/${objectKey}`,
+							headers: {},
+							accessKeyId: r2Credentials.accessKeyId,
+							secretAccessKey: r2Credentials.secretAccessKey,
+							region: 'auto',
+							service: 's3',
+							expiresIn,
+						});
 
-						const url = await getSignedUrl(s3Client, command, { expiresIn });
 						returnData.push({
 							json: {
 								url,

@@ -42,7 +42,10 @@
         "nodes": [
             "dist/nodes/CloudflareR2/CloudflareR2.node.js",
             "dist/nodes/CloudflareD1/CloudflareD1.node.js",
-            "dist/nodes/CloudflareAI/CloudflareAi.node.js"
+            "dist/nodes/CloudflareAI/CloudflareAi.node.js",
+            "dist/nodes/CloudflareKV/CloudflareKv.node.js",
+            "dist/nodes/CloudflareQueue/CloudflareQueue.node.js",
+            "dist/nodes/CloudflareQueue/CloudflareQueueTrigger.node.js"
         ]
     },
     "devDependencies": {
@@ -54,10 +57,7 @@
         "prettier": "^3.5.3",
         "typescript": "^5.8.2"
     },
-    "dependencies": {
-        "@aws-sdk/client-s3": "^3.0.0",
-        "@aws-sdk/s3-request-presigner": "^3.0.0"
-    },
+    "dependencies": {},
     "peerDependencies": {
         "n8n-workflow": "*"
     }

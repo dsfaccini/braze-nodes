@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <g fill="none" fill-rule="evenodd">
+    <!-- Background circle -->
+    <circle cx="30" cy="30" r="30" fill="#F38020"/>
+    
+    <!-- R2 text -->
+    <text x="30" y="38" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="white">R2</text>
+    
+    <!-- Storage icon -->
+    <g transform="translate(16, 10)">
+      <rect x="0" y="0" width="28" height="4" rx="1" fill="white" opacity="0.8"/>
+      <rect x="0" y="6" width="28" height="4" rx="1" fill="white" opacity="0.8"/>
+    </g>
+  </g>
+</svg>
