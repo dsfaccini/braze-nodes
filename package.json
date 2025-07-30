@@ -1,6 +1,6 @@
 {
     "name": "cloudflare-nodes-by-david",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "n8n nodes for Cloudflare services including R2, D1, and Workers AI",
     "keywords": [
         "n8n-community-node-package",
