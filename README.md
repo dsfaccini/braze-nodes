@@ -1,29 +1,152 @@
-# Clouflare nodes
+# Cloudflare Nodes for n8n
 
-This repository is forked from the n8n node start repository.
+A comprehensive collection of n8n community nodes for Cloudflare services including R2 object storage, D1 serverless database, Workers AI, KV storage, and Queues.
 
-Its goal is to develop nodes for Cloudflare services.
+## Available Nodes
 
-Cloudflare has grown from a network security company to a full-fledged cloud provider, offering a wide range of services including AI services, AutoRAG, cloud storage (r2), database and data catalog services using R2, D1 and worker functions.
+### 🗄️ Cloudflare R2
 
-## Nodes
+Object storage compatible with Amazon S3 API.
 
-### R2
+**Operations:**
 
-We need R2 nodes to add files to R2 (with options to create the bucket if it does not exist) and all the REST operations on R2 objects (list, get, delete, etc.). R2 is private by default such that the user would manully have to go to the cloudflare dashboard to make the bucket public.
+- **Buckets**: List, create, delete, get info
+- **Objects**: Upload, download, list, delete, copy
+- **URLs**: Generate presigned URLs for temporary access
 
-### D1
+### 🗃️ Cloudflare KV
 
-D1 is a serverless SQL database that can be used to store structured data. We need nodes to create, read, update, and delete records in D1 databases.
+Globally distributed key-value store.
 
-We need a node to interact with it as there is a supabase node and other nodes for SQL databases.
+**Operations:**
 
-### AI modules
+- **Namespaces**: List, create, delete
+- **Key-Value**: Get, set, delete, list keys
+- **Bulk**: Get/set/delete multiple keys at once
+- **Advanced**: Expiration, metadata, prefix filtering
 
-Cloudflare offers many models for different applications via their ai services. This node must integrate with the most used models such as completions, image generation and transcription.
+### 📬 Cloudflare Queue
 
-## How to install
+Message queue service for asynchronous processing.
 
-I don't know really... [this guy](https://community.n8n.io/t/building-custom-nodes/58148/5) seems like the latest source for how to do it but it implies making a dockerfile and copying the dist into it, then building the image, and then using that image in the compose instead of the official, which are too many steps and awfully fragile for an already deployed project to be messing with their compose. 
+**Operations:**
 
-I did try copying the dist folder into the /custom folder that maps to the container but the container couldn't start bc it was missing the aws-sdk deps. That part seems understandable that you'd need to install the deps in the image... so for now we're stuck here.
+- **Queue Management**: List, create, update, delete queues
+- **Messages**: Send, pull, acknowledge, retry messages
+- **Trigger Mode**: Auto-poll for new messages with configurable intervals
+
+### 🤖 Cloudflare AI
+
+Access to Cloudflare's AI/ML models.
+
+**Operations:**
+
+- **Text Generation**: Completions and chat models
+- **Image Generation**: AI-powered image creation
+- **Speech**: Transcription and text-to-speech
+
+### 🗂️ Cloudflare D1
+
+Serverless SQL database built on SQLite.
+
+**Operations:**
+
+- **Database Management**: List, create, delete databases
+- **Query Execution**: Run SQL queries and commands
+- **Data Operations**: CRUD operations with structured data
+
+## Installation
+
+Install via npm in your n8n instance:
+
+```bash
+npm install @getalecs/n8n-nodes-cloudflare
+```
+
+Or install directly in n8n:
+
+1. Go to **Settings** > **Community Nodes**
+2. Enter: `@getalecs/n8n-nodes-cloudflare`
+3. Click **Install**
+
+## Authentication
+
+All nodes use **Cloudflare API credentials**:
+
+1. **Standard Mode** (D1, AI, KV, Queue):
+   - API Token (from Cloudflare dashboard)
+   - Account ID
+
+2. **R2 Mode** (Object Storage):
+   - API Token
+   - Account ID  
+   - R2 Access Key ID
+   - R2 Secret Access Key
+   - R2 Jurisdiction (default/eu/fedramp)
+
+### Getting Credentials
+
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/profile/api-tokens)
+2. Create API Token with required permissions:
+   - **R2**: `Object Read`, `Object Write`
+   - **KV**: `Zone:Zone Settings:Edit`, `Account:Cloudflare Workers KV Storage:Edit`
+   - **D1**: `Account:Cloudflare D1:Edit`
+   - **Queues**: `Account:Cloudflare Queues:Edit`
+   - **AI**: `Account:Cloudflare AI:Read`
+3. Copy your Account ID from the dashboard sidebar
+
+## Key Features
+
+- ✅ **Zero External Dependencies**: Uses native HTTP requests instead of heavy SDKs
+- ✅ **Complete API Coverage**: Implements all major operations for each service
+- ✅ **Error Handling**: Comprehensive error messages and continue-on-fail support
+- ✅ **Security**: Implements AWS Signature v4 for R2 authentication
+- ✅ **Performance**: Efficient bulk operations and streaming support
+- ✅ **Trigger Support**: Queue trigger node for real-time message processing
+
+## Documentation
+
+Detailed guides available in the repository:
+
+- [R2 Authentication Guide](./R2_AUTHENTICATION_GUIDE.md) - Why AWS Signature v4 is needed
+- [R2 Operations Guide](./R2_OPERATIONS_GUIDE.md) - Complete operations matrix
+- [R2 Architecture Diagram](./R2_ARCHITECTURE_DIAGRAM.md) - Visual request flow
+
+## Examples
+
+### Upload File to R2
+
+```text
+HTTP Request → CloudflareR2 (Upload) → Success Response
+```
+
+### Process Queue Messages
+
+```text
+CloudflareQueue Trigger → Code Node → CloudflareQueue (Acknowledge)
+```
+
+### Store Data in KV
+
+```text
+Code Node → CloudflareKV (Set) → Email Node
+```
+
+## Requirements
+
+- n8n version 0.198.0 or higher
+- Node.js 20.15.0 or higher
+- Valid Cloudflare account with API access
+
+## Support
+
+- [GitHub Issues](https://github.com/n8n-community/n8n-nodes-cloudflare/issues)
+- [n8n Community Forum](https://community.n8n.io/)
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+Built with ❤️ for the n8n community

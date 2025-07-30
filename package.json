@@ -1,5 +1,5 @@
 {
-    "name": "cloudflare-nodes-by-david",
+    "name": "n8n-nodes-cloudflare",
     "version": "0.1.1",
     "description": "n8n nodes for Cloudflare services including R2, D1, and Workers AI",
     "keywords": [
@@ -17,7 +17,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/n8n-community/n8n-nodes-cloudflare.git"
+        "url": "git+https://github.com/dsfaccini/cloudflare-nodes.git"
     },
     "engines": {
         "node": ">=20.15"
