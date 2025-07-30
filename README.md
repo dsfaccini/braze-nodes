@@ -145,7 +145,7 @@ Code Node → CloudflareKV (Set) → Email Node
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+n8n original + MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 

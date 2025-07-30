@@ -1,5 +1,5 @@
 {
-    "name": "n8n-nodes-cloudflare",
+    "name": "@getalecs/n8n-nodes-cloudflare",
     "version": "0.1.1",
     "description": "n8n nodes for Cloudflare services including R2, D1, and Workers AI",
     "keywords": [
@@ -9,20 +9,23 @@
         "d1",
         "workers-ai"
     ],
-    "license": "MIT",
     "homepage": "https://github.com/n8n-community/n8n-nodes-cloudflare",
-    "author": {
-        "name": "n8n Community",
-        "email": "community@n8n.io"
+    "bugs": {
+        "url": "https://github.com/dsfaccini/cloudflare-nodes/issues"
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/dsfaccini/cloudflare-nodes.git"
     },
-    "engines": {
-        "node": ">=20.15"
+    "license": "MIT",
+    "author": {
+      "name": "David Sanchez"
     },
+    "type": "commonjs",
     "main": "index.js",
+    "files": [
+        "dist"
+    ],
     "scripts": {
         "build": "npx rimraf dist && tsc && gulp build:icons",
         "dev": "tsc --watch",
@@ -31,9 +34,21 @@
         "lintfix": "eslint nodes credentials package.json --fix",
         "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
     },
-    "files": [
-        "dist"
-    ],
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "@typescript-eslint/parser": "~8.32.0",
+        "eslint": "^8.57.0",
+        "eslint-plugin-n8n-nodes-base": "^1.16.3",
+        "gulp": "^5.0.0",
+        "prettier": "^3.5.3",
+        "typescript": "^5.8.2"
+    },
+    "peerDependencies": {
+        "n8n-workflow": "*"
+    },
+    "engines": {
+        "node": ">=20.15"
+    },
     "n8n": {
         "n8nNodesApiVersion": 1,
         "credentials": [
@@ -47,18 +62,5 @@
             "dist/nodes/CloudflareQueue/CloudflareQueue.node.js",
             "dist/nodes/CloudflareQueue/CloudflareQueueTrigger.node.js"
         ]
-    },
-    "devDependencies": {
-        "@types/node": "^20.0.0",
-        "@typescript-eslint/parser": "~8.32.0",
-        "eslint": "^8.57.0",
-        "eslint-plugin-n8n-nodes-base": "^1.16.3",
-        "gulp": "^5.0.0",
-        "prettier": "^3.5.3",
-        "typescript": "^5.8.2"
-    },
-    "dependencies": {},
-    "peerDependencies": {
-        "n8n-workflow": "*"
     }
 }
