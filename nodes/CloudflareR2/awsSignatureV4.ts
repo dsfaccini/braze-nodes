@@ -16,7 +16,8 @@ export class AwsSignatureV4 {
 	private static readonly signedHeaders = ['host', 'x-amz-content-sha256', 'x-amz-date'];
 
 	static sign(options: SignatureOptions): Record<string, string> {
-		const { method, url, headers, body, accessKeyId, secretAccessKey, region, service } = options;
+		const { method, url, headers, body, accessKeyId, secretAccessKey, region, service } =
+			options;
 
 		const urlObj = new URL(url);
 		const timestamp = new Date().toISOString().replace(/[:-]|\.\d{3}/g, '');

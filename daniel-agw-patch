@@ -1,0 +1,507 @@
+Subject: [PATCH] Update CloudflareQueue and CloudflareKV SVGs: make them reflect the correct service
+Refactor Cloudflare node definitions: replace `uri` with `url` in HTTP requests and update credential display names for consistency.
+---
+Index: credentials/CloudflareApi.credentials.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/credentials/CloudflareApi.credentials.ts b/credentials/CloudflareApi.credentials.ts
+--- a/credentials/CloudflareApi.credentials.ts	(revision 5095e89070374a6eb6ac5d6671186dde0fd6c787)
++++ b/credentials/CloudflareApi.credentials.ts	(revision 215a2a961a635f224edf51fc5b8ca8594269460a)
+@@ -123,7 +123,7 @@
+ 	test: ICredentialTestRequest = {
+ 		request: {
+ 			baseURL: 'https://api.cloudflare.com/client/v4',
+-			url: '/accounts/={{$credentials.accountId}}',
++			url: '={{"/accounts/" + $credentials.accountId}}',
+ 			headers: {
+ 				Authorization: '={{"Bearer " + $credentials.apiToken}}',
+ 			},
+Index: nodes/CloudflareAI/CloudflareAi.node.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/nodes/CloudflareAI/CloudflareAi.node.ts b/nodes/CloudflareAI/CloudflareAi.node.ts
+--- a/nodes/CloudflareAI/CloudflareAi.node.ts	(revision 5095e89070374a6eb6ac5d6671186dde0fd6c787)
++++ b/nodes/CloudflareAI/CloudflareAi.node.ts	(revision 215a2a961a635f224edf51fc5b8ca8594269460a)
+@@ -27,12 +27,8 @@
+ 		credentials: [
+ 			{
+ 				name: 'cloudflareApi',
++				displayName: 'Cloudflare API key connection',
+ 				required: true,
+-				displayOptions: {
+-					show: {
+-						'@credentials.authMode': ['standard'],
+-					},
+-				},
+ 			},
+ 		],
+ 		properties: [
+Index: nodes/CloudflareD1/CloudflareD1.node.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/nodes/CloudflareD1/CloudflareD1.node.ts b/nodes/CloudflareD1/CloudflareD1.node.ts
+--- a/nodes/CloudflareD1/CloudflareD1.node.ts	(revision 5095e89070374a6eb6ac5d6671186dde0fd6c787)
++++ b/nodes/CloudflareD1/CloudflareD1.node.ts	(revision 215a2a961a635f224edf51fc5b8ca8594269460a)
+@@ -26,12 +26,8 @@
+ 		credentials: [
+ 			{
+ 				name: 'cloudflareApi',
++				displayName: 'Cloudflare API key connection',
+ 				required: true,
+-				displayOptions: {
+-					show: {
+-						'@credentials.authMode': ['standard'],
+-					},
+-				},
+ 			},
+ 		],
+ 		properties: [
+Index: nodes/CloudflareKV/CloudflareKV.node.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/nodes/CloudflareKV/CloudflareKV.node.ts b/nodes/CloudflareKV/CloudflareKV.node.ts
+--- a/nodes/CloudflareKV/CloudflareKV.node.ts	(revision 5095e89070374a6eb6ac5d6671186dde0fd6c787)
++++ b/nodes/CloudflareKV/CloudflareKV.node.ts	(revision 215a2a961a635f224edf51fc5b8ca8594269460a)
+@@ -27,12 +27,8 @@
+ 		credentials: [
+ 			{
+ 				name: 'cloudflareApi',
++				displayName: 'Cloudflare API key connection',
+ 				required: true,
+-				displayOptions: {
+-					show: {
+-						'@credentials.authMode': ['standard'],
+-					},
+-				},
+ 			},
+ 		],
+ 		properties: [
+@@ -80,13 +76,12 @@
+ 						'Content-Type': 'application/json',
+ 					},
+ 					method: 'GET' as IHttpRequestMethods,
+-					uri: '',
+ 					json: true,
+ 				};
+
+ 				if (resource === 'namespace') {
+ 					if (operation === 'list') {
+-						requestOptions.uri = baseURL;
++						requestOptions.url = baseURL;
+ 						response = await this.helpers.httpRequest(requestOptions);
+ 						returnData.push({
+ 							json: response,
+@@ -94,7 +89,7 @@
+ 					} else if (operation === 'create') {
+ 						const title = this.getNodeParameter('namespaceTitle', i) as string;
+ 						requestOptions.method = 'POST';
+-						requestOptions.uri = baseURL;
++						requestOptions.url = baseURL;
+ 						requestOptions.body = { title };
+ 						response = await this.helpers.httpRequest(requestOptions);
+ 						returnData.push({
+@@ -103,7 +98,7 @@
+ 					} else if (operation === 'delete') {
+ 						const namespaceId = this.getNodeParameter('namespaceId', i) as string;
+ 						requestOptions.method = 'DELETE';
+-						requestOptions.uri = `${baseURL}/${namespaceId}`;
++						requestOptions.url = `${baseURL}/${namespaceId}`;
+ 						response = await this.helpers.httpRequest(requestOptions);
+ 						returnData.push({
+ 							json: {
+@@ -117,11 +112,11 @@
+
+ 					if (operation === 'get') {
+ 						const key = this.getNodeParameter('key', i) as string;
+-						requestOptions.uri = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
++						requestOptions.url = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
+ 						// For KV get, we need to handle the response as text
+ 						delete requestOptions.json;
+ 						requestOptions.returnFullResponse = true;
+-
++
+ 						try {
+ 							response = await this.helpers.httpRequest(requestOptions);
+ 							const metadata = response.headers['cf-kv-metadata'];
+@@ -153,22 +148,22 @@
+ 						const metadata = this.getNodeParameter('metadata', i, {}) as object;
+
+ 						requestOptions.method = 'PUT';
+-						requestOptions.uri = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
+-
++						requestOptions.url = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
++
+ 						// Build query parameters
+ 						const queryParams = new URLSearchParams();
+ 						if (expiration) queryParams.append('expiration', expiration.toString());
+ 						if (expirationTtl) queryParams.append('expiration_ttl', expirationTtl.toString());
+-
++
+ 						if (queryParams.toString()) {
+-							requestOptions.uri += `?${queryParams.toString()}`;
++							requestOptions.url += `?${queryParams.toString()}`;
+ 						}
+
+ 						// KV stores values as text, so we need to send raw body
+ 						delete requestOptions.json;
+ 						requestOptions.body = value;
+ 						requestOptions.headers['Content-Type'] = 'text/plain';
+-
++
+ 						// Add metadata if provided
+ 						if (Object.keys(metadata).length > 0) {
+ 							requestOptions.headers['CF-KV-Metadata'] = JSON.stringify(metadata);
+@@ -188,7 +183,7 @@
+ 					} else if (operation === 'delete') {
+ 						const key = this.getNodeParameter('key', i) as string;
+ 						requestOptions.method = 'DELETE';
+-						requestOptions.uri = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
++						requestOptions.url = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
+ 						response = await this.helpers.httpRequest(requestOptions);
+ 						returnData.push({
+ 							json: {
+@@ -206,7 +201,7 @@
+ 						queryParams.append('limit', limit.toString());
+ 						if (cursor) queryParams.append('cursor', cursor);
+
+-						requestOptions.uri = `${baseURL}/${namespaceId}/keys?${queryParams.toString()}`;
++						requestOptions.url = `${baseURL}/${namespaceId}/keys?${queryParams.toString()}`;
+ 						response = await this.helpers.httpRequest(requestOptions);
+ 						returnData.push({
+ 							json: response,
+@@ -217,10 +212,10 @@
+
+ 						// KV doesn't have a bulk get endpoint, so we need to make multiple requests
+ 						for (const key of keys) {
+-							requestOptions.uri = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
++							requestOptions.url = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
+ 							delete requestOptions.json;
+ 							requestOptions.returnFullResponse = true;
+-
++
+ 							try {
+ 								const keyResponse = await this.helpers.httpRequest(requestOptions);
+ 								const metadata = keyResponse.headers['cf-kv-metadata'];
+@@ -263,7 +258,7 @@
+ 						}));
+
+ 						requestOptions.method = 'PUT';
+-						requestOptions.uri = `${baseURL}/${namespaceId}/bulk`;
++						requestOptions.url = `${baseURL}/${namespaceId}/bulk`;
+ 						requestOptions.body = bulkData;
+
+ 						response = await this.helpers.httpRequest(requestOptions);
+@@ -274,7 +269,7 @@
+ 						const keys = (this.getNodeParameter('keys', i) as string).split(',').map(k => k.trim());
+
+ 						requestOptions.method = 'DELETE';
+-						requestOptions.uri = `${baseURL}/${namespaceId}/bulk`;
++						requestOptions.url = `${baseURL}/${namespaceId}/bulk`;
+ 						requestOptions.body = keys;
+
+ 						response = await this.helpers.httpRequest(requestOptions);
+@@ -301,4 +296,4 @@
+
+ 		return [returnData];
+ 	}
+-}
+\ No newline at end of file
++}
+Index: nodes/CloudflareQueue/CloudflareQueue.node.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/nodes/CloudflareQueue/CloudflareQueue.node.ts b/nodes/CloudflareQueue/CloudflareQueue.node.ts
+--- a/nodes/CloudflareQueue/CloudflareQueue.node.ts	(revision 5095e89070374a6eb6ac5d6671186dde0fd6c787)
++++ b/nodes/CloudflareQueue/CloudflareQueue.node.ts	(revision 215a2a961a635f224edf51fc5b8ca8594269460a)
+@@ -27,12 +27,8 @@
+ 		credentials: [
+ 			{
+ 				name: 'cloudflareApi',
++				displayName: 'Cloudflare API key connection',
+ 				required: true,
+-				displayOptions: {
+-					show: {
+-						'@credentials.authMode': ['standard'],
+-					},
+-				},
+ 			},
+ 		],
+ 		properties: [
+@@ -86,7 +82,7 @@
+
+ 				if (resource === 'queue') {
+ 					if (operation === 'list') {
+-						requestOptions.uri = baseURL;
++						requestOptions.url = baseURL;
+ 						response = await this.helpers.httpRequest(requestOptions);
+ 						returnData.push({
+ 							json: response,
+@@ -96,7 +92,7 @@
+ 						const settings = this.getNodeParameter('settings', i, {}) as any;
+
+ 						requestOptions.method = 'POST';
+-						requestOptions.uri = baseURL;
++						requestOptions.url = baseURL;
+ 						requestOptions.body = {
+ 							queue_name: queueName,
+ 							...settings,
+@@ -111,7 +107,7 @@
+ 						const settings = this.getNodeParameter('settings', i, {}) as any;
+
+ 						requestOptions.method = 'PUT';
+-						requestOptions.uri = `${baseURL}/${queueId}`;
++						requestOptions.url = `${baseURL}/${queueId}`;
+ 						requestOptions.body = settings;
+
+ 						response = await this.helpers.httpRequest(requestOptions);
+@@ -122,7 +118,7 @@
+ 						const queueId = this.getNodeParameter('queueId', i) as string;
+
+ 						requestOptions.method = 'DELETE';
+-						requestOptions.uri = `${baseURL}/${queueId}`;
++						requestOptions.url = `${baseURL}/${queueId}`;
+
+ 						response = await this.helpers.httpRequest(requestOptions);
+ 						returnData.push({
+@@ -134,7 +130,7 @@
+ 					} else if (operation === 'getInfo') {
+ 						const queueId = this.getNodeParameter('queueId', i) as string;
+
+-						requestOptions.uri = `${baseURL}/${queueId}`;
++						requestOptions.url = `${baseURL}/${queueId}`;
+ 						response = await this.helpers.httpRequest(requestOptions);
+ 						returnData.push({
+ 							json: response,
+@@ -148,12 +144,12 @@
+ 						const delaySeconds = this.getNodeParameter('delaySeconds', i, 0) as number;
+
+ 						requestOptions.method = 'POST';
+-						requestOptions.uri = `${baseURL}/${queueId}/messages`;
+-
++						requestOptions.url = `${baseURL}/${queueId}/messages`;
++
+ 						const messageData: any = {
+ 							body: messageBody,
+ 						};
+-
++
+ 						if (delaySeconds > 0) {
+ 							messageData.delay_seconds = delaySeconds;
+ 						}
+@@ -171,8 +167,8 @@
+ 						}>;
+
+ 						requestOptions.method = 'POST';
+-						requestOptions.uri = `${baseURL}/${queueId}/messages`;
+-
++						requestOptions.url = `${baseURL}/${queueId}/messages`;
++
+ 						const messagesData = messages.map(msg => {
+ 							const messageData: any = {
+ 								body: msg.body,
+@@ -194,7 +190,7 @@
+ 						const visibilityTimeout = this.getNodeParameter('visibilityTimeout', i, 30) as number;
+
+ 						requestOptions.method = 'POST';
+-						requestOptions.uri = `${baseURL}/${queueId}/messages/pull`;
++						requestOptions.url = `${baseURL}/${queueId}/messages/pull`;
+ 						requestOptions.body = {
+ 							batch_size: batchSize,
+ 							visibility_timeout_ms: visibilityTimeout * 1000, // Convert to milliseconds
+@@ -211,7 +207,7 @@
+ 							.filter(id => id.length > 0);
+
+ 						requestOptions.method = 'POST';
+-						requestOptions.uri = `${baseURL}/${queueId}/messages/ack`;
++						requestOptions.url = `${baseURL}/${queueId}/messages/ack`;
+ 						requestOptions.body = {
+ 							acks: leaseIds.map(leaseId => ({ lease_id: leaseId })),
+ 						};
+@@ -228,8 +224,8 @@
+ 						const retryDelaySeconds = this.getNodeParameter('retryDelaySeconds', i, 0) as number;
+
+ 						requestOptions.method = 'POST';
+-						requestOptions.uri = `${baseURL}/${queueId}/messages/ack`;
+-
++						requestOptions.url = `${baseURL}/${queueId}/messages/ack`;
++
+ 						const retries = leaseIds.map(leaseId => {
+ 							const retryData: any = { lease_id: leaseId };
+ 							if (retryDelaySeconds > 0) {
+@@ -266,4 +262,4 @@
+
+ 		return [returnData];
+ 	}
+-}
+\ No newline at end of file
++}
+Index: nodes/CloudflareQueue/CloudflareQueueTrigger.node.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/nodes/CloudflareQueue/CloudflareQueueTrigger.node.ts b/nodes/CloudflareQueue/CloudflareQueueTrigger.node.ts
+--- a/nodes/CloudflareQueue/CloudflareQueueTrigger.node.ts	(revision 5095e89070374a6eb6ac5d6671186dde0fd6c787)
++++ b/nodes/CloudflareQueue/CloudflareQueueTrigger.node.ts	(revision 215a2a961a635f224edf51fc5b8ca8594269460a)
+@@ -24,12 +24,8 @@
+ 		credentials: [
+ 			{
+ 				name: 'cloudflareApi',
++				displayName: 'Cloudflare API key connection',
+ 				required: true,
+-				displayOptions: {
+-					show: {
+-						'@credentials.authMode': ['standard'],
+-					},
+-				},
+ 			},
+ 		],
+ 		properties: [
+@@ -155,7 +151,7 @@
+ 							}
+ 						} catch (error) {
+ 							this.logger.error(`Error processing message ${message.id}:`, error);
+-
++
+ 							// Track retry count
+ 							const retryCount = messageRetries.get(message.lease_id) || 0;
+ 							if (retryCount < maxRetries) {
+@@ -247,4 +243,4 @@
+ 			manualTriggerFunction,
+ 		};
+ 	}
+-}
+\ No newline at end of file
++}
+Index: nodes/CloudflareR2/CloudflareR2.node.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/nodes/CloudflareR2/CloudflareR2.node.ts b/nodes/CloudflareR2/CloudflareR2.node.ts
+--- a/nodes/CloudflareR2/CloudflareR2.node.ts	(revision 5095e89070374a6eb6ac5d6671186dde0fd6c787)
++++ b/nodes/CloudflareR2/CloudflareR2.node.ts	(revision 215a2a961a635f224edf51fc5b8ca8594269460a)
+@@ -29,12 +29,8 @@
+ 		credentials: [
+ 			{
+ 				name: 'cloudflareApi',
++				displayName: 'Cloudflare API key connection',
+ 				required: true,
+-				displayOptions: {
+-					show: {
+-						'@credentials.authMode': ['r2'],
+-					},
+-				},
+ 			},
+ 		],
+ 		properties: [
+@@ -470,4 +466,4 @@
+
+ 		return [returnData];
+ 	}
+-}
+\ No newline at end of file
++}
+Index: nodes/CloudflareKV/cloudflare-kv.svg
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/nodes/CloudflareKV/cloudflare-kv.svg b/nodes/CloudflareKV/cloudflare-kv.svg
+--- a/nodes/CloudflareKV/cloudflare-kv.svg	(revision 215a2a961a635f224edf51fc5b8ca8594269460a)
++++ b/nodes/CloudflareKV/cloudflare-kv.svg	(revision b719866607edbde125af0a30e4a11e03d920430d)
+@@ -2,14 +2,28 @@
+   <g fill="none" fill-rule="evenodd">
+     <!-- Background circle -->
+     <circle cx="30" cy="30" r="30" fill="#F38020"/>
+-
+-    <!-- R2 text -->
+-    <text x="30" y="38" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="white">R2</text>
+-
+-    <!-- Storage icon -->
+-    <g transform="translate(16, 10)">
+-      <rect x="0" y="0" width="28" height="4" rx="1" fill="white" opacity="0.8"/>
+-      <rect x="0" y="6" width="28" height="4" rx="1" fill="white" opacity="0.8"/>
++
++    <!-- KV text -->
++    <text x="30" y="38" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="white">KV</text>
++
++    <!-- Key-Value icon -->
++    <g transform="translate(12, 12)">
++      <!-- Key icon -->
++      <g fill="white" opacity="0.9">
++        <circle cx="6" cy="6" r="3"/>
++        <rect x="8" y="5" width="12" height="2"/>
++        <rect x="16" y="3" width="2" height="2"/>
++        <rect x="18" y="5" width="2" height="2"/>
++      </g>
++      <!-- Arrow -->
++      <path d="M24 15 L32 15 M30 13 L32 15 L30 17" stroke="white" stroke-width="1.5" fill="none" opacity="0.8"/>
++      <!-- Value icon (document/data) -->
++      <g fill="white" opacity="0.9">
++        <rect x="34" y="10" width="8" height="10" rx="1"/>
++        <rect x="36" y="12" width="4" height="1"/>
++        <rect x="36" y="14" width="4" height="1"/>
++        <rect x="36" y="16" width="3" height="1"/>
++      </g>
+     </g>
+   </g>
+-</svg>
+\ No newline at end of file
++</svg>
+Index: nodes/CloudflareQueue/cloudflare-queue.svg
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/nodes/CloudflareQueue/cloudflare-queue.svg b/nodes/CloudflareQueue/cloudflare-queue.svg
+--- a/nodes/CloudflareQueue/cloudflare-queue.svg	(revision 215a2a961a635f224edf51fc5b8ca8594269460a)
++++ b/nodes/CloudflareQueue/cloudflare-queue.svg	(revision b719866607edbde125af0a30e4a11e03d920430d)
+@@ -2,14 +2,27 @@
+   <g fill="none" fill-rule="evenodd">
+     <!-- Background circle -->
+     <circle cx="30" cy="30" r="30" fill="#F38020"/>
+-
+-    <!-- R2 text -->
+-    <text x="30" y="38" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="white">R2</text>
+-
+-    <!-- Storage icon -->
+-    <g transform="translate(16, 10)">
+-      <rect x="0" y="0" width="28" height="4" rx="1" fill="white" opacity="0.8"/>
+-      <rect x="0" y="6" width="28" height="4" rx="1" fill="white" opacity="0.8"/>
++
++    <!-- Q text -->
++    <text x="30" y="42" font-family="Arial, sans-serif" font-size="22" font-weight="bold" text-anchor="middle" fill="white">Q</text>
++
++    <!-- Queue icon - message flow -->
++    <g transform="translate(8, 8)">
++      <!-- Message boxes in queue -->
++      <rect x="2" y="12" width="8" height="6" rx="1" fill="white" opacity="0.9"/>
++      <rect x="12" y="12" width="8" height="6" rx="1" fill="white" opacity="0.8"/>
++      <rect x="22" y="12" width="8" height="6" rx="1" fill="white" opacity="0.7"/>
++      <rect x="32" y="12" width="8" height="6" rx="1" fill="white" opacity="0.6"/>
++
++      <!-- Flow arrows -->
++      <path d="M10 15 L12 15 M11 14 L12 15 L11 16" stroke="white" stroke-width="1" fill="none" opacity="0.8"/>
++      <path d="M20 15 L22 15 M21 14 L22 15 L21 16" stroke="white" stroke-width="1" fill="none" opacity="0.8"/>
++      <path d="M30 15 L32 15 M31 14 L32 15 L31 16" stroke="white" stroke-width="1" fill="none" opacity="0.8"/>
++
++      <!-- Queue indicators -->
++      <circle cx="6" cy="15" r="1" fill="#F38020"/>
++      <circle cx="16" cy="15" r="1" fill="#F38020"/>
++      <circle cx="26" cy="15" r="1" fill="#F38020"/>
+     </g>
+   </g>
+-</svg>
+\ No newline at end of file
++</svg>

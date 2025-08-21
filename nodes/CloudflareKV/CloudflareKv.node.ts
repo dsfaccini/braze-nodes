@@ -76,7 +76,7 @@ export class CloudflareKV implements INodeType {
 				let response;
 				const requestOptions: any = {
 					headers: {
-						'Authorization': `Bearer ${apiToken}`,
+						Authorization: `Bearer ${apiToken}`,
 						'Content-Type': 'application/json',
 					},
 					method: 'GET' as IHttpRequestMethods,
@@ -121,7 +121,7 @@ export class CloudflareKV implements INodeType {
 						// For KV get, we need to handle the response as text
 						delete requestOptions.json;
 						requestOptions.returnFullResponse = true;
-						
+
 						try {
 							response = await this.helpers.httpRequest(requestOptions);
 							const metadata = response.headers['cf-kv-metadata'];
@@ -148,18 +148,25 @@ export class CloudflareKV implements INodeType {
 					} else if (operation === 'set') {
 						const key = this.getNodeParameter('key', i) as string;
 						const value = this.getNodeParameter('value', i) as string;
-						const expiration = this.getNodeParameter('expiration', i, undefined) as number | undefined;
-						const expirationTtl = this.getNodeParameter('expirationTtl', i, undefined) as number | undefined;
+						const expiration = this.getNodeParameter('expiration', i, undefined) as
+							| number
+							| undefined;
+						const expirationTtl = this.getNodeParameter(
+							'expirationTtl',
+							i,
+							undefined,
+						) as number | undefined;
 						const metadata = this.getNodeParameter('metadata', i, {}) as object;
 
 						requestOptions.method = 'PUT';
 						requestOptions.uri = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
-						
+
 						// Build query parameters
 						const queryParams = new URLSearchParams();
 						if (expiration) queryParams.append('expiration', expiration.toString());
-						if (expirationTtl) queryParams.append('expiration_ttl', expirationTtl.toString());
-						
+						if (expirationTtl)
+							queryParams.append('expiration_ttl', expirationTtl.toString());
+
 						if (queryParams.toString()) {
 							requestOptions.uri += `?${queryParams.toString()}`;
 						}
@@ -168,7 +175,7 @@ export class CloudflareKV implements INodeType {
 						delete requestOptions.json;
 						requestOptions.body = value;
 						requestOptions.headers['Content-Type'] = 'text/plain';
-						
+
 						// Add metadata if provided
 						if (Object.keys(metadata).length > 0) {
 							requestOptions.headers['CF-KV-Metadata'] = JSON.stringify(metadata);
@@ -212,7 +219,9 @@ export class CloudflareKV implements INodeType {
 							json: response,
 						});
 					} else if (operation === 'getMultiple') {
-						const keys = (this.getNodeParameter('keys', i) as string).split(',').map(k => k.trim());
+						const keys = (this.getNodeParameter('keys', i) as string)
+							.split(',')
+							.map((k) => k.trim());
 						const results: any[] = [];
 
 						// KV doesn't have a bulk get endpoint, so we need to make multiple requests
@@ -220,7 +229,7 @@ export class CloudflareKV implements INodeType {
 							requestOptions.uri = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
 							delete requestOptions.json;
 							requestOptions.returnFullResponse = true;
-							
+
 							try {
 								const keyResponse = await this.helpers.httpRequest(requestOptions);
 								const metadata = keyResponse.headers['cf-kv-metadata'];
@@ -255,7 +264,7 @@ export class CloudflareKV implements INodeType {
 							metadata?: object;
 						}>;
 
-						const bulkData = pairs.map(pair => ({
+						const bulkData = pairs.map((pair) => ({
 							key: pair.key,
 							value: pair.value,
 							expiration: pair.expiration,
@@ -271,7 +280,9 @@ export class CloudflareKV implements INodeType {
 							json: response,
 						});
 					} else if (operation === 'deleteMultiple') {
-						const keys = (this.getNodeParameter('keys', i) as string).split(',').map(k => k.trim());
+						const keys = (this.getNodeParameter('keys', i) as string)
+							.split(',')
+							.map((k) => k.trim());
 
 						requestOptions.method = 'DELETE';
 						requestOptions.uri = `${baseURL}/${namespaceId}/bulk`;

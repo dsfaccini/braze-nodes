@@ -110,7 +110,8 @@ export class CloudflareR2 implements INodeType {
 			if (!response.ok) {
 				const errorText = await response.text();
 				const error = parseErrorResponse(errorText);
-				const errorMessage = error.message || `R2 Error: ${response.status} ${response.statusText}`;
+				const errorMessage =
+					error.message || `R2 Error: ${response.status} ${response.statusText}`;
 				const errorData: any = {
 					message: errorMessage,
 					httpCode: response.status.toString(),
@@ -134,7 +135,8 @@ export class CloudflareR2 implements INodeType {
 			const bucketMatches = response.text.match(/<Bucket>[\s\S]*?<\/Bucket>/g) || [];
 			const buckets = bucketMatches.map((bucketXml: string) => {
 				const name = bucketXml.match(/<Name>(.*?)<\/Name>/)?.[1] || '';
-				const creationDate = bucketXml.match(/<CreationDate>(.*?)<\/CreationDate>/)?.[1] || '';
+				const creationDate =
+					bucketXml.match(/<CreationDate>(.*?)<\/CreationDate>/)?.[1] || '';
 				return { Name: name, CreationDate: creationDate };
 			});
 
@@ -157,10 +159,12 @@ export class CloudflareR2 implements INodeType {
 			const contentsMatches = response.text.match(/<Contents>[\s\S]*?<\/Contents>/g) || [];
 			const objects = contentsMatches.map((contentXml: string) => {
 				const key = contentXml.match(/<Key>(.*?)<\/Key>/)?.[1] || '';
-				const lastModified = contentXml.match(/<LastModified>(.*?)<\/LastModified>/)?.[1] || '';
+				const lastModified =
+					contentXml.match(/<LastModified>(.*?)<\/LastModified>/)?.[1] || '';
 				const etag = contentXml.match(/<ETag>"?(.*?)"?<\/ETag>/)?.[1] || '';
 				const size = contentXml.match(/<Size>(.*?)<\/Size>/)?.[1] || '0';
-				const storageClass = contentXml.match(/<StorageClass>(.*?)<\/StorageClass>/)?.[1] || 'STANDARD';
+				const storageClass =
+					contentXml.match(/<StorageClass>(.*?)<\/StorageClass>/)?.[1] || 'STANDARD';
 
 				return {
 					Key: key,
@@ -173,7 +177,8 @@ export class CloudflareR2 implements INodeType {
 
 			const name = response.text.match(/<Name>(.*?)<\/Name>/)?.[1] || '';
 			const keyCount = response.text.match(/<KeyCount>(.*?)<\/KeyCount>/)?.[1] || '0';
-			const isTruncated = response.text.match(/<IsTruncated>(.*?)<\/IsTruncated>/)?.[1] === 'true';
+			const isTruncated =
+				response.text.match(/<IsTruncated>(.*?)<\/IsTruncated>/)?.[1] === 'true';
 
 			return {
 				name,
@@ -185,7 +190,8 @@ export class CloudflareR2 implements INodeType {
 
 		const parseCopyObjectResponse = (response: any): any => {
 			const etag = response.text.match(/<ETag>"?(.*?)"?<\/ETag>/)?.[1] || '';
-			const lastModified = response.text.match(/<LastModified>(.*?)<\/LastModified>/)?.[1] || '';
+			const lastModified =
+				response.text.match(/<LastModified>(.*?)<\/LastModified>/)?.[1] || '';
 
 			return {
 				ETag: etag.replace(/"/g, ''),
@@ -357,7 +363,8 @@ export class CloudflareR2 implements INodeType {
 						});
 
 						const buffer = Buffer.from(await response.arrayBuffer());
-						const contentType = response.headers.get('content-type') || 'application/octet-stream';
+						const contentType =
+							response.headers.get('content-type') || 'application/octet-stream';
 
 						const binaryData = await this.helpers.prepareBinaryData(
 							buffer,

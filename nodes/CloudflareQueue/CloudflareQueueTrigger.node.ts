@@ -74,7 +74,8 @@ export class CloudflareQueueTrigger implements INodeType {
 				name: 'autoAcknowledge',
 				type: 'boolean',
 				default: true,
-				description: 'Whether to automatically acknowledge messages after successful processing',
+				description:
+					'Whether to automatically acknowledge messages after successful processing',
 			},
 			{
 				displayName: 'Max Retries',
@@ -110,7 +111,7 @@ export class CloudflareQueueTrigger implements INodeType {
 			try {
 				const requestOptions = {
 					headers: {
-						'Authorization': `Bearer ${apiToken}`,
+						Authorization: `Bearer ${apiToken}`,
 						'Content-Type': 'application/json',
 					},
 					method: 'POST' as IHttpRequestMethods,
@@ -155,7 +156,7 @@ export class CloudflareQueueTrigger implements INodeType {
 							}
 						} catch (error) {
 							this.logger.error(`Error processing message ${message.id}:`, error);
-							
+
 							// Track retry count
 							const retryCount = messageRetries.get(message.lease_id) || 0;
 							if (retryCount < maxRetries) {
@@ -165,7 +166,9 @@ export class CloudflareQueueTrigger implements INodeType {
 								// Max retries reached, acknowledge to prevent infinite retries
 								processedLeaseIds.push(message.lease_id);
 								messageRetries.delete(message.lease_id);
-								this.logger.error(`Message ${message.id} exceeded max retries, acknowledging`);
+								this.logger.error(
+									`Message ${message.id} exceeded max retries, acknowledging`,
+								);
 							}
 						}
 					}
@@ -175,14 +178,16 @@ export class CloudflareQueueTrigger implements INodeType {
 						try {
 							await this.helpers.httpRequest({
 								headers: {
-									'Authorization': `Bearer ${apiToken}`,
+									Authorization: `Bearer ${apiToken}`,
 									'Content-Type': 'application/json',
 								},
 								method: 'POST' as IHttpRequestMethods,
 								url: `${baseURL}/messages/ack`,
 								json: true,
 								body: {
-									acks: processedLeaseIds.map(leaseId => ({ lease_id: leaseId })),
+									acks: processedLeaseIds.map((leaseId) => ({
+										lease_id: leaseId,
+									})),
 								},
 							});
 						} catch (error) {
@@ -193,7 +198,7 @@ export class CloudflareQueueTrigger implements INodeType {
 					// Retry failed messages with exponential backoff
 					if (failedLeaseIds.length > 0) {
 						try {
-							const retries = failedLeaseIds.map(leaseId => {
+							const retries = failedLeaseIds.map((leaseId) => {
 								const retryCount = messageRetries.get(leaseId) || 0;
 								const retryDelay = Math.min(300, Math.pow(2, retryCount) * 5); // Exponential backoff, max 5 minutes
 								return {
@@ -204,7 +209,7 @@ export class CloudflareQueueTrigger implements INodeType {
 
 							await this.helpers.httpRequest({
 								headers: {
-									'Authorization': `Bearer ${apiToken}`,
+									Authorization: `Bearer ${apiToken}`,
 									'Content-Type': 'application/json',
 								},
 								method: 'POST' as IHttpRequestMethods,

@@ -34,6 +34,7 @@ npm run prepublishOnly
 ## Architecture Overview
 
 ### Node Structure
+
 - Nodes are located in `nodes/[NodeName]/[NodeName].node.ts`
 - Each node implements the `INodeType` interface from `n8n-workflow`
 - Nodes must be registered in `package.json` under `n8n.nodes`
@@ -41,6 +42,7 @@ npm run prepublishOnly
 - Use `requestDefaults` for API base configuration
 
 ### Credentials Structure
+
 - Credentials are in `credentials/[ServiceName]Api.credentials.ts`
 - Implement `ICredentialType` interface
 - Must be registered in `package.json` under `n8n.credentials`
@@ -48,6 +50,7 @@ npm run prepublishOnly
 - Add `test` property for credential validation
 
 ### Build Process
+
 - TypeScript compiles to `dist/` directory
 - Gulp task copies icons to dist structure
 - Only `dist/` folder is published to npm
@@ -56,17 +59,20 @@ npm run prepublishOnly
 ## Cloudflare Integration Requirements
 
 ### R2 Node
+
 - Support all REST operations (list, get, create, delete)
 - Option to create bucket if it doesn't exist
 - Handle private/public bucket configuration
 - Note: R2 buckets are private by default
 
 ### D1 Node
+
 - CRUD operations for serverless SQL database
 - Similar to existing Supabase/SQL database nodes
 - Handle D1-specific connection patterns
 
 ### AI Modules Node
+
 - Integrate with Cloudflare AI services
 - Support completions, image generation, and transcription
 - Handle multiple model options
