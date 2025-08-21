@@ -8,7 +8,7 @@ import {
 	NodeOperationError,
 } from 'n8n-workflow';
 
-// was the I fucking up the loading of the custom node?
+// Cloudflare AI node implementation
 export class CloudflareAi implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Cloudflare AI',
@@ -557,7 +557,7 @@ export class CloudflareAi implements INodeType {
 					});
 				} else {
 					// Handle JSON responses
-					response = await this.helpers.httpRequest(requestOptions);
+					response = await this.helpers.httpRequestWithAuthentication.call(this, 'cloudflareApi', requestOptions);
 
 					if (response.success !== false) {
 						returnData.push({

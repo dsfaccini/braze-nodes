@@ -1,13 +1,15 @@
 {
     "name": "@getalecs/n8n-nodes-cloudflare",
     "version": "0.1.1",
-    "description": "n8n nodes for Cloudflare services including R2, D1, and Workers AI",
+    "description": "n8n nodes for Cloudflare services including R2, D1, Workers AI, KV and Queues",
     "keywords": [
         "n8n-community-node-package",
         "cloudflare",
         "r2",
         "d1",
-        "workers-ai"
+        "workers-ai",
+        "kv",
+        "queue"
     ],
     "homepage": "https://github.com/n8n-community/n8n-nodes-cloudflare",
     "bugs": {
