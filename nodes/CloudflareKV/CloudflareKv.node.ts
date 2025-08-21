@@ -27,12 +27,8 @@ export class CloudflareKV implements INodeType {
 		credentials: [
 			{
 				name: 'cloudflareApi',
+				displayName: 'Cloudflare API key connection',
 				required: true,
-				displayOptions: {
-					show: {
-						'@credentials.authMode': ['standard'],
-					},
-				},
 			},
 		],
 		properties: [
@@ -80,13 +76,12 @@ export class CloudflareKV implements INodeType {
 						'Content-Type': 'application/json',
 					},
 					method: 'GET' as IHttpRequestMethods,
-					uri: '',
 					json: true,
 				};
 
 				if (resource === 'namespace') {
 					if (operation === 'list') {
-						requestOptions.uri = baseURL;
+						requestOptions.url = baseURL;
 						response = await this.helpers.httpRequest(requestOptions);
 						returnData.push({
 							json: response,
@@ -94,7 +89,7 @@ export class CloudflareKV implements INodeType {
 					} else if (operation === 'create') {
 						const title = this.getNodeParameter('namespaceTitle', i) as string;
 						requestOptions.method = 'POST';
-						requestOptions.uri = baseURL;
+						requestOptions.url = baseURL;
 						requestOptions.body = { title };
 						response = await this.helpers.httpRequest(requestOptions);
 						returnData.push({
@@ -103,7 +98,7 @@ export class CloudflareKV implements INodeType {
 					} else if (operation === 'delete') {
 						const namespaceId = this.getNodeParameter('namespaceId', i) as string;
 						requestOptions.method = 'DELETE';
-						requestOptions.uri = `${baseURL}/${namespaceId}`;
+						requestOptions.url = `${baseURL}/${namespaceId}`;
 						response = await this.helpers.httpRequest(requestOptions);
 						returnData.push({
 							json: {
@@ -117,7 +112,7 @@ export class CloudflareKV implements INodeType {
 
 					if (operation === 'get') {
 						const key = this.getNodeParameter('key', i) as string;
-						requestOptions.uri = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
+						requestOptions.url = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
 						// For KV get, we need to handle the response as text
 						delete requestOptions.json;
 						requestOptions.returnFullResponse = true;
@@ -159,7 +154,7 @@ export class CloudflareKV implements INodeType {
 						const metadata = this.getNodeParameter('metadata', i, {}) as object;
 
 						requestOptions.method = 'PUT';
-						requestOptions.uri = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
+						requestOptions.url = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
 
 						// Build query parameters
 						const queryParams = new URLSearchParams();
@@ -168,7 +163,7 @@ export class CloudflareKV implements INodeType {
 							queryParams.append('expiration_ttl', expirationTtl.toString());
 
 						if (queryParams.toString()) {
-							requestOptions.uri += `?${queryParams.toString()}`;
+							requestOptions.url += `?${queryParams.toString()}`;
 						}
 
 						// KV stores values as text, so we need to send raw body
@@ -195,7 +190,7 @@ export class CloudflareKV implements INodeType {
 					} else if (operation === 'delete') {
 						const key = this.getNodeParameter('key', i) as string;
 						requestOptions.method = 'DELETE';
-						requestOptions.uri = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
+						requestOptions.url = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
 						response = await this.helpers.httpRequest(requestOptions);
 						returnData.push({
 							json: {
@@ -213,7 +208,7 @@ export class CloudflareKV implements INodeType {
 						queryParams.append('limit', limit.toString());
 						if (cursor) queryParams.append('cursor', cursor);
 
-						requestOptions.uri = `${baseURL}/${namespaceId}/keys?${queryParams.toString()}`;
+						requestOptions.url = `${baseURL}/${namespaceId}/keys?${queryParams.toString()}`;
 						response = await this.helpers.httpRequest(requestOptions);
 						returnData.push({
 							json: response,
@@ -226,7 +221,7 @@ export class CloudflareKV implements INodeType {
 
 						// KV doesn't have a bulk get endpoint, so we need to make multiple requests
 						for (const key of keys) {
-							requestOptions.uri = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
+							requestOptions.url = `${baseURL}/${namespaceId}/values/${encodeURIComponent(key)}`;
 							delete requestOptions.json;
 							requestOptions.returnFullResponse = true;
 
@@ -272,7 +267,7 @@ export class CloudflareKV implements INodeType {
 						}));
 
 						requestOptions.method = 'PUT';
-						requestOptions.uri = `${baseURL}/${namespaceId}/bulk`;
+						requestOptions.url = `${baseURL}/${namespaceId}/bulk`;
 						requestOptions.body = bulkData;
 
 						response = await this.helpers.httpRequest(requestOptions);
@@ -285,7 +280,7 @@ export class CloudflareKV implements INodeType {
 							.map((k) => k.trim());
 
 						requestOptions.method = 'DELETE';
-						requestOptions.uri = `${baseURL}/${namespaceId}/bulk`;
+						requestOptions.url = `${baseURL}/${namespaceId}/bulk`;
 						requestOptions.body = keys;
 
 						response = await this.helpers.httpRequest(requestOptions);

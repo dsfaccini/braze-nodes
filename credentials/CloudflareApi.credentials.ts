@@ -123,7 +123,7 @@ export class CloudflareApi implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			baseURL: 'https://api.cloudflare.com/client/v4',
-			url: '/accounts/={{$credentials.accountId}}',
+			url: '={{"/accounts/" + $credentials.accountId}}',
 			headers: {
 				Authorization: '={{"Bearer " + $credentials.apiToken}}',
 			},

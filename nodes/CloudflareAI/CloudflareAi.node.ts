@@ -27,12 +27,8 @@ export class CloudflareAi implements INodeType {
 		credentials: [
 			{
 				name: 'cloudflareApi',
+				displayName: 'Cloudflare API key connection',
 				required: true,
-				displayOptions: {
-					show: {
-						'@credentials.authMode': ['standard'],
-					},
-				},
 			},
 		],
 		properties: [

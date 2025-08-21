@@ -27,12 +27,8 @@ export class CloudflareQueue implements INodeType {
 		credentials: [
 			{
 				name: 'cloudflareApi',
+				displayName: 'Cloudflare API key connection',
 				required: true,
-				displayOptions: {
-					show: {
-						'@credentials.authMode': ['standard'],
-					},
-				},
 			},
 		],
 		properties: [
@@ -86,7 +82,7 @@ export class CloudflareQueue implements INodeType {
 
 				if (resource === 'queue') {
 					if (operation === 'list') {
-						requestOptions.uri = baseURL;
+						requestOptions.url = baseURL;
 						response = await this.helpers.httpRequest(requestOptions);
 						returnData.push({
 							json: response,
@@ -96,7 +92,7 @@ export class CloudflareQueue implements INodeType {
 						const settings = this.getNodeParameter('settings', i, {}) as any;
 
 						requestOptions.method = 'POST';
-						requestOptions.uri = baseURL;
+						requestOptions.url = baseURL;
 						requestOptions.body = {
 							queue_name: queueName,
 							...settings,
@@ -111,7 +107,7 @@ export class CloudflareQueue implements INodeType {
 						const settings = this.getNodeParameter('settings', i, {}) as any;
 
 						requestOptions.method = 'PUT';
-						requestOptions.uri = `${baseURL}/${queueId}`;
+						requestOptions.url = `${baseURL}/${queueId}`;
 						requestOptions.body = settings;
 
 						response = await this.helpers.httpRequest(requestOptions);
@@ -122,7 +118,7 @@ export class CloudflareQueue implements INodeType {
 						const queueId = this.getNodeParameter('queueId', i) as string;
 
 						requestOptions.method = 'DELETE';
-						requestOptions.uri = `${baseURL}/${queueId}`;
+						requestOptions.url = `${baseURL}/${queueId}`;
 
 						response = await this.helpers.httpRequest(requestOptions);
 						returnData.push({
@@ -134,7 +130,7 @@ export class CloudflareQueue implements INodeType {
 					} else if (operation === 'getInfo') {
 						const queueId = this.getNodeParameter('queueId', i) as string;
 
-						requestOptions.uri = `${baseURL}/${queueId}`;
+						requestOptions.url = `${baseURL}/${queueId}`;
 						response = await this.helpers.httpRequest(requestOptions);
 						returnData.push({
 							json: response,
@@ -148,7 +144,7 @@ export class CloudflareQueue implements INodeType {
 						const delaySeconds = this.getNodeParameter('delaySeconds', i, 0) as number;
 
 						requestOptions.method = 'POST';
-						requestOptions.uri = `${baseURL}/${queueId}/messages`;
+						requestOptions.url = `${baseURL}/${queueId}/messages`;
 
 						const messageData: any = {
 							body: messageBody,
@@ -171,7 +167,7 @@ export class CloudflareQueue implements INodeType {
 						}>;
 
 						requestOptions.method = 'POST';
-						requestOptions.uri = `${baseURL}/${queueId}/messages`;
+						requestOptions.url = `${baseURL}/${queueId}/messages`;
 
 						const messagesData = messages.map((msg) => {
 							const messageData: any = {
@@ -198,7 +194,7 @@ export class CloudflareQueue implements INodeType {
 						) as number;
 
 						requestOptions.method = 'POST';
-						requestOptions.uri = `${baseURL}/${queueId}/messages/pull`;
+						requestOptions.url = `${baseURL}/${queueId}/messages/pull`;
 						requestOptions.body = {
 							batch_size: batchSize,
 							visibility_timeout_ms: visibilityTimeout * 1000, // Convert to milliseconds
@@ -215,7 +211,7 @@ export class CloudflareQueue implements INodeType {
 							.filter((id) => id.length > 0);
 
 						requestOptions.method = 'POST';
-						requestOptions.uri = `${baseURL}/${queueId}/messages/ack`;
+						requestOptions.url = `${baseURL}/${queueId}/messages/ack`;
 						requestOptions.body = {
 							acks: leaseIds.map((leaseId) => ({ lease_id: leaseId })),
 						};
@@ -236,7 +232,7 @@ export class CloudflareQueue implements INodeType {
 						) as number;
 
 						requestOptions.method = 'POST';
-						requestOptions.uri = `${baseURL}/${queueId}/messages/ack`;
+						requestOptions.url = `${baseURL}/${queueId}/messages/ack`;
 
 						const retries = leaseIds.map((leaseId) => {
 							const retryData: any = { lease_id: leaseId };
