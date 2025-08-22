@@ -19,7 +19,7 @@ export class CloudflareApi implements ICredentialType {
 			default: '',
 			required: true,
 			description:
-				'The Cloudflare API token. Create one at My Profile → API Tokens in the Cloudflare dashboard.',
+				'The Cloudflare API token. Use this pre-configured link to create one with the right permissions: https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%5D&name=custom-n8n-cloudflare-nodes&accountId=%2A&zoneId=all',
 			typeOptions: {
 				password: true,
 			},
@@ -51,7 +51,7 @@ export class CloudflareApi implements ICredentialType {
 			],
 			default: 'standard',
 			description:
-				'Choose the authentication mode based on which Cloudflare service you want to use',
+				'Choose based on your service: Standard for D1/AI/KV/Queues (uses API token), R2 for object storage (uses S3-compatible credentials). Note: Queues require a paid Workers plan.',
 		},
 		{
 			displayName: 'R2 Access Key ID',
@@ -64,7 +64,7 @@ export class CloudflareApi implements ICredentialType {
 					authMode: ['r2'],
 				},
 			},
-			description: 'The R2 Access Key ID (API Token ID) from your Cloudflare dashboard',
+			description: 'The R2 Access Key ID from your Cloudflare R2 S3-compatible API token. Create one at: https://developers.cloudflare.com/r2/api/tokens/',
 		},
 		{
 			displayName: 'R2 Secret Access Key',
@@ -79,7 +79,7 @@ export class CloudflareApi implements ICredentialType {
 			typeOptions: {
 				password: true,
 			},
-			description: 'The R2 Secret Access Key from your Cloudflare dashboard',
+			description: 'The R2 Secret Access Key from your Cloudflare R2 S3-compatible API token. This is different from your regular API token.',
 		},
 		{
 			displayName: 'R2 Jurisdiction',

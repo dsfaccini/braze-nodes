@@ -17,7 +17,7 @@ export class CloudflareQueue implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Send and receive messages using Cloudflare Queues',
+		description: 'Send and receive messages using Cloudflare Queues (requires paid Workers plan)',
 		defaults: {
 			name: 'Cloudflare Queue',
 		},
@@ -252,11 +252,31 @@ export class CloudflareQueue implements INodeType {
 						});
 					}
 				}
-			} catch (error) {
+			} catch (error: any) {
+				// Enhanced error handling for common issues
+				let errorMessage = error.message;
+				
+				// Check for 403 Forbidden (paid plan required)
+				if (error.httpCode === '403' || error.message?.includes('403')) {
+					errorMessage = `Cloudflare Queues requires a paid Workers plan. Free accounts cannot access Queue APIs. Please upgrade your plan at: https://dash.cloudflare.com/${credentials.accountId}/workers/plans`;
+				}
+				// Check for other authentication issues
+				else if (error.httpCode === '401' || error.message?.includes('401')) {
+					errorMessage = `Invalid API token or Account ID. Please verify your Cloudflare API credentials and ensure the token has Queue permissions.`;
+				}
+				// Check for account/queue not found
+				else if (error.httpCode === '404' || error.message?.includes('404')) {
+					errorMessage = error.message?.includes('queue') 
+						? `Queue not found. Please verify the Queue ID exists in your account.`
+						: `Account not found. Please verify your Account ID is correct.`;
+				}
+
 				if (this.continueOnFail()) {
 					returnData.push({
 						json: {
-							error: error.message,
+							error: errorMessage,
+							originalError: error.message,
+							httpCode: error.httpCode,
 						},
 						pairedItem: {
 							item: i,
@@ -264,7 +284,12 @@ export class CloudflareQueue implements INodeType {
 					});
 					continue;
 				}
-				throw error;
+				
+				// Create enhanced error for throw
+				const enhancedError = new Error(errorMessage);
+				(enhancedError as any).httpCode = error.httpCode;
+				(enhancedError as any).originalError = error.message;
+				throw enhancedError;
 			}
 		}
 

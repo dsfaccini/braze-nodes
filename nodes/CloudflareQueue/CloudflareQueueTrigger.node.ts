@@ -15,7 +15,7 @@ export class CloudflareQueueTrigger implements INodeType {
 		icon: { light: 'file:cloudflare-queue.svg', dark: 'file:cloudflare-queue.svg' },
 		group: ['trigger'],
 		version: 1,
-		description: 'Trigger on new messages from Cloudflare Queue',
+		description: 'Trigger on new messages from Cloudflare Queue (requires paid Workers plan)',
 		defaults: {
 			name: 'Cloudflare Queue Trigger',
 		},
@@ -220,8 +220,24 @@ export class CloudflareQueueTrigger implements INodeType {
 						}
 					}
 				}
-			} catch (error) {
-				this.logger.error('Error polling queue:', error);
+			} catch (error: any) {
+				// Enhanced error logging for common issues
+				let errorMessage = `Error polling queue: ${error.message}`;
+				
+				// Check for 403 Forbidden (paid plan required)
+				if (error.httpCode === '403' || error.message?.includes('403')) {
+					errorMessage = `Cloudflare Queues requires a paid Workers plan. Free accounts cannot access Queue APIs. Please upgrade your plan and check your queue dashboard at: https://dash.cloudflare.com/${accountId}/workers/queues`;
+				}
+				// Check for authentication issues
+				else if (error.httpCode === '401' || error.message?.includes('401')) {
+					errorMessage = `Invalid API token or Account ID. Please verify your Cloudflare API credentials have Queue permissions.`;
+				}
+				// Check for queue not found
+				else if (error.httpCode === '404' || error.message?.includes('404')) {
+					errorMessage = `Queue not found. Please verify the Queue ID '${queueId}' exists in your account.`;
+				}
+
+				this.logger.error(errorMessage);
 			}
 
 			// Schedule next poll

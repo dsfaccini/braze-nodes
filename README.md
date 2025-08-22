@@ -1,6 +1,8 @@
 # Cloudflare Nodes for n8n
 
-A comprehensive collection of n8n community nodes for Cloudflare services including R2 object storage, D1 serverless database, Workers AI, KV storage, and Queues.
+**Warning**: this repository is currently in development, which means that not all cloudflare services are implemented as nodes yet and some operations may currently not be available. Additionally you may encounter bugs or unhelpful error messages. Please report any issues you find as issues and provide as much context as possible, include screenshots and error messages in code blocks if possible.
+
+Intro: This is a collection of n8n community nodes for Cloudflare services. Currently supported services: R2 object storage, D1 serverless database, Workers AI, KV storage, and Queues.
 
 ## Available Nodes
 
@@ -69,31 +71,67 @@ Or install directly in n8n:
 2. Enter: `@getalecs/n8n-nodes-cloudflare`
 3. Click **Install**
 
+## Prerequisites
+
+> [!IMPORTANT]
+> **Cloudflare Queues requires a paid Workers plan**. Free accounts will receive 403 errors when using Queue nodes. [Learn more about Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/).
+
+- Valid Cloudflare account
+- For Queues: Paid Workers plan
+- For R2: Separate R2 API token (see below)
+
 ## Authentication
 
-All nodes use **Cloudflare API credentials**:
+### 🔑 API Token Types
 
-1. **Standard Mode** (D1, AI, KV, Queue):
-   - API Token (from Cloudflare dashboard)
-   - Account ID
+Cloudflare offers two types of API tokens with different scopes:
 
-2. **R2 Mode** (Object Storage):
-   - API Token
-   - Account ID  
-   - R2 Access Key ID
-   - R2 Secret Access Key
-   - R2 Jurisdiction (default/eu/fedramp)
+#### 1. **User-Level Tokens** (Recommended for most services)
+Perfect for D1, AI, KV, and Queues. Use this pre-configured link:
 
-### Getting Credentials
+**[📝 Create User-Level Token](https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%5D&name=custom-n8n-cloudflare-nodes&accountId=%2A&zoneId=all)** *(Pre-configured with required permissions)*
 
-1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/profile/api-tokens)
-2. Create API Token with required permissions:
-   - **R2**: `Object Read`, `Object Write`
-   - **KV**: `Zone:Zone Settings:Edit`, `Account:Cloudflare Workers KV Storage:Edit`
-   - **D1**: `Account:Cloudflare D1:Edit`
-   - **Queues**: `Account:Cloudflare Queues:Edit`
-   - **AI**: `Account:Cloudflare AI:Read`
-3. Copy your Account ID from the dashboard sidebar
+#### 2. **Account-Level Tokens** 
+For account-level permissions, replace `profile` in the URL above with your Account ID:
+```
+https://dash.cloudflare.com/YOUR_ACCOUNT_ID_HERE/profile/api-tokens?...
+```
+
+### 🔐 Authentication Modes
+
+**Standard Mode** (D1, AI, KV, Queue):
+- ✅ API Token (from link above)
+- ✅ Account ID
+
+**R2 Mode** (Object Storage):
+- ✅ Account ID  
+- ✅ R2 Access Key ID
+- ✅ R2 Secret Access Key
+- ✅ R2 Jurisdiction (default/eu/fedramp)
+
+> [!WARNING]
+> **R2 requires special S3-compatible API tokens**, not regular Cloudflare API tokens. These provide Access Key ID and Secret Access Key for S3 compatibility.
+
+### 🚀 Quick Setup
+
+1. **For most services (D1, AI, KV, Queues):**
+   - Click the [pre-configured token link](https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%5D&name=custom-n8n-cloudflare-nodes&accountId=%2A&zoneId=all)
+   - Click "Continue to summary" → "Create Token"
+   - Copy the token and your Account ID
+
+2. **For R2 object storage:**
+   - Follow the [R2 API Token Guide](https://developers.cloudflare.com/r2/api/tokens/)
+   - Create an S3-compatible token
+   - Use the Access Key ID and Secret Access Key provided
+
+3. **In n8n:**
+   - Add Cloudflare API credentials
+   - Choose the appropriate authentication mode
+   - Enter your token(s) and Account ID
+
+### 🛠️ Custom Token Generation
+
+Need different permissions? Use the [Cloudflare API Token URL Generator](https://cfdata.lol/tools/api-token-url-generator/) to create custom pre-configured URLs.
 
 ## Key Features
 
@@ -137,6 +175,41 @@ Code Node → CloudflareKV (Set) → Email Node
 - n8n version 0.198.0 or higher
 - Node.js 20.15.0 or higher
 - Valid Cloudflare account with API access
+
+## Troubleshooting
+
+### 🚨 Common Issues
+
+#### Queue Operations Return 403 Forbidden
+```
+Error: Request failed with status code 403
+```
+**Solution:** Cloudflare Queues requires a paid Workers plan. [Upgrade your account](https://dash.cloudflare.com/YOUR_ACCOUNT_ID/workers/plans) or visit your [Queue dashboard](https://dash.cloudflare.com/YOUR_ACCOUNT_ID/workers/queues).
+
+#### R2 Authentication Errors
+```
+Error: The AWS Access Key Id you provided does not exist in our records
+```
+**Solution:** R2 requires S3-compatible API tokens, not regular Cloudflare tokens. Create one at the [R2 Token page](https://developers.cloudflare.com/r2/api/tokens/).
+
+#### Invalid Account ID
+```
+Error: Unknown account identifier
+```
+**Solution:** Double-check your Account ID in the Cloudflare dashboard sidebar. It should be a 32-character hexadecimal string.
+
+#### Token Permission Errors
+```
+Error: API token does not have the required permissions
+```
+**Solution:** Use the [pre-configured token URL](https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%5D&name=custom-n8n-cloudflare-nodes&accountId=%2A&zoneId=all) to ensure all required permissions are included.
+
+### 📖 Additional Resources
+
+- [Cloudflare API Documentation](https://developers.cloudflare.com/api/)
+- [Workers Pricing](https://developers.cloudflare.com/workers/platform/pricing/)
+- [R2 API Tokens Guide](https://developers.cloudflare.com/r2/api/tokens/)
+- [D1 Database Limits](https://developers.cloudflare.com/d1/platform/limits/)
 
 ## Support
 

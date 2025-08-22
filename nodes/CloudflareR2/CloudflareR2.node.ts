@@ -7,7 +7,15 @@ import {
 	NodeApiError,
 } from 'n8n-workflow';
 
+import {
+	S3Client,
+	PutObjectCommand,
+	GetObjectCommand,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+
 import { AwsSignatureV4 } from './awsSignatureV4';
+
 import { bucketOperations, bucketFields } from './CloudflareR2BucketDescription';
 import { objectOperations, objectFields } from './CloudflareR2ObjectDescription';
 
@@ -71,8 +79,18 @@ export class CloudflareR2 implements INodeType {
 		const { CloudflareApi } = await import('../../credentials/CloudflareApi.credentials');
 		const r2Credentials = CloudflareApi.getR2Credentials(credentials);
 
+		// Validate credentials
+		if (!r2Credentials.accessKeyId || !r2Credentials.secretAccessKey || !r2Credentials.endpoint) {
+			throw new NodeApiError(this.getNode(), {
+				message: 'R2 credentials are missing or invalid. Please check your Cloudflare API credentials configuration.',
+				description: 'Missing R2 Access Key ID, Secret Access Key, or Account ID. Make sure to set Auth Mode to "R2 S3-Compatible" and provide both R2 credentials.',
+			});
+		}
+
 		// Helper functions
 		const node = this.getNode();
+
+		// Custom HTTP request function for basic operations
 		const makeR2Request = async (options: {
 			method: string;
 			path: string;
@@ -126,6 +144,7 @@ export class CloudflareR2 implements INodeType {
 			return { text, headers: response.headers };
 		};
 
+		// Parser functions
 		const parseListBucketsResponse = (response: any): any => {
 			// Parse XML response
 			const bucketMatches = response.text.match(/<Bucket>[\s\S]*?<\/Bucket>/g) || [];
@@ -162,10 +181,19 @@ export class CloudflareR2 implements INodeType {
 				const storageClass =
 					contentXml.match(/<StorageClass>(.*?)<\/StorageClass>/)?.[1] || 'STANDARD';
 
+				// Decode HTML entities and remove quotes
+				const decodedEtag = etag
+					.replace(/&quot;/g, '"')
+					.replace(/&amp;/g, '&')
+					.replace(/&lt;/g, '<')
+					.replace(/&gt;/g, '>')
+					.replace(/&#39;/g, "'")
+					.replace(/"/g, '');
+
 				return {
 					Key: key,
 					LastModified: lastModified,
-					ETag: etag.replace(/"/g, ''),
+					ETag: decodedEtag,
 					Size: parseInt(size, 10),
 					StorageClass: storageClass,
 				};
@@ -189,8 +217,17 @@ export class CloudflareR2 implements INodeType {
 			const lastModified =
 				response.text.match(/<LastModified>(.*?)<\/LastModified>/)?.[1] || '';
 
+			// Decode HTML entities and remove quotes
+			const decodedEtag = etag
+				.replace(/&quot;/g, '"')
+				.replace(/&amp;/g, '&')
+				.replace(/&lt;/g, '<')
+				.replace(/&gt;/g, '>')
+				.replace(/&#39;/g, "'")
+				.replace(/"/g, '');
+
 			return {
-				ETag: etag.replace(/"/g, ''),
+				ETag: decodedEtag,
 				LastModified: lastModified,
 			};
 		};
@@ -427,32 +464,54 @@ export class CloudflareR2 implements INodeType {
 							},
 						});
 					} else if (operation === 'getPresignedUrl') {
-						const bucketName = this.getNodeParameter('bucketName', i) as string;
-						const objectKey = this.getNodeParameter('objectKey', i) as string;
-						const urlOperation = this.getNodeParameter('urlOperation', i) as string;
-						const expiresIn = this.getNodeParameter('expiresIn', i, 3600) as number;
+						try {
+							const bucketName = this.getNodeParameter('bucketName', i) as string;
+							const objectKey = this.getNodeParameter('objectKey', i) as string;
+							const urlOperation = this.getNodeParameter('urlOperation', i) as string;
+							const expiresIn = this.getNodeParameter('expiresIn', i, 3600) as number;
 
-						const method = urlOperation === 'get' ? 'GET' : 'PUT';
-						const url = AwsSignatureV4.signUrl({
-							method,
-							url: `${r2Credentials.endpoint}/${bucketName}/${objectKey}`,
-							headers: {},
-							accessKeyId: r2Credentials.accessKeyId,
-							secretAccessKey: r2Credentials.secretAccessKey,
-							region: 'auto',
-							service: 's3',
-							expiresIn,
-						});
+							// Create S3Client only for presigned URLs
+							const s3Client = new S3Client({
+								region: 'auto',
+								endpoint: r2Credentials.endpoint,
+								credentials: {
+									accessKeyId: r2Credentials.accessKeyId,
+									secretAccessKey: r2Credentials.secretAccessKey,
+								},
+								forcePathStyle: true,
+							});
 
-						returnData.push({
-							json: {
-								url,
-								bucket: bucketName,
-								key: objectKey,
-								operation: urlOperation,
-								expiresIn,
-							},
-						});
+							let command;
+							if (urlOperation === 'get') {
+								command = new GetObjectCommand({
+									Bucket: bucketName,
+									Key: objectKey,
+								});
+							} else {
+								command = new PutObjectCommand({
+									Bucket: bucketName,
+									Key: objectKey,
+								});
+							}
+
+							const url = await getSignedUrl(s3Client, command, { expiresIn });
+
+							returnData.push({
+								json: {
+									url,
+									bucket: bucketName,
+									key: objectKey,
+									operation: urlOperation,
+									expiresIn,
+								},
+							});
+						} catch (error: any) {
+							throw new NodeApiError(node, {
+								message: `R2 Get Presigned URL Error: ${error.message || 'Unknown error'}`,
+								description: error.name || 'Presigned URL generation failed',
+								httpCode: error.$metadata?.httpStatusCode?.toString() || '500',
+							});
+						}
 					}
 				}
 			} catch (error) {

@@ -2,6 +2,13 @@ import { INodeProperties } from 'n8n-workflow';
 
 export const queueOperations: INodeProperties[] = [
 	{
+		displayName: 'Paid Plan Notice',
+		name: 'paidPlanNotice',
+		type: 'notice',
+		default: '',
+		description: 'Cloudflare Queues requires a paid Workers plan. Free accounts will receive 403 Forbidden errors.',
+	},
+	{
 		displayName: 'Operation',
 		name: 'operation',
 		type: 'options',
