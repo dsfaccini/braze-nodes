@@ -190,7 +190,7 @@ export const kvFields: INodeProperties[] = [
 		},
 		default: '',
 		placeholder: '60',
-		description: 'Time to live in seconds from now (relative expiration time). Mutually exclusive with Expiration (optional)',
+		description: 'Time to live in seconds from now (relative expiration time). Mutually exclusive with Expiration (optional).',
 	},
 	{
 		displayName: 'Metadata',
@@ -305,7 +305,7 @@ export const kvFields: INodeProperties[] = [
 						type: 'number',
 						default: '',
 						placeholder: '1735689600',
-						description: 'Absolute expiration time as UNIX timestamp (seconds since epoch). Must be greater than current time (optional)',
+						description: 'Absolute expiration time as UNIX timestamp (seconds since epoch). Must be greater than current time (optional).',
 					},
 					{
 						displayName: 'Metadata',

@@ -7,7 +7,7 @@ echo "🚀 Starting n8n-nodes-cloudflare publish process..."
 
 # Build the project
 echo "📦 Building project..."
-npm run build
+npm run prepublishOnly
 
 # Prepare package.json for publishing
 echo "📝 Preparing package.json..."

@@ -5,6 +5,7 @@ import {
 	INodeTypeDescription,
 	NodeConnectionType,
 	NodeApiError,
+	ApplicationError,
 } from 'n8n-workflow';
 
 import {
@@ -284,7 +285,7 @@ export class CloudflareR2 implements INodeType {
 							});
 						} catch (error: any) {
 							if (error.status === 409 || error.httpCode === '409' || error.message?.includes('409')) {
-								throw new Error(`Cannot delete bucket '${bucketName}': Bucket must be completely empty before deletion. Please ensure all objects, including hidden files and incomplete multipart uploads, are removed first. You may need to check the bucket manually in the Cloudflare dashboard.`);
+								throw new ApplicationError(`Cannot delete bucket '${bucketName}': Bucket must be completely empty before deletion. Please ensure all objects, including hidden files and incomplete multipart uploads, are removed first. You may need to check the bucket manually in the Cloudflare dashboard.`);
 							}
 							throw error;
 						}
@@ -538,7 +539,7 @@ export class CloudflareR2 implements INodeType {
 					});
 					continue;
 				}
-				
+
 				// Create enhanced error for throw
 				const enhancedError = new Error(errorMessage);
 				(enhancedError as any).httpCode = error.httpCode;
