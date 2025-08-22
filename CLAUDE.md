@@ -183,3 +183,85 @@ Check that the names between folder, file, class and package.json registration a
 - Perform web searches for specific implementation areas when needed
 
 Example validation prompt: "For my custom n8n node I was asked to implement [task definition], I wrote the following code: [code snippet]. Will the code work correctly, is it safe? If you have conflicting knowledge on the correct implementation of a custom n8n node use the REF mcp to get documentation about n8n or do a websearch for the specific area"
+
+## Advanced Error Handling Patterns
+
+### Cloudflare API Error Extraction
+
+When working with Cloudflare APIs, implement enhanced error handling to extract meaningful error messages:
+
+```typescript
+} catch (error: any) {
+  // Extract Cloudflare API error message
+  let errorMessage = error.response?.data?.errors?.[0]?.message || error.message;
+
+  if (this.continueOnFail()) {
+    returnData.push({
+      json: {
+        error: errorMessage,
+        originalError: error.message,
+        httpCode: error.httpCode,
+      },
+      pairedItem: { item: i },
+    });
+    continue;
+  }
+  
+  // Create enhanced error for throw
+  const enhancedError = new Error(errorMessage);
+  (enhancedError as any).httpCode = error.httpCode;
+  (enhancedError as any).originalError = error.message;
+  throw enhancedError;
+}
+```
+
+### Service-Specific Error Handling
+
+For operations with known failure patterns, add specific error handling:
+
+```typescript
+// Example: R2 bucket deletion 409 error
+if (error.status === 409 || error.httpCode === '409' || error.message?.includes('409')) {
+  throw new Error(`Cannot delete bucket '${bucketName}': Bucket must be completely empty before deletion. Please ensure all objects, including hidden files and incomplete multipart uploads, are removed first.`);
+}
+```
+
+## Parameter Definition Best Practices
+
+### Avoiding Parameter Name Conflicts
+
+When multiple resources use similar parameters, ensure unique naming or proper displayOptions:
+
+```typescript
+// Bad: Both bucket and object operations use 'bucketName'
+// Good: Use specific displayOptions to avoid conflicts
+{
+  displayName: 'Bucket Name',
+  name: 'bucketName',
+  displayOptions: {
+    show: {
+      resource: ['object'],
+      operation: ['upload', 'download', 'delete', 'list'],
+    },
+    hide: {
+      operation: ['copy'], // Explicitly hide for operations with different parameters
+    },
+  },
+}
+```
+
+### Expiration vs TTL Parameters
+
+When implementing expiration functionality, clearly distinguish between absolute and relative time:
+
+- **Expiration**: Absolute UNIX timestamp (seconds since epoch)
+- **TTL**: Relative time in seconds from now
+- Always include clear descriptions and realistic placeholder values
+- Document mutual exclusivity when both options are available
+
+### Common Cloudflare Service Limitations
+
+- **R2 Bucket Deletion**: Requires completely empty buckets (no objects, hidden files, or incomplete uploads)
+- **KV Namespaces**: Duplicate names not allowed within same account
+- **Queue Operations**: Requires paid Workers plan for most operations
+- **API Rate Limits**: Implement appropriate error handling for 429 responses

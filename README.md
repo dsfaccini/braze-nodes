@@ -16,6 +16,8 @@ Object storage compatible with Amazon S3 API.
 - **Objects**: Upload, download, list, delete, copy
 - **URLs**: Generate presigned URLs for temporary access
 
+**Important Note**: R2 buckets can only be deleted when completely empty. If you encounter a 409 error when trying to delete a bucket, ensure all objects (including hidden files and incomplete multipart uploads) are removed first. You may need to manually verify the bucket is empty in the Cloudflare dashboard.
+
 ### 🗃️ Cloudflare KV
 
 Globally distributed key-value store.
