@@ -63,6 +63,10 @@ export const objectFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['object'],
+				operation: ['upload', 'download', 'delete', 'list', 'getPresignedUrl'],
+			},
+			hide: {
+				operation: ['copy'],
 			},
 		},
 		default: '',

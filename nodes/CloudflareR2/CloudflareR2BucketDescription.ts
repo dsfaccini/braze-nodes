@@ -21,7 +21,7 @@ export const bucketOperations: INodeProperties[] = [
 			{
 				name: 'Delete',
 				value: 'delete',
-				description: 'Delete an R2 bucket',
+				description: 'Delete an R2 bucket (bucket must be completely empty)',
 				action: 'Delete a bucket',
 			},
 			{
