@@ -1,0 +1,452 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1984,
+        -336
+      ],
+      "id": "b757571e-32ee-4546-bbe7-c4fe24c1314a",
+      "name": "When clicking 'Execute workflow'"
+    },
+    {
+      "parameters": {
+        "resource": "bucket"
+      },
+      "type": "CUSTOM.cloudflareR2",
+      "typeVersion": 1,
+      "position": [
+        -1776,
+        -336
+      ],
+      "id": "39c524c5-43a4-4007-a674-999be9edd238",
+      "name": "List R2 Buckets",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "pTydrlNAV9Ki45S4",
+          "name": "cloudflare r2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "bucket",
+        "operation": "create",
+        "bucketName": "n8n-test-bucket",
+        "additionalOptions": {}
+      },
+      "type": "CUSTOM.cloudflareR2",
+      "typeVersion": 1,
+      "position": [
+        -1584,
+        -336
+      ],
+      "id": "39340435-8cf7-4e36-a7e1-d2dd901e0a63",
+      "name": "Create Test Bucket",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "pTydrlNAV9Ki45S4",
+          "name": "cloudflare r2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://cdn.getalecs.com/misc/rick-roll.gif",
+        "responseFormat": "file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        -1376,
+        -336
+      ],
+      "id": "0d195296-4285-4a2e-8793-50d6b6e6aaab",
+      "name": "Download Sample Image"
+    },
+    {
+      "parameters": {
+        "bucketName": "={{ $json.bucket }}",
+        "objectKey": "images/sample.gif",
+        "additionalOptions": {}
+      },
+      "type": "CUSTOM.cloudflareR2",
+      "typeVersion": 1,
+      "position": [
+        -1184,
+        -336
+      ],
+      "id": "fcbdbdbf-0e49-4a73-87fc-ddad59723de7",
+      "name": "Upload Image to R2",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "pTydrlNAV9Ki45S4",
+          "name": "cloudflare r2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "list",
+        "bucketName": "={{ $('Create Test Bucket').item.json.bucket }}",
+        "options": {
+          "prefix": "images/",
+          "maxKeys": 10
+        }
+      },
+      "type": "CUSTOM.cloudflareR2",
+      "typeVersion": 1,
+      "position": [
+        -976,
+        -336
+      ],
+      "id": "6755e180-5e8b-4f97-bf11-3f686ed340cd",
+      "name": "List Objects with Prefix",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "pTydrlNAV9Ki45S4",
+          "name": "cloudflare r2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "bucketName": "={{ $('Create Test Bucket').item.json.bucket }}",
+        "objectKey": "={{ $('Upload Image to R2').item.json.key }}"
+      },
+      "type": "CUSTOM.cloudflareR2",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        -336
+      ],
+      "id": "622e931d-f3dc-430f-ba13-9527814cfe23",
+      "name": "Download Object",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "pTydrlNAV9Ki45S4",
+          "name": "cloudflare r2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "bucketName": "={{ $('Create Test Bucket').item.json.bucket }}",
+        "sourceBucket": "={{ $('Create Test Bucket').item.json.bucket }}",
+        "sourceKey": "={{ $json.key }}",
+        "destinationBucket": "={{ $('Create Test Bucket').item.json.bucket }}",
+        "destinationKey": "archive/sample-copy.svg"
+      },
+      "type": "CUSTOM.cloudflareR2",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        -336
+      ],
+      "id": "359eb43e-39d2-4bcc-a758-638d4820b744",
+      "name": "Copy Object",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "pTydrlNAV9Ki45S4",
+          "name": "cloudflare r2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getPresignedUrl",
+        "bucketName": "={{ $json.destinationBucket }}",
+        "objectKey": "={{ $json.destinationKey }}"
+      },
+      "type": "CUSTOM.cloudflareR2",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        -336
+      ],
+      "id": "1e99a6e0-144b-4131-bbc8-c581323e3a81",
+      "name": "Get Presigned URL (Download)",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "pTydrlNAV9Ki45S4",
+          "name": "cloudflare r2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getPresignedUrl",
+        "bucketName": "={{ $('Create Test Bucket').item.json.bucket }}",
+        "objectKey": "=uploads/user-upload-{{ Date.now() }}.svg",
+        "urlOperation": "put",
+        "expiresIn": 7200
+      },
+      "type": "CUSTOM.cloudflareR2",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        -336
+      ],
+      "id": "31bdd232-a8f0-463d-af08-2c3ccc1f3503",
+      "name": "Get Presigned URL (Upload)",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "pTydrlNAV9Ki45S4",
+          "name": "cloudflare r2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Binary Data Upload Example\n\nTo upload binary data (images, PDFs, etc.):\n\n1. Add a node that provides binary data\n   (e.g., HTTP Request, Read Binary File)\n\n2. Connect it to an R2 Upload node\n\n3. Configure the R2 node:\n   - Set 'Data to Upload' to 'Binary Data'\n   - Specify the binary property name\n\nThe binary data will be automatically\nhandled and uploaded to R2.",
+        "height": 392,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        -64
+      ],
+      "id": "14905829-541d-4617-bd68-6a13b131d3a7",
+      "name": "Binary Upload Note"
+    },
+    {
+      "parameters": {
+        "operation": "list",
+        "bucketName": "={{ $('Create Test Bucket').item.json.bucket }}",
+        "options": {}
+      },
+      "type": "CUSTOM.cloudflareR2",
+      "typeVersion": 1,
+      "position": [
+        32,
+        -336
+      ],
+      "id": "3ddfd92c-325c-4867-a852-abd0a159a4c7",
+      "name": "List All Objects",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "pTydrlNAV9Ki45S4",
+          "name": "cloudflare r2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "bucketName": "={{ $('Copy Object').item.json.destinationBucket }}",
+        "objectKey": "={{ $('Copy Object').item.json.destinationKey }}"
+      },
+      "type": "CUSTOM.cloudflareR2",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -336
+      ],
+      "id": "2c87a1c9-9ec9-4fcb-924f-2a81f583e42a",
+      "name": "Delete Object",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "pTydrlNAV9Ki45S4",
+          "name": "cloudflare r2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "bucket",
+        "operation": "delete",
+        "bucketName": "={{ $('Create Test Bucket').item.json.bucket }}"
+      },
+      "type": "CUSTOM.cloudflareR2",
+      "typeVersion": 1,
+      "position": [
+        624,
+        -336
+      ],
+      "id": "db1f5196-ed64-411a-bd23-1008a96aec0b",
+      "name": "Delete Test Bucket",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "pTydrlNAV9Ki45S4",
+          "name": "cloudflare r2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Cloudflare R2 Test Workflow\n\n### Features Demonstrated:\n\n**Bucket Operations:**\n- List all buckets\n- Create bucket with unique name\n- Delete bucket (must be empty)\n\n**Object Operations:**\n- Download sample binary file (HTTP Request)\n- Upload binary data to R2\n- Download objects from R2\n- Copy objects within/between buckets\n- Delete objects\n\n**Advanced Features:**\n- Binary file handling\n- Presigned URLs (GET & PUT)\n- Prefix filtering for listings\n- Folder-like key organization\n\n### Notes:\n- R2 is S3-compatible\n- Max object size: 5TB\n- Buckets are private by default\n- Use presigned URLs for public access\n- Supports multipart uploads (>5GB)",
+        "height": 724,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1984,
+        -64
+      ],
+      "id": "e4f30983-741f-4b35-996a-0fb62ff33e20",
+      "name": "R2 Features Note"
+    },
+    {
+      "parameters": {
+        "content": "### This workflow is tested and runs \"as is\". \n\nThe \"delete bucket\" node at the end will fail because buckets can't be deleted when they're not empty",
+        "height": 120,
+        "width": 560
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1520,
+        -80
+      ],
+      "id": "82c0c6c3-4c02-47ce-ad4d-a6eb71395fc4",
+      "name": "Binary Upload Note1"
+    }
+  ],
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "List R2 Buckets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List R2 Buckets": {
+      "main": [
+        [
+          {
+            "node": "Create Test Bucket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Test Bucket": {
+      "main": [
+        [
+          {
+            "node": "Download Sample Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Sample Image": {
+      "main": [
+        [
+          {
+            "node": "Upload Image to R2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Image to R2": {
+      "main": [
+        [
+          {
+            "node": "List Objects with Prefix",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Objects with Prefix": {
+      "main": [
+        [
+          {
+            "node": "Download Object",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Object": {
+      "main": [
+        [
+          {
+            "node": "Copy Object",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy Object": {
+      "main": [
+        [
+          {
+            "node": "Get Presigned URL (Download)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Presigned URL (Download)": {
+      "main": [
+        [
+          {
+            "node": "Get Presigned URL (Upload)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Presigned URL (Upload)": {
+      "main": [
+        [
+          {
+            "node": "List All Objects",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List All Objects": {
+      "main": [
+        [
+          {
+            "node": "Delete Object",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Object": {
+      "main": [
+        [
+          {
+            "node": "Delete Test Bucket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4a14cee1eb0debce573738e170ada49302cebdb75db537c756eadc4d70085c45"
+  }
+}

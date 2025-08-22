@@ -1,0 +1,462 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2176,
+        -176
+      ],
+      "id": "fe7adf68-af66-48dc-8666-26cc90aa89ee",
+      "name": "When clicking 'Execute workflow'"
+    },
+    {
+      "parameters": {
+        "resource": "database",
+        "options": {
+          "limit": 50
+        }
+      },
+      "type": "CUSTOM.cloudflareD1",
+      "typeVersion": 1,
+      "position": [
+        -1968,
+        -176
+      ],
+      "id": "0cec2b4c-336c-4302-8e54-fd32f2d77200",
+      "name": "List D1 Databases",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "database",
+        "operation": "create",
+        "databaseName": "n8n-test-db-{{ Date.now() }}",
+        "additionalOptions": {}
+      },
+      "type": "CUSTOM.cloudflareD1",
+      "typeVersion": 1,
+      "position": [
+        -1776,
+        -176
+      ],
+      "id": "af7e21d3-7f61-4529-a98a-527ddc7ae2aa",
+      "name": "Create Test Database",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "databaseId": "={{ $json.uuid }}",
+        "query": "CREATE TABLE IF NOT EXISTS users (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  name TEXT NOT NULL,\n  email TEXT UNIQUE NOT NULL,\n  created_at DATETIME DEFAULT CURRENT_TIMESTAMP\n)"
+      },
+      "type": "CUSTOM.cloudflareD1",
+      "typeVersion": 1,
+      "position": [
+        -1376,
+        -176
+      ],
+      "id": "541b24a9-d1ed-4547-b905-4e4404abc8c4",
+      "name": "Create Users Table",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
+        "query": "CREATE TABLE IF NOT EXISTS posts (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  user_id INTEGER NOT NULL,\n  title TEXT NOT NULL,\n  content TEXT,\n  published BOOLEAN DEFAULT FALSE,\n  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n  FOREIGN KEY (user_id) REFERENCES users(id)\n)"
+      },
+      "type": "CUSTOM.cloudflareD1",
+      "typeVersion": 1,
+      "position": [
+        -1168,
+        -176
+      ],
+      "id": "8e372a45-256b-4562-a64e-fba8f2f4d28b",
+      "name": "Create Posts Table",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
+        "query": "INSERT INTO users (name, email) VALUES \n  ('John Doe', 'john@example.com'),\n  ('Jane Smith', 'jane@example.com'),\n  ('Bob Johnson', 'bob@example.com')"
+      },
+      "type": "CUSTOM.cloudflareD1",
+      "typeVersion": 1,
+      "position": [
+        -976,
+        -176
+      ],
+      "id": "32f0f5fc-15f1-460e-9779-b043682f58c0",
+      "name": "Insert Sample Users",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
+        "query": "INSERT INTO posts (user_id, title, content, published) VALUES (?, ?, ?, ?)",
+        "parameters": "[1, \"First Post\", \"This is my first post content\", true]"
+      },
+      "type": "CUSTOM.cloudflareD1",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        -176
+      ],
+      "id": "465b1e86-de32-41d1-bb50-d33fd1927aec",
+      "name": "Insert Post (Parameterized)",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
+        "query": "SELECT * FROM users"
+      },
+      "type": "CUSTOM.cloudflareD1",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        -176
+      ],
+      "id": "cd6dd697-bc58-4b4f-a071-c8ee717c1577",
+      "name": "Select All Users",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
+        "query": "SELECT u.name, u.email, COUNT(p.id) as post_count\nFROM users u\nLEFT JOIN posts p ON u.id = p.user_id\nGROUP BY u.id, u.name, u.email"
+      },
+      "type": "CUSTOM.cloudflareD1",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        -176
+      ],
+      "id": "a8f1fb98-2699-4d3e-b1ea-9ff6d347cf81",
+      "name": "Select with JOIN",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeRaw",
+        "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
+        "query": "SELECT name, 'sqlite_version()' as version FROM sqlite_master WHERE type='table'"
+      },
+      "type": "CUSTOM.cloudflareD1",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        -176
+      ],
+      "id": "c78fcd15-53bd-4d00-a87c-d2c40d5e355c",
+      "name": "Execute Raw Query",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
+        "query": "UPDATE users SET name = ? WHERE email = ?",
+        "parameters": "[\"John Updated\", \"john@example.com\"]"
+      },
+      "type": "CUSTOM.cloudflareD1",
+      "typeVersion": 1,
+      "position": [
+        32,
+        -176
+      ],
+      "id": "18072c07-a7de-47c7-8cfa-3283b2143940",
+      "name": "Update User",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
+        "query": "INSERT INTO posts (user_id, title, content) VALUES (2, 'Multiple Insert 1', 'Content 1'), (2, 'Multiple Insert 2', 'Content 2')"
+      },
+      "type": "CUSTOM.cloudflareD1",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -176
+      ],
+      "id": "feccef8d-29d6-471f-911a-c07c0879e123",
+      "name": "Multiple Inserts",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
+        "query": "SELECT \n  name,\n  email,\n  CASE \n    WHEN email LIKE '%example.com' THEN 'Example Domain'\n    ELSE 'Other Domain'\n  END as domain_type\nFROM users\nORDER BY created_at DESC\nLIMIT 5"
+      },
+      "type": "CUSTOM.cloudflareD1",
+      "typeVersion": 1,
+      "position": [
+        432,
+        -176
+      ],
+      "id": "251f63c5-2397-474b-aebc-8f21938ab772",
+      "name": "Complex Query with CASE",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "database",
+        "operation": "delete",
+        "databaseName": "={{ $('Create Test Database').item.json.name }}"
+      },
+      "type": "CUSTOM.cloudflareD1",
+      "typeVersion": 1,
+      "position": [
+        624,
+        -176
+      ],
+      "id": "97748df7-0ff7-41a9-b05b-689b168b3465",
+      "name": "Delete Test Database",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## D1 Test Workflow Features\n\n### Database Operations:\n- List databases\n- Create database with location hint\n- Delete database\n\n### Query Operations:\n- CREATE TABLE statements\n- INSERT with and without parameters\n- SELECT queries\n- JOIN queries\n- UPDATE with parameters\n- Multiple value inserts\n- Complex queries with CASE\n- Raw query execution\n\n### Note:\nD1 REST API has performance limitations.\nFor production use, consider using\nCloudflare Workers as a proxy.\n\nTransactions (BEGIN/COMMIT) are not\nsupported via REST API.",
+        "height": 612,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2176,
+        112
+      ],
+      "id": "260c93dc-8d46-4373-8eae-3aa7fa18c23f",
+      "name": "Features Note"
+    },
+    {
+      "parameters": {
+        "content": "**This workflow is tested and runs as is**",
+        "height": 80,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1712,
+        112
+      ],
+      "id": "1cc7423c-d756-415a-adac-a647ed4429bd",
+      "name": "Features Note1"
+    }
+  ],
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "List D1 Databases",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List D1 Databases": {
+      "main": [
+        [
+          {
+            "node": "Create Test Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Test Database": {
+      "main": [
+        [
+          {
+            "node": "Create Users Table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Users Table": {
+      "main": [
+        [
+          {
+            "node": "Create Posts Table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Posts Table": {
+      "main": [
+        [
+          {
+            "node": "Insert Sample Users",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Sample Users": {
+      "main": [
+        [
+          {
+            "node": "Insert Post (Parameterized)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Post (Parameterized)": {
+      "main": [
+        [
+          {
+            "node": "Select All Users",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select All Users": {
+      "main": [
+        [
+          {
+            "node": "Select with JOIN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select with JOIN": {
+      "main": [
+        [
+          {
+            "node": "Execute Raw Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Raw Query": {
+      "main": [
+        [
+          {
+            "node": "Update User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update User": {
+      "main": [
+        [
+          {
+            "node": "Multiple Inserts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Multiple Inserts": {
+      "main": [
+        [
+          {
+            "node": "Complex Query with CASE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Complex Query with CASE": {
+      "main": [
+        [
+          {
+            "node": "Delete Test Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "4a14cee1eb0debce573738e170ada49302cebdb75db537c756eadc4d70085c45"
+  }
+}

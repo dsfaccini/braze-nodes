@@ -1,0 +1,1 @@
+for kv and r2 (and perhaps other nodes this applies to): when the user tries to create e.g. a bucket that already exists, it would be great if the node returned the respective data instead of throwing an error. this allows the flow to continue without the user adding an error output or having to check the id manually.

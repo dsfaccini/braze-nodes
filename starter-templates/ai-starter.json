@@ -1,0 +1,446 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        304
+      ],
+      "id": "100212da-71b7-485a-b8eb-fddc83ab0416",
+      "name": "When clicking 'Execute workflow'"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4f6b6927-55f5-4a9c-b660-5bfd894aec35",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1024,
+        304
+      ],
+      "id": "9ccefc44-6584-4103-9011-49a49635e3bc",
+      "name": "Prepare Test Data"
+    },
+    {
+      "parameters": {
+        "model": "@cf/meta/llama-3-8b-instruct",
+        "messages": {
+          "messageValues": [
+            {
+              "role": "system",
+              "content": "You are a helpful AI assistant that explains complex topics in simple terms."
+            },
+            {
+              "content": "={{ $json.chatMessage }}"
+            }
+          ]
+        },
+        "options": {
+          "max_tokens": 150,
+          "temperature": 0.7
+        }
+      },
+      "type": "CUSTOM.cloudflareAi",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        0
+      ],
+      "id": "76b9e430-95a7-4652-90ad-792c456f650f",
+      "name": "Chat Completion",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "textGeneration",
+        "model": "@cf/meta/llama-3-8b-instruct",
+        "prompt": "Write a haiku about artificial intelligence:",
+        "options": {
+          "max_tokens": 50,
+          "temperature": 0.9
+        }
+      },
+      "type": "CUSTOM.cloudflareAi",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        144
+      ],
+      "id": "29c5ef14-6b2c-4fa6-a48a-ca4b531603ed",
+      "name": "Text Generation",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "summarization",
+        "text": "={{ $json.sampleText }}"
+      },
+      "type": "CUSTOM.cloudflareAi",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        288
+      ],
+      "id": "5799dcce-2415-49f0-8cf1-76f0781c7ca5",
+      "name": "Text Summarization",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "textClassification",
+        "text": "This product exceeded my expectations! Amazing quality and fast shipping."
+      },
+      "type": "CUSTOM.cloudflareAi",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        432
+      ],
+      "id": "98aa3348-ab1b-40fa-ac42-ecc750266cd4",
+      "name": "Text Classification",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "embeddings",
+        "text": "={{ $json.sampleText }}"
+      },
+      "type": "CUSTOM.cloudflareAi",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        560
+      ],
+      "id": "7c42c89d-b0b5-4cd6-a78c-b7080be6abba",
+      "name": "Generate Embeddings",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "prompt": "={{ $json.imagePrompt }}"
+      },
+      "type": "CUSTOM.cloudflareAi",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        144
+      ],
+      "id": "97652238-0c07-4f27-8558-7b3a7c06a341",
+      "name": "Image Generation",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "fileName": "generated-image.png"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -384,
+        144
+      ],
+      "id": "40ff42ea-23c7-40fa-825b-3ba32faaa01f",
+      "name": "Convert Image to Binary"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "classification",
+        "binaryPropertyName": "generatedImage"
+      },
+      "type": "CUSTOM.cloudflareAi",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        144
+      ],
+      "id": "24367280-2c43-45fb-9abf-22959e379e5a",
+      "name": "Image Classification"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "textToSpeech",
+        "text": "Hello, this is a test of Cloudflare's text to speech capabilities."
+      },
+      "type": "CUSTOM.cloudflareAi",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        288
+      ],
+      "id": "40c0c04a-b6f1-46da-a9fa-9ce6de60056c",
+      "name": "Text to Speech",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "fileName": "speech.wav"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -384,
+        288
+      ],
+      "id": "63adb0d9-adee-4cc8-82b6-68618a2a6b56",
+      "name": "Convert Audio to Binary"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "binaryPropertyName": "audioFile"
+      },
+      "type": "CUSTOM.cloudflareAi",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        288
+      ],
+      "id": "8b8f8dc3-4084-4c95-9689-6466f9f7cb09",
+      "name": "Speech to Text",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        32,
+        304
+      ],
+      "id": "053756c7-9d28-4794-a56b-dfc51391cd2d",
+      "name": "Merge All Results"
+    },
+    {
+      "parameters": {
+        "content": "## Cloudflare AI Test Workflow\n\n### Text Operations:\n- **Chat Completion**: LLM conversation\n- **Text Generation**: Creative text\n- **Summarization**: Condense text\n- **Classification**: Sentiment analysis\n\n### Image Operations:\n- **Generation**: Text-to-image\n- **Classification**: Image recognition\n\n### Audio Operations:\n- **Text-to-Speech**: Generate audio\n- **Speech-to-Text**: Transcribe audio\n\n### Embeddings:\n- Generate vector embeddings\n\n### Note:\nSome models may have rate limits.\nCheck Cloudflare docs for available models.",
+        "height": 400,
+        "width": 350
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        224,
+        112
+      ],
+      "id": "7ca1abf6-60c4-4633-8efc-0b29c00a170d",
+      "name": "AI Features Note"
+    },
+    {
+      "parameters": {
+        "content": "## Model Information\n\n### Text Models:\n- `@cf/meta/llama-3-8b-instruct`\n- `@cf/facebook/bart-large-cnn`\n- `@cf/huggingface/distilbert-sst-2-int8`\n\n### Image Models:\n- `@cf/stabilityai/stable-diffusion-xl-base-1.0`\n- `@cf/microsoft/resnet-50`\n\n### Audio Models:\n- `@cf/openai/whisper`\n- `@cf/openai/whisper-tiny-en`\n\n### Embedding Models:\n- `@cf/baai/bge-base-en-v1.5`",
+        "height": 400,
+        "width": 350
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        704
+      ],
+      "id": "7f6f1c1f-3b92-4fd9-a16b-68490ae015c5",
+      "name": "Models Note"
+    },
+    {
+      "parameters": {
+        "content": "## This workflow remains untested, thus the node is untested, go step by step if you want to use it",
+        "height": 128,
+        "width": 512
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        688
+      ],
+      "id": "f001aa48-d4f8-437e-8964-af94f68c701a",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "Prepare Test Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Test Data": {
+      "main": [
+        [
+          {
+            "node": "Chat Completion",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Text Generation",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Text Summarization",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Text Classification",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Generate Embeddings",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Image Generation",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Text to Speech",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Completion": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Generation": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Image Generation": {
+      "main": [
+        [
+          {
+            "node": "Convert Image to Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Image to Binary": {
+      "main": [
+        [
+          {
+            "node": "Image Classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text to Speech": {
+      "main": [
+        [
+          {
+            "node": "Convert Audio to Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Audio to Binary": {
+      "main": [
+        [
+          {
+            "node": "Speech to Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "4a14cee1eb0debce573738e170ada49302cebdb75db537c756eadc4d70085c45"
+  }
+}

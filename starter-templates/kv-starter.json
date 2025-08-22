@@ -1,0 +1,488 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1616,
+        0
+      ],
+      "id": "bf601a20-14da-41a6-bb97-2036bd786c7b",
+      "name": "When clicking 'Execute workflow'"
+    },
+    {
+      "parameters": {
+        "resource": "namespace"
+      },
+      "type": "CUSTOM.cloudflareKv",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        240
+      ],
+      "id": "c36ba93b-b96b-40ef-ac3b-2853dc5cfdf7",
+      "name": "List KV Namespaces",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "namespace",
+        "operation": "create",
+        "namespaceTitle": "n8n-test-namespace"
+      },
+      "type": "CUSTOM.cloudflareKv",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        0
+      ],
+      "id": "c69a224d-2abe-4e85-8885-78c6f1f1f1f6",
+      "name": "Create Test Namespace",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "namespaceId": "={{ $('Create Test Namespace').item.json.result.id }}",
+        "key": "user:1",
+        "value": "{\n  \"id\": 1,\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"role\": \"admin\"\n}",
+        "expiration": 0,
+        "expirationTtl": 3600
+      },
+      "type": "CUSTOM.cloudflareKv",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        512
+      ],
+      "id": "a25dfc0d-cbc4-4a98-ae5e-8f7825715073",
+      "name": "Set Value with Metadata & TTL",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "setMultiple",
+        "namespaceId": "e981f60329aa43ca964ddafa4e2778e6",
+        "keyValuePairs": {
+          "pair": [
+            {
+              "key": "user:2",
+              "value": "{\"id\": 2, \"name\": \"Jane Smith\", \"email\": \"jane@example.com\", \"role\": \"user\"}",
+              "expiration": 0,
+              "metadata": {
+                "type": "user"
+              }
+            },
+            {
+              "key": "user:3",
+              "value": "{\"id\": 3, \"name\": \"Bob Johnson\", \"email\": \"bob@example.com\", \"role\": \"user\"}",
+              "expiration": 0,
+              "metadata": {
+                "type": "user"
+              }
+            },
+            {
+              "key": "config:app",
+              "value": "{\"theme\": \"dark\", \"language\": \"en\", \"features\": [\"auth\", \"notifications\"]}",
+              "expiration": 86400,
+              "metadata": {
+                "type": "config"
+              }
+            }
+          ]
+        }
+      },
+      "type": "CUSTOM.cloudflareKv",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        -240
+      ],
+      "id": "38b2d9fe-9d13-4589-8e95-437064eafa65",
+      "name": "Set Multiple Values",
+      "alwaysOutputData": false,
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "namespaceId": "={{ $('Create Test Namespace').item.json.result.id }}",
+        "key": "={{ $('Set Value with Metadata & TTL').item.json.key }}"
+      },
+      "type": "CUSTOM.cloudflareKv",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        768
+      ],
+      "id": "aa95ab5a-ca7f-429b-bdb5-8210f1d3122c",
+      "name": "Get Single Value",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "listKeys",
+        "namespaceId": "={{ $('Create Test Namespace').item.json.result.id }}",
+        "prefix": "user:",
+        "limit": 10
+      },
+      "type": "CUSTOM.cloudflareKv",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        0
+      ],
+      "id": "8a35440d-14f7-40dc-badd-7c2519b586dc",
+      "name": "List Keys with Prefix",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getMultiple",
+        "namespaceId": "={{ $('Create Test Namespace').item.json.result.id }}",
+        "keys": "user:1,user:2,user:3"
+      },
+      "type": "CUSTOM.cloudflareKv",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        -400
+      ],
+      "id": "7d1f0b61-43ed-4e63-b63d-be382ff79503",
+      "name": "Get Multiple Values",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "namespaceId": "={{ $('Create Test Namespace').item.json.result.id }}",
+        "key": "session:abc123",
+        "value": "{\"userId\": 1, \"token\": \"abc123\", \"createdAt\": \"{{ new Date().toISOString() }}\"}",
+        "expiration": "={{ Math.floor(Date.now() / 1000) + 7200 }}",
+        "expirationTtl": 600
+      },
+      "type": "CUSTOM.cloudflareKv",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        496
+      ],
+      "id": "88b90469-75e6-4101-a1e7-a5702be57334",
+      "name": "Set with Absolute Expiration",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "namespaceId": "={{ $('Create Test Namespace').item.json.result.id }}",
+        "key": "session:abc123"
+      },
+      "type": "CUSTOM.cloudflareKv",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        768
+      ],
+      "id": "57875fee-d088-4ff4-a60b-26e9c8aaf6a6",
+      "name": "Delete Single Key",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteMultiple",
+        "namespaceId": "={{ $('Create Test Namespace').item.json.result.id }}",
+        "keys": "user:2,user:3"
+      },
+      "type": "CUSTOM.cloudflareKv",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        0
+      ],
+      "id": "baa54613-ccfc-4525-a1e7-05554588095b",
+      "name": "Delete Multiple Keys",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "listKeys",
+        "namespaceId": "={{ $('Create Test Namespace').item.json.result.id }}"
+      },
+      "type": "CUSTOM.cloudflareKv",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        240
+      ],
+      "id": "904ff9a0-d97f-4841-a24f-f457fe50f6a4",
+      "name": "List All Remaining Keys",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Cloudflare KV Test Workflow\n\n### Features Demonstrated:\n\n**Namespace Operations:**\n- List all namespaces\n- Create namespace with unique name\n- Delete namespace\n\n**Key-Value Operations:**\n- Set single value with metadata & TTL\n- Get single value (with metadata)\n- Get multiple values\n- Delete single key\n- Delete multiple keys\n\n**Advanced Features:**\n- Metadata storage (JSON objects)\n- TTL (Time To Live) in seconds\n- Absolute expiration timestamps\n- Prefix filtering for key listing\n- Pagination support\n- URL encoding for special characters\n\n### Notes:\n- KV stores all values as strings\n- Metadata must be valid JSON\n- Max value size: 25 MiB\n- Max metadata size: 1024 bytes\n- Keys support URL encoding",
+        "height": 708,
+        "width": 432
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1616,
+        208
+      ],
+      "id": "e37fc291-856c-4815-b556-9d6aa97477d9",
+      "name": "KV Features Note"
+    },
+    {
+      "parameters": {
+        "content": "## Get/Set multiple values in bulk\n\nCurrently not working",
+        "height": 100,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1184,
+        -256
+      ],
+      "id": "afea5627-99f1-4f03-97e3-398a8297b768",
+      "name": "KV Features Note1"
+    },
+    {
+      "parameters": {
+        "resource": "namespace",
+        "operation": "delete",
+        "namespaceId": "={{ $('Create Test Namespace').item.json.result.id }}"
+      },
+      "type": "CUSTOM.cloudflareKv",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        496
+      ],
+      "id": "ff0384e6-b46a-4f35-abd7-0611d9086245",
+      "name": "Delete Test Namespace",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "content": "### This workflow is tested and runs as is",
+        "height": 100,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1936,
+        -144
+      ],
+      "id": "67731010-1fd0-4716-a80e-2f6a02988603",
+      "name": "KV Features Note2"
+    },
+    {
+      "parameters": {
+        "resource": "namespace",
+        "operation": "delete",
+        "namespaceId": "0f02ccb07c354b63893c59453be015c3"
+      },
+      "type": "CUSTOM.cloudflareKv",
+      "typeVersion": 1,
+      "position": [
+        -1392,
+        -128
+      ],
+      "id": "fe6813cd-f3a1-42ee-a9fc-6cb880b1e264",
+      "name": "delete manually if needed",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      },
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "Create Test Namespace",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List KV Namespaces": {
+      "main": [
+        [
+          {
+            "node": "Set Value with Metadata & TTL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Test Namespace": {
+      "main": [
+        [
+          {
+            "node": "List KV Namespaces",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Value with Metadata & TTL": {
+      "main": [
+        [
+          {
+            "node": "Get Single Value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Single Value": {
+      "main": [
+        [
+          {
+            "node": "List Keys with Prefix",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Keys with Prefix": {
+      "main": [
+        [
+          {
+            "node": "Set with Absolute Expiration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Multiple Values": {
+      "main": [
+        []
+      ]
+    },
+    "Set with Absolute Expiration": {
+      "main": [
+        [
+          {
+            "node": "Delete Single Key",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Single Key": {
+      "main": [
+        [
+          {
+            "node": "Delete Multiple Keys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Multiple Keys": {
+      "main": [
+        [
+          {
+            "node": "List All Remaining Keys",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List All Remaining Keys": {
+      "main": [
+        [
+          {
+            "node": "Delete Test Namespace",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4a14cee1eb0debce573738e170ada49302cebdb75db537c756eadc4d70085c45"
+  }
+}

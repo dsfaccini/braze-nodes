@@ -1,0 +1,1 @@
+it would be great if the kv nodes could accept either an id or a name, so the user doesn't need to pin an id but use a name instead, for example for ephimeral operations. can you use the `gh` cli to create an issue with a proper description of the feature.  

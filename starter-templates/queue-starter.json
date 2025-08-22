@@ -1,0 +1,475 @@
+{
+  "name": "test queues",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Paid Workers\n\nQueues are a paid workers feature. If the account doesn't have a paid workers plan, requests to create a queue will be answered with a 403\n\nThis flow is so far untested, it's provided as a starter for the user",
+        "height": 256,
+        "width": 368
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        16,
+        -336
+      ],
+      "typeVersion": 1,
+      "id": "9482c0e3-0a45-47b0-9caf-9bdac10169c9",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "3d500e1f-0e64-4c7a-a7f2-6ed2d050335c",
+      "name": "When clicking 'Execute workflow'"
+    },
+    {
+      "parameters": {
+        "resource": "queue"
+      },
+      "type": "CUSTOM.cloudflareQueue",
+      "typeVersion": 1,
+      "position": [
+        192,
+        0
+      ],
+      "id": "05a11f80-0f59-4cff-8c6b-18312d83957a",
+      "name": "List Queues",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "queue",
+        "operation": "create",
+        "queueName": "n8n-test-queue",
+        "settings": {
+          "delivery_delay": 5,
+          "message_retention_period": 86400,
+          "max_retries": 3
+        }
+      },
+      "type": "CUSTOM.cloudflareQueue",
+      "typeVersion": 1,
+      "position": [
+        384,
+        0
+      ],
+      "id": "4d7a051c-7b21-4994-9f9e-01c8bddb012a",
+      "name": "Create Test Queue",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "queueId": "={{ $json.result.queue_id }}",
+        "messageBody": "Test message sent at {{ new Date().toISOString() }}",
+        "delaySeconds": 2
+      },
+      "type": "CUSTOM.cloudflareQueue",
+      "typeVersion": 1,
+      "position": [
+        592,
+        0
+      ],
+      "id": "62a60c28-1bb5-4539-92e9-734d084dd29a",
+      "name": "Send Single Message",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendBatch",
+        "queueId": "={{ $('Create Test Queue').item.json.result.queue_id }}",
+        "messages": {
+          "message": [
+            {
+              "body": "Batch message 1 - priority high"
+            },
+            {
+              "body": "Batch message 2 - delayed 10s",
+              "delaySeconds": 10
+            },
+            {
+              "body": "Batch message 3 - immediate"
+            }
+          ]
+        }
+      },
+      "type": "CUSTOM.cloudflareQueue",
+      "typeVersion": 1,
+      "position": [
+        784,
+        0
+      ],
+      "id": "c1c74e13-1210-4a8c-93bd-db30a820328c",
+      "name": "Send Batch Messages",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Wait 3 seconds for messages to be available\nawait new Promise(resolve => setTimeout(resolve, 3000));\n\nreturn [{json: {waited: '3 seconds'}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        992,
+        0
+      ],
+      "id": "22ec3baf-908c-477c-a99a-c02434c003de",
+      "name": "Wait 3 seconds"
+    },
+    {
+      "parameters": {
+        "operation": "pull",
+        "queueId": "={{ $('Create Test Queue').item.json.result.queue_id }}",
+        "batchSize": 5
+      },
+      "type": "CUSTOM.cloudflareQueue",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        0
+      ],
+      "id": "4c911a43-8198-44e6-b437-30181486d96a",
+      "name": "Pull Messages",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "acknowledge",
+        "queueId": "={{ $('Create Test Queue').item.json.result.queue_id }}",
+        "leaseIds": "={{ $json.result.messages.map(m => m.lease_id).join(',') }}"
+      },
+      "type": "CUSTOM.cloudflareQueue",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        0
+      ],
+      "id": "93760db5-44b8-4eeb-ba23-6337467375d5",
+      "name": "Acknowledge Messages",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "queue",
+        "operation": "getInfo",
+        "queueId": "={{ $('Create Test Queue').item.json.result.queue_id }}"
+      },
+      "type": "CUSTOM.cloudflareQueue",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        0
+      ],
+      "id": "c40c947e-2264-47cd-9cc4-2b3a881408e4",
+      "name": "Get Queue Info",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "queueId": "={{ $('Create Test Queue').item.json.result.queue_id }}",
+        "messageBody": "Message for retry test"
+      },
+      "type": "CUSTOM.cloudflareQueue",
+      "typeVersion": 1,
+      "position": [
+        1792,
+        0
+      ],
+      "id": "76d40e93-cee7-45c0-875f-5c80653a73de",
+      "name": "Send Message for Retry",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pull",
+        "queueId": "={{ $('Create Test Queue').item.json.result.queue_id }}",
+        "batchSize": 1,
+        "visibilityTimeout": 10
+      },
+      "type": "CUSTOM.cloudflareQueue",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        0
+      ],
+      "id": "1a4ed681-2de6-480c-b9b4-c7f4d609ece1",
+      "name": "Pull Message for Retry",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "retry",
+        "queueId": "={{ $('Create Test Queue').item.json.result.queue_id }}",
+        "leaseIds": "={{ $json.result.messages[0].lease_id }}",
+        "retryDelaySeconds": 5
+      },
+      "type": "CUSTOM.cloudflareQueue",
+      "typeVersion": 1,
+      "position": [
+        2192,
+        0
+      ],
+      "id": "d0ebf006-5b91-4b8e-84c4-4a4524f0be44",
+      "name": "Retry Message",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "queue",
+        "operation": "update",
+        "queueId": "={{ $('Create Test Queue').item.json.result.queue_id }}",
+        "settings": {
+          "delivery_delay": 10,
+          "message_retention_period": 172800,
+          "max_retries": 5
+        }
+      },
+      "type": "CUSTOM.cloudflareQueue",
+      "typeVersion": 1,
+      "position": [
+        2384,
+        0
+      ],
+      "id": "302de137-c5ae-4141-a2d0-31604e7cedc0",
+      "name": "Update Queue Settings",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "queue",
+        "operation": "delete",
+        "queueId": "={{ $('Create Test Queue').item.json.result.queue_id }}"
+      },
+      "type": "CUSTOM.cloudflareQueue",
+      "typeVersion": 1,
+      "position": [
+        2592,
+        0
+      ],
+      "id": "80028b95-20a4-42be-a7d1-ef2ec322a45c",
+      "name": "Delete Test Queue",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "cloudflare - non-r2 stuff"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "List Queues",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Queues": {
+      "main": [
+        [
+          {
+            "node": "Create Test Queue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Test Queue": {
+      "main": [
+        [
+          {
+            "node": "Send Single Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Single Message": {
+      "main": [
+        [
+          {
+            "node": "Send Batch Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Batch Messages": {
+      "main": [
+        [
+          {
+            "node": "Wait 3 seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 3 seconds": {
+      "main": [
+        [
+          {
+            "node": "Pull Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pull Messages": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acknowledge Messages": {
+      "main": [
+        [
+          {
+            "node": "Get Queue Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Queue Info": {
+      "main": [
+        [
+          {
+            "node": "Send Message for Retry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Message for Retry": {
+      "main": [
+        [
+          {
+            "node": "Pull Message for Retry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pull Message for Retry": {
+      "main": [
+        [
+          {
+            "node": "Retry Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retry Message": {
+      "main": [
+        [
+          {
+            "node": "Update Queue Settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Queue Settings": {
+      "main": [
+        [
+          {
+            "node": "Delete Test Queue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "80742841-db66-4ab8-8b97-098682a37b38",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4a14cee1eb0debce573738e170ada49302cebdb75db537c756eadc4d70085c45"
+  },
+  "id": "cnwdn9sFgDYJl3r5",
+  "tags": []
+}

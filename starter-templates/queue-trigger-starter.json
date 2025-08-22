@@ -1,0 +1,277 @@
+{
+  "name": "test Cloudflare Queue Trigger",
+  "nodes": [
+    {
+      "parameters": {
+        "queueId": "YOUR_QUEUE_ID_HERE",
+        "pollInterval": 10,
+        "batchSize": 5,
+        "visibilityTimeout": 30,
+        "autoAcknowledge": true
+      },
+      "type": "CUSTOM.cloudflareQueueTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        240
+      ],
+      "id": "queue-trigger-1",
+      "name": "Cloudflare Queue Trigger",
+      "credentials": {
+        "cloudflareApi": {
+          "id": "818nrk8fhkdTMjHd",
+          "name": "Cloudflare account"
+        }
+      },
+      "notes": "This trigger will poll the specified queue every 10 seconds for new messages. When messages are found, they are automatically acknowledged after processing."
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "messageId",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "name": "messageBody",
+              "value": "={{ $json.body }}"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{ $json.timestamp_ms }}"
+            },
+            {
+              "name": "processedAt",
+              "value": "={{ new Date().toISOString() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        440,
+        240
+      ],
+      "id": "process-message-1",
+      "name": "Process Message"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-1",
+              "leftValue": "={{ $json.messageBody }}",
+              "rightValue": "priority",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.1,
+      "position": [
+        640,
+        240
+      ],
+      "id": "check-priority-1",
+      "name": "Check if Priority"
+    },
+    {
+      "parameters": {
+        "content": "## Priority Message Handler\n\nThis branch handles high-priority messages that contain the word \"priority\" in the message body.",
+        "height": 140,
+        "width": 300
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        820,
+        80
+      ],
+      "id": "note-priority-1",
+      "name": "Priority Handler Note"
+    },
+    {
+      "parameters": {
+        "content": "## Normal Message Handler\n\nThis branch handles regular messages without special priority.",
+        "height": 140,
+        "width": 300
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        820,
+        380
+      ],
+      "id": "note-normal-1",
+      "name": "Normal Handler Note"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "PRIORITY_PROCESSED"
+            },
+            {
+              "name": "processingTime",
+              "value": "={{ Date.now() - parseInt($json.timestamp) }}ms"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        840,
+        160
+      ],
+      "id": "priority-handler-1",
+      "name": "Handle Priority Message"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "NORMAL_PROCESSED"
+            },
+            {
+              "name": "processingTime",
+              "value": "={{ Date.now() - parseInt($json.timestamp) }}ms"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        840,
+        320
+      ],
+      "id": "normal-handler-1",
+      "name": "Handle Normal Message"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1080,
+        240
+      ],
+      "id": "merge-results-1",
+      "name": "Merge Results"
+    },
+    {
+      "parameters": {
+        "content": "## Cloudflare Queue Trigger Test Workflow\n\n### Setup Instructions:\n1. Create a queue using the CloudflareQueue test workflow\n2. Copy the queue ID and replace 'YOUR_QUEUE_ID_HERE' in the trigger node\n3. Activate this workflow\n4. Send messages to the queue using the CloudflareQueue node\n\n### Features Demonstrated:\n- Automatic polling every 10 seconds\n- Batch message retrieval (up to 5 messages)\n- 30-second visibility timeout\n- Automatic acknowledgment after processing\n- Message routing based on content\n- Processing time calculation\n\n### Testing:\n- Send messages with \"priority\" in the body to test priority routing\n- Send regular messages to test normal routing\n- Monitor the execution history to see messages being processed",
+        "height": 400,
+        "width": 500
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        80
+      ],
+      "id": "instructions-1",
+      "name": "Workflow Instructions"
+    }
+  ],
+  "connections": {
+    "Cloudflare Queue Trigger": {
+      "main": [
+        [
+          {
+            "node": "Process Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Message": {
+      "main": [
+        [
+          {
+            "node": "Check if Priority",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Priority": {
+      "main": [
+        [
+          {
+            "node": "Handle Priority Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Normal Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Priority Message": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Normal Message": {
+      "main": [
+        [
+          {
+            "node": "Merge Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "test-trigger-v1",
+  "meta": {
+    "instanceId": "4a14cee1eb0debce573738e170ada49302cebdb75db537c756eadc4d70085c45"
+  },
+  "tags": []
+}

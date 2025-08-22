@@ -2,7 +2,7 @@ import { INodeProperties } from 'n8n-workflow';
 
 export const queueOperations: INodeProperties[] = [
 	{
-		displayName: 'Paid Plan Notice',
+		displayName: 'Cloudflare Queues require a Workers Paid plan',
 		name: 'paidPlanNotice',
 		type: 'notice',
 		default: '',
