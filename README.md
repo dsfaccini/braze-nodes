@@ -1,8 +1,8 @@
 # Cloudflare Nodes for n8n
 
-**Warning**: this repository is currently in development, which means that not all cloudflare services are implemented as nodes yet and some operations may currently not be available. Additionally you may encounter bugs or unhelpful error messages. Please report any issues you find as issues and provide as much context as possible, include screenshots and error messages in code blocks if possible.
+This is a collection of n8n community nodes for Cloudflare services. Currently supported services: R2 object storage, D1 serverless database, Workers AI, KV storage, and Queues.
 
-Intro: This is a collection of n8n community nodes for Cloudflare services. Currently supported services: R2 object storage, D1 serverless database, Workers AI, KV storage, and Queues.
+**Disclaimer**: This is a community-developed project and is not officially affiliated with or endorsed by Cloudflare or n8n. I'm just a fan that wanted to use cloudflare services in n8n. This repository is in development, which means that not all cloudflare services are implemented as nodes yet and some operations may currently not be available. Additionally you may encounter bugs or unhelpful error messages. Please report any issues you find and provide as much context as possible, include screenshots and error messages in code blocks if possible.
 
 ## Available Nodes
 
@@ -59,17 +59,17 @@ Serverless SQL database built on SQLite.
 
 ## Installation
 
-Install via npm in your n8n instance:
+Install directly in n8n:
+
+1. Go to **Settings** > **Community Nodes** ([https://your-n8n-domain.com/settings/community-nodes](https://your-n8n-domain.com/settings/community-nodes))
+2. Enter: `@getalecs/n8n-nodes-cloudflare`
+3. Click **Install**
+
+Or install via npm in your n8n instance:
 
 ```bash
 npm install @getalecs/n8n-nodes-cloudflare
 ```
-
-Or install directly in n8n:
-
-1. Go to **Settings** > **Community Nodes**
-2. Enter: `@getalecs/n8n-nodes-cloudflare`
-3. Click **Install**
 
 ## Prerequisites
 
@@ -94,7 +94,7 @@ Perfect for D1, AI, KV, and Queues. Use this pre-configured link:
 #### 2. **Account-Level Tokens** 
 For account-level permissions, replace `profile` in the URL above with your Account ID:
 ```
-https://dash.cloudflare.com/YOUR_ACCOUNT_ID_HERE/profile/api-tokens?...
+https://dash.cloudflare.com/YOUR_ACCOUNT_ID_HERE/api-tokens?...
 ```
 
 ### 🔐 Authentication Modes
