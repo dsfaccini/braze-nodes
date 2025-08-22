@@ -54,15 +54,15 @@
     "n8n": {
         "n8nNodesApiVersion": 1,
         "credentials": [
-            "dist/credentials/CloudflareApi.credentials.js"
+            "credentials/CloudflareApi.credentials.js"
         ],
         "nodes": [
-            "dist/nodes/CloudflareR2/CloudflareR2.node.js",
-            "dist/nodes/CloudflareD1/CloudflareD1.node.js",
-            "dist/nodes/CloudflareAI/CloudflareAi.node.js",
-            "dist/nodes/CloudflareKV/CloudflareKv.node.js",
-            "dist/nodes/CloudflareQueue/CloudflareQueue.node.js",
-            "dist/nodes/CloudflareQueue/CloudflareQueueTrigger.node.js"
+            "nodes/CloudflareR2/CloudflareR2.node.js",
+            "nodes/CloudflareD1/CloudflareD1.node.js",
+            "nodes/CloudflareAI/CloudflareAi.node.js",
+            "nodes/CloudflareKV/CloudflareKv.node.js",
+            "nodes/CloudflareQueue/CloudflareQueue.node.js",
+            "nodes/CloudflareQueue/CloudflareQueueTrigger.node.js"
         ]
     }
 }

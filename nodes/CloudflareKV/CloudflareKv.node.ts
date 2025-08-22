@@ -9,7 +9,7 @@ import {
 
 import { kvOperations, kvFields } from './CloudflareKVDescription';
 
-export class CloudflareKV implements INodeType {
+export class CloudflareKv implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Cloudflare KV',
 		name: 'cloudflareKv',
