@@ -570,11 +570,16 @@ export class CloudflareAi implements INodeType {
 						);
 					}
 				}
-			} catch (error) {
+			} catch (error: any) {
+				// Extract Cloudflare API error message
+				let errorMessage = error.response?.data?.errors?.[0]?.message || error.message;
+
 				if (this.continueOnFail()) {
 					returnData.push({
 						json: {
-							error: error.message,
+							error: errorMessage,
+							originalError: error.message,
+							httpCode: error.httpCode,
 						},
 						pairedItem: {
 							item: i,
@@ -582,7 +587,12 @@ export class CloudflareAi implements INodeType {
 					});
 					continue;
 				}
-				throw error;
+				
+				// Create enhanced error for throw
+				const enhancedError = new Error(errorMessage);
+				(enhancedError as any).httpCode = error.httpCode;
+				(enhancedError as any).originalError = error.message;
+				throw enhancedError;
 			}
 		}
 

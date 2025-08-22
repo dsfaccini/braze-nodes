@@ -270,17 +270,24 @@ export class CloudflareR2 implements INodeType {
 						});
 					} else if (operation === 'delete') {
 						const bucketName = this.getNodeParameter('bucketName', i) as string;
-						await makeR2Request({
-							method: 'DELETE',
-							path: `/${bucketName}`,
-							credentials: r2Credentials,
-						});
-						returnData.push({
-							json: {
-								success: true,
-								bucket: bucketName,
-							},
-						});
+						try {
+							await makeR2Request({
+								method: 'DELETE',
+								path: `/${bucketName}`,
+								credentials: r2Credentials,
+							});
+							returnData.push({
+								json: {
+									success: true,
+									bucket: bucketName,
+								},
+							});
+						} catch (error: any) {
+							if (error.status === 409 || error.httpCode === '409' || error.message?.includes('409')) {
+								throw new Error(`Cannot delete bucket '${bucketName}': Bucket must be completely empty before deletion. Please ensure all objects, including hidden files and incomplete multipart uploads, are removed first. You may need to check the bucket manually in the Cloudflare dashboard.`);
+							}
+							throw error;
+						}
 					} else if (operation === 'getInfo') {
 						const bucketName = this.getNodeParameter('bucketName', i) as string;
 						const response = await makeR2Request({
@@ -514,11 +521,16 @@ export class CloudflareR2 implements INodeType {
 						}
 					}
 				}
-			} catch (error) {
+			} catch (error: any) {
+				// Extract Cloudflare API error message
+				let errorMessage = error.response?.data?.errors?.[0]?.message || error.message;
+
 				if (this.continueOnFail()) {
 					returnData.push({
 						json: {
-							error: error.message,
+							error: errorMessage,
+							originalError: error.message,
+							httpCode: error.httpCode,
 						},
 						pairedItem: {
 							item: i,
@@ -526,7 +538,12 @@ export class CloudflareR2 implements INodeType {
 					});
 					continue;
 				}
-				throw error;
+				
+				// Create enhanced error for throw
+				const enhancedError = new Error(errorMessage);
+				(enhancedError as any).httpCode = error.httpCode;
+				(enhancedError as any).originalError = error.message;
+				throw enhancedError;
 			}
 		}
 
