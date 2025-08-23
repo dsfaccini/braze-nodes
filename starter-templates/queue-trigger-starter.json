@@ -9,7 +9,7 @@
         "visibilityTimeout": 30,
         "autoAcknowledge": true
       },
-      "type": "CUSTOM.cloudflareQueueTrigger",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareQueueTrigger",
       "typeVersion": 1,
       "position": [
         240,

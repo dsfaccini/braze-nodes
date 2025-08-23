@@ -18,7 +18,7 @@
           "limit": 50
         }
       },
-      "type": "CUSTOM.cloudflareD1",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareD1",
       "typeVersion": 1,
       "position": [
         -1968,
@@ -40,7 +40,7 @@
         "databaseName": "n8n-test-db-{{ Date.now() }}",
         "additionalOptions": {}
       },
-      "type": "CUSTOM.cloudflareD1",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareD1",
       "typeVersion": 1,
       "position": [
         -1776,
@@ -60,7 +60,7 @@
         "databaseId": "={{ $json.uuid }}",
         "query": "CREATE TABLE IF NOT EXISTS users (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  name TEXT NOT NULL,\n  email TEXT UNIQUE NOT NULL,\n  created_at DATETIME DEFAULT CURRENT_TIMESTAMP\n)"
       },
-      "type": "CUSTOM.cloudflareD1",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareD1",
       "typeVersion": 1,
       "position": [
         -1376,
@@ -80,7 +80,7 @@
         "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
         "query": "CREATE TABLE IF NOT EXISTS posts (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  user_id INTEGER NOT NULL,\n  title TEXT NOT NULL,\n  content TEXT,\n  published BOOLEAN DEFAULT FALSE,\n  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n  FOREIGN KEY (user_id) REFERENCES users(id)\n)"
       },
-      "type": "CUSTOM.cloudflareD1",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareD1",
       "typeVersion": 1,
       "position": [
         -1168,
@@ -100,7 +100,7 @@
         "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
         "query": "INSERT INTO users (name, email) VALUES \n  ('John Doe', 'john@example.com'),\n  ('Jane Smith', 'jane@example.com'),\n  ('Bob Johnson', 'bob@example.com')"
       },
-      "type": "CUSTOM.cloudflareD1",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareD1",
       "typeVersion": 1,
       "position": [
         -976,
@@ -121,7 +121,7 @@
         "query": "INSERT INTO posts (user_id, title, content, published) VALUES (?, ?, ?, ?)",
         "parameters": "[1, \"First Post\", \"This is my first post content\", true]"
       },
-      "type": "CUSTOM.cloudflareD1",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareD1",
       "typeVersion": 1,
       "position": [
         -768,
@@ -141,7 +141,7 @@
         "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
         "query": "SELECT * FROM users"
       },
-      "type": "CUSTOM.cloudflareD1",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareD1",
       "typeVersion": 1,
       "position": [
         -576,
@@ -161,7 +161,7 @@
         "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
         "query": "SELECT u.name, u.email, COUNT(p.id) as post_count\nFROM users u\nLEFT JOIN posts p ON u.id = p.user_id\nGROUP BY u.id, u.name, u.email"
       },
-      "type": "CUSTOM.cloudflareD1",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareD1",
       "typeVersion": 1,
       "position": [
         -368,
@@ -182,7 +182,7 @@
         "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
         "query": "SELECT name, 'sqlite_version()' as version FROM sqlite_master WHERE type='table'"
       },
-      "type": "CUSTOM.cloudflareD1",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareD1",
       "typeVersion": 1,
       "position": [
         -176,
@@ -203,7 +203,7 @@
         "query": "UPDATE users SET name = ? WHERE email = ?",
         "parameters": "[\"John Updated\", \"john@example.com\"]"
       },
-      "type": "CUSTOM.cloudflareD1",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareD1",
       "typeVersion": 1,
       "position": [
         32,
@@ -223,7 +223,7 @@
         "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
         "query": "INSERT INTO posts (user_id, title, content) VALUES (2, 'Multiple Insert 1', 'Content 1'), (2, 'Multiple Insert 2', 'Content 2')"
       },
-      "type": "CUSTOM.cloudflareD1",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareD1",
       "typeVersion": 1,
       "position": [
         224,
@@ -243,7 +243,7 @@
         "databaseId": "={{ $('Create Test Database').item.json.uuid }}",
         "query": "SELECT \n  name,\n  email,\n  CASE \n    WHEN email LIKE '%example.com' THEN 'Example Domain'\n    ELSE 'Other Domain'\n  END as domain_type\nFROM users\nORDER BY created_at DESC\nLIMIT 5"
       },
-      "type": "CUSTOM.cloudflareD1",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareD1",
       "typeVersion": 1,
       "position": [
         432,
@@ -264,7 +264,7 @@
         "operation": "delete",
         "databaseName": "={{ $('Create Test Database').item.json.name }}"
       },
-      "type": "CUSTOM.cloudflareD1",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareD1",
       "typeVersion": 1,
       "position": [
         624,

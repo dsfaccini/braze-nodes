@@ -31,7 +31,7 @@
       "parameters": {
         "resource": "queue"
       },
-      "type": "CUSTOM.cloudflareQueue",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareQueue",
       "typeVersion": 1,
       "position": [
         192,
@@ -57,7 +57,7 @@
           "max_retries": 3
         }
       },
-      "type": "CUSTOM.cloudflareQueue",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareQueue",
       "typeVersion": 1,
       "position": [
         384,
@@ -78,7 +78,7 @@
         "messageBody": "Test message sent at {{ new Date().toISOString() }}",
         "delaySeconds": 2
       },
-      "type": "CUSTOM.cloudflareQueue",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareQueue",
       "typeVersion": 1,
       "position": [
         592,
@@ -112,7 +112,7 @@
           ]
         }
       },
-      "type": "CUSTOM.cloudflareQueue",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareQueue",
       "typeVersion": 1,
       "position": [
         784,
@@ -146,7 +146,7 @@
         "queueId": "={{ $('Create Test Queue').item.json.result.queue_id }}",
         "batchSize": 5
       },
-      "type": "CUSTOM.cloudflareQueue",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareQueue",
       "typeVersion": 1,
       "position": [
         1184,
@@ -167,7 +167,7 @@
         "queueId": "={{ $('Create Test Queue').item.json.result.queue_id }}",
         "leaseIds": "={{ $json.result.messages.map(m => m.lease_id).join(',') }}"
       },
-      "type": "CUSTOM.cloudflareQueue",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareQueue",
       "typeVersion": 1,
       "position": [
         1392,
@@ -188,7 +188,7 @@
         "operation": "getInfo",
         "queueId": "={{ $('Create Test Queue').item.json.result.queue_id }}"
       },
-      "type": "CUSTOM.cloudflareQueue",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareQueue",
       "typeVersion": 1,
       "position": [
         1584,
@@ -208,7 +208,7 @@
         "queueId": "={{ $('Create Test Queue').item.json.result.queue_id }}",
         "messageBody": "Message for retry test"
       },
-      "type": "CUSTOM.cloudflareQueue",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareQueue",
       "typeVersion": 1,
       "position": [
         1792,
@@ -230,7 +230,7 @@
         "batchSize": 1,
         "visibilityTimeout": 10
       },
-      "type": "CUSTOM.cloudflareQueue",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareQueue",
       "typeVersion": 1,
       "position": [
         1984,
@@ -252,7 +252,7 @@
         "leaseIds": "={{ $json.result.messages[0].lease_id }}",
         "retryDelaySeconds": 5
       },
-      "type": "CUSTOM.cloudflareQueue",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareQueue",
       "typeVersion": 1,
       "position": [
         2192,
@@ -278,7 +278,7 @@
           "max_retries": 5
         }
       },
-      "type": "CUSTOM.cloudflareQueue",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareQueue",
       "typeVersion": 1,
       "position": [
         2384,
@@ -299,7 +299,7 @@
         "operation": "delete",
         "queueId": "={{ $('Create Test Queue').item.json.result.queue_id }}"
       },
-      "type": "CUSTOM.cloudflareQueue",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareQueue",
       "typeVersion": 1,
       "position": [
         2592,

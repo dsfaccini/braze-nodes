@@ -65,7 +65,7 @@ Install directly in n8n:
 
 1. Go to **Settings** > **Community Nodes**
 	```
-	https://your-n8n-domain.com/settings/community-nodes
+	https://YOUR_N8N_DOMAIN/settings/community-nodes
 	```
 2. Enter: 
 	```
@@ -182,7 +182,7 @@ Perfect for D1, AI, KV, and Queues. Use this pre-configured link:
 ### 🚀 Quick Setup
 
 1. **For most services (D1, AI, KV, Queues):**
-   - Create a user or acccount api token with the permissions for the services you want to use. Use the link [above](#-quick-setup) to navigate to cloudflare dashboard to generate the api token with the required permissions pre-selected.
+   - Create a user or acccount api token with the permissions for the services you want to use. Use the link [above](#1-user-level-tokens-recommended-for-most-services) to navigate to cloudflare dashboard to generate the api token with the required permissions pre-selected.
    - Click "Continue to summary" → "Create Token"
    - Copy the token and your Account ID
 
@@ -198,7 +198,7 @@ Perfect for D1, AI, KV, and Queues. Use this pre-configured link:
 
 ### 🛠️ Custom Token Generation
 
-Need different permissions? Use the [Cloudflare API Token URL Generator](https://cfdata.lol/tools/api-token-url-generator/) to create custom pre-configured URLs.
+If you won't use all the services or you want to keep separate keys for different services you can select them manually on the cloudflare api token dashboard or use one of the pre-configured links above and remove the permissions you don't need.
 
 ## Key Features
 
@@ -266,7 +266,7 @@ Error: Unknown account identifier
 ```
 Error: API token does not have the required permissions
 ```
-**Solution:** Verify that the token you're using has the right permissions for the service you want to use it for. You can use the preconfigured links provided [above](#-quick-setup).
+**Solution:** Verify that the token you're using has the right permissions for the service you want to use it for. You can use the preconfigured links provided [above](#1-user-level-tokens-recommended-for-most-services).
 
 ### 📖 Additional Resources
 

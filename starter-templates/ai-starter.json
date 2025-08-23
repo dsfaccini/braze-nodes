@@ -53,7 +53,7 @@
           "temperature": 0.7
         }
       },
-      "type": "CUSTOM.cloudflareAi",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareAi",
       "typeVersion": 1,
       "position": [
         -816,
@@ -78,7 +78,7 @@
           "temperature": 0.9
         }
       },
-      "type": "CUSTOM.cloudflareAi",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareAi",
       "typeVersion": 1,
       "position": [
         -816,
@@ -98,7 +98,7 @@
         "operation": "summarization",
         "text": "={{ $json.sampleText }}"
       },
-      "type": "CUSTOM.cloudflareAi",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareAi",
       "typeVersion": 1,
       "position": [
         -816,
@@ -118,7 +118,7 @@
         "operation": "textClassification",
         "text": "This product exceeded my expectations! Amazing quality and fast shipping."
       },
-      "type": "CUSTOM.cloudflareAi",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareAi",
       "typeVersion": 1,
       "position": [
         -816,
@@ -138,7 +138,7 @@
         "resource": "embeddings",
         "text": "={{ $json.sampleText }}"
       },
-      "type": "CUSTOM.cloudflareAi",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareAi",
       "typeVersion": 1,
       "position": [
         -816,
@@ -158,7 +158,7 @@
         "resource": "image",
         "prompt": "={{ $json.imagePrompt }}"
       },
-      "type": "CUSTOM.cloudflareAi",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareAi",
       "typeVersion": 1,
       "position": [
         -576,
@@ -194,7 +194,7 @@
         "operation": "classification",
         "binaryPropertyName": "generatedImage"
       },
-      "type": "CUSTOM.cloudflareAi",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareAi",
       "typeVersion": 1,
       "position": [
         -176,
@@ -209,7 +209,7 @@
         "operation": "textToSpeech",
         "text": "Hello, this is a test of Cloudflare's text to speech capabilities."
       },
-      "type": "CUSTOM.cloudflareAi",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareAi",
       "typeVersion": 1,
       "position": [
         -576,
@@ -244,7 +244,7 @@
         "resource": "audio",
         "binaryPropertyName": "audioFile"
       },
-      "type": "CUSTOM.cloudflareAi",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareAi",
       "typeVersion": 1,
       "position": [
         -176,

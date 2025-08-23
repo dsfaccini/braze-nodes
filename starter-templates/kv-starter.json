@@ -15,7 +15,7 @@
       "parameters": {
         "resource": "namespace"
       },
-      "type": "CUSTOM.cloudflareKv",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareKv",
       "typeVersion": 1,
       "position": [
         -1104,
@@ -36,7 +36,7 @@
         "operation": "create",
         "namespaceTitle": "n8n-test-namespace"
       },
-      "type": "CUSTOM.cloudflareKv",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareKv",
       "typeVersion": 1,
       "position": [
         -1120,
@@ -60,7 +60,7 @@
         "expiration": 0,
         "expirationTtl": 3600
       },
-      "type": "CUSTOM.cloudflareKv",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareKv",
       "typeVersion": 1,
       "position": [
         -1104,
@@ -108,7 +108,7 @@
           ]
         }
       },
-      "type": "CUSTOM.cloudflareKv",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareKv",
       "typeVersion": 1,
       "position": [
         -720,
@@ -129,7 +129,7 @@
         "namespaceId": "={{ $('Create Test Namespace').item.json.result.id }}",
         "key": "={{ $('Set Value with Metadata & TTL').item.json.key }}"
       },
-      "type": "CUSTOM.cloudflareKv",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareKv",
       "typeVersion": 1,
       "position": [
         -1104,
@@ -151,7 +151,7 @@
         "prefix": "user:",
         "limit": 10
       },
-      "type": "CUSTOM.cloudflareKv",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareKv",
       "typeVersion": 1,
       "position": [
         -800,
@@ -172,7 +172,7 @@
         "namespaceId": "={{ $('Create Test Namespace').item.json.result.id }}",
         "keys": "user:1,user:2,user:3"
       },
-      "type": "CUSTOM.cloudflareKv",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareKv",
       "typeVersion": 1,
       "position": [
         -720,
@@ -196,7 +196,7 @@
         "expiration": "={{ Math.floor(Date.now() / 1000) + 7200 }}",
         "expirationTtl": 600
       },
-      "type": "CUSTOM.cloudflareKv",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareKv",
       "typeVersion": 1,
       "position": [
         -800,
@@ -217,7 +217,7 @@
         "namespaceId": "={{ $('Create Test Namespace').item.json.result.id }}",
         "key": "session:abc123"
       },
-      "type": "CUSTOM.cloudflareKv",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareKv",
       "typeVersion": 1,
       "position": [
         -800,
@@ -238,7 +238,7 @@
         "namespaceId": "={{ $('Create Test Namespace').item.json.result.id }}",
         "keys": "user:2,user:3"
       },
-      "type": "CUSTOM.cloudflareKv",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareKv",
       "typeVersion": 1,
       "position": [
         -512,
@@ -258,7 +258,7 @@
         "operation": "listKeys",
         "namespaceId": "={{ $('Create Test Namespace').item.json.result.id }}"
       },
-      "type": "CUSTOM.cloudflareKv",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareKv",
       "typeVersion": 1,
       "position": [
         -512,
@@ -309,7 +309,7 @@
         "operation": "delete",
         "namespaceId": "={{ $('Create Test Namespace').item.json.result.id }}"
       },
-      "type": "CUSTOM.cloudflareKv",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareKv",
       "typeVersion": 1,
       "position": [
         -512,
@@ -346,7 +346,7 @@
         "operation": "delete",
         "namespaceId": "0f02ccb07c354b63893c59453be015c3"
       },
-      "type": "CUSTOM.cloudflareKv",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareKv",
       "typeVersion": 1,
       "position": [
         -1392,

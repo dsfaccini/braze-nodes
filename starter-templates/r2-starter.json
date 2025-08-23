@@ -15,7 +15,7 @@
       "parameters": {
         "resource": "bucket"
       },
-      "type": "CUSTOM.cloudflareR2",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareR2",
       "typeVersion": 1,
       "position": [
         -1776,
@@ -37,7 +37,7 @@
         "bucketName": "n8n-test-bucket",
         "additionalOptions": {}
       },
-      "type": "CUSTOM.cloudflareR2",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareR2",
       "typeVersion": 1,
       "position": [
         -1584,
@@ -73,7 +73,7 @@
         "objectKey": "images/sample.gif",
         "additionalOptions": {}
       },
-      "type": "CUSTOM.cloudflareR2",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareR2",
       "typeVersion": 1,
       "position": [
         -1184,
@@ -97,7 +97,7 @@
           "maxKeys": 10
         }
       },
-      "type": "CUSTOM.cloudflareR2",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareR2",
       "typeVersion": 1,
       "position": [
         -976,
@@ -118,7 +118,7 @@
         "bucketName": "={{ $('Create Test Bucket').item.json.bucket }}",
         "objectKey": "={{ $('Upload Image to R2').item.json.key }}"
       },
-      "type": "CUSTOM.cloudflareR2",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareR2",
       "typeVersion": 1,
       "position": [
         -784,
@@ -142,7 +142,7 @@
         "destinationBucket": "={{ $('Create Test Bucket').item.json.bucket }}",
         "destinationKey": "archive/sample-copy.svg"
       },
-      "type": "CUSTOM.cloudflareR2",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareR2",
       "typeVersion": 1,
       "position": [
         -576,
@@ -163,7 +163,7 @@
         "bucketName": "={{ $json.destinationBucket }}",
         "objectKey": "={{ $json.destinationKey }}"
       },
-      "type": "CUSTOM.cloudflareR2",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareR2",
       "typeVersion": 1,
       "position": [
         -384,
@@ -186,7 +186,7 @@
         "urlOperation": "put",
         "expiresIn": 7200
       },
-      "type": "CUSTOM.cloudflareR2",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareR2",
       "typeVersion": 1,
       "position": [
         -176,
@@ -222,7 +222,7 @@
         "bucketName": "={{ $('Create Test Bucket').item.json.bucket }}",
         "options": {}
       },
-      "type": "CUSTOM.cloudflareR2",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareR2",
       "typeVersion": 1,
       "position": [
         32,
@@ -243,7 +243,7 @@
         "bucketName": "={{ $('Copy Object').item.json.destinationBucket }}",
         "objectKey": "={{ $('Copy Object').item.json.destinationKey }}"
       },
-      "type": "CUSTOM.cloudflareR2",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareR2",
       "typeVersion": 1,
       "position": [
         224,
@@ -264,7 +264,7 @@
         "operation": "delete",
         "bucketName": "={{ $('Create Test Bucket').item.json.bucket }}"
       },
-      "type": "CUSTOM.cloudflareR2",
+      "type": "@getalecs/n8n-nodes-cloudflare.cloudflareR2",
       "typeVersion": 1,
       "position": [
         624,
