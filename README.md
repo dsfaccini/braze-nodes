@@ -64,9 +64,13 @@ Serverless SQL database built on SQLite.
 Install directly in n8n:
 
 1. Go to **Settings** > **Community Nodes**
-	- ```https://your-n8n-domain.com/settings/community-nodes```
+	```
+	https://your-n8n-domain.com/settings/community-nodes
+	```
 2. Enter: 
-	- ```@getalecs/n8n-nodes-cloudflare```
+	```
+	@getalecs/n8n-nodes-cloudflare
+	```
 3. Click **Install**
 
 ![Installation](https://cdn.getalecs.com/n8n-nodes-cloudflare/install-cloudflare-nodes.gif)
@@ -81,16 +85,47 @@ npm install @getalecs/n8n-nodes-cloudflare
 
 Get started quickly with pre-built workflow templates for each Cloudflare service. These templates demonstrate common use cases and best practices.
 
-### Available Templates
+### R2 Starter ✅ Tested
+Basic R2 operations: upload, download, list objects
 
-| Template | Description | Status | Import URL |
-|----------|-------------|--------|------------|
-| **R2 Starter** | Basic R2 operations: upload, download, list objects | ✅ Tested | ```https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/r2-starter.json``` |
-| **KV Starter** | Key-value operations with metadata and expiration | ✅ Tested | ```https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/kv-starter.json``` |
-| **D1 Starter** | SQL database operations and query examples | ✅ Tested | ```https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/d1-starter.json``` |
-| **AI Starter** | Text generation, image creation, and speech | ⚠️ Untested | ```https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/ai-starter.json``` |
-| **Queue Starter** | Message sending and processing basics | ⚠️ Untested | ```https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/queue-starter.json``` |
-| **Queue Trigger** | Automated message polling with error handling | ⚠️ Untested | ```https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/queue-trigger-starter.json``` |
+```
+https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/r2-starter.json
+```
+
+### KV Starter ✅ Tested
+Key-value operations with metadata and expiration
+
+```
+https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/kv-starter.json
+```
+
+### D1 Starter ✅ Tested
+SQL database operations and query examples
+
+```
+https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/d1-starter.json
+```
+
+### AI Starter ⚠️ Untested
+Text generation, image creation, and speech
+
+```
+https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/ai-starter.json
+```
+
+### Queue Starter ⚠️ Untested
+Message sending and processing basics
+
+```
+https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/queue-starter.json
+```
+
+### Queue Trigger ⚠️ Untested
+Automated message polling with error handling
+
+```
+https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/queue-trigger-starter.json
+```
 
 ### How to Import Templates
 
