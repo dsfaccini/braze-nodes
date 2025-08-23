@@ -1,6 +1,6 @@
 {
     "name": "@getalecs/n8n-nodes-cloudflare",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "description": "n8n nodes for Cloudflare services including R2, D1, Workers AI, KV and Queues",
     "keywords": [
         "n8n-community-node-package",
