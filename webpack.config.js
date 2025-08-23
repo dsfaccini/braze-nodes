@@ -11,24 +11,17 @@ module.exports = {
 		'nodes/CloudflareKV/CloudflareKv.node': './nodes/CloudflareKV/CloudflareKv.node.ts',
 		'nodes/CloudflareQueue/CloudflareQueue.node': './nodes/CloudflareQueue/CloudflareQueue.node.ts',
 		'nodes/CloudflareQueue/CloudflareQueueTrigger.node': './nodes/CloudflareQueue/CloudflareQueueTrigger.node.ts',
-		
+
 		// Credential files
 		'credentials/CloudflareApi.credentials': './credentials/CloudflareApi.credentials.ts',
-		'credentials/ExampleCredentialsApi.credentials': './credentials/ExampleCredentialsApi.credentials.ts',
-		'credentials/HttpBinApi.credentials': './credentials/HttpBinApi.credentials.ts',
-		
+
 		// Description files
 		'nodes/CloudflareKV/CloudflareKVDescription': './nodes/CloudflareKV/CloudflareKVDescription.ts',
 		'nodes/CloudflareQueue/CloudflareQueueDescription': './nodes/CloudflareQueue/CloudflareQueueDescription.ts',
 		'nodes/CloudflareR2/CloudflareR2BucketDescription': './nodes/CloudflareR2/CloudflareR2BucketDescription.ts',
 		'nodes/CloudflareR2/CloudflareR2ObjectDescription': './nodes/CloudflareR2/CloudflareR2ObjectDescription.ts',
 		'nodes/CloudflareR2/awsSignatureV4': './nodes/CloudflareR2/awsSignatureV4.ts',
-		'nodes/HttpBin/HttpVerbDescription': './nodes/HttpBin/HttpVerbDescription.ts',
-		
-		// Example nodes
-		'nodes/ExampleNode/ExampleNode.node': './nodes/ExampleNode/ExampleNode.node.ts',
-		'nodes/HttpBin/HttpBin.node': './nodes/HttpBin/HttpBin.node.ts',
-		
+
 		// Index file
 		'index': './index.ts'
 	},

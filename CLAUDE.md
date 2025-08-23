@@ -38,10 +38,6 @@ npm run prepublishOnly
 
 These are the two main folders where all the custom n8n package code lives.
 
-### Example Nodes
-
-The repository includes ExampleNode and HttpBin nodes from the template as examples that are helpful for development. Additional example nodes may be added as needed.
-
 ## Architecture Overview
 
 ### Node Structure
