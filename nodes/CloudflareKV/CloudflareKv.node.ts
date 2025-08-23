@@ -17,7 +17,7 @@ export class CloudflareKv implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Store and retrieve data from Cloudflare Workers KV. See <a href="https://developers.cloudflare.com/api/resources/kv/subresources/namespaces/methods/delete/" target="_blank">Cloudflare KV API docs</a> for more details.',
+		description: 'Store and retrieve data from Cloudflare Workers KV.',
 		defaults: {
 			name: 'Cloudflare KV',
 		},
@@ -306,7 +306,7 @@ export class CloudflareKv implements INodeType {
 					});
 					continue;
 				}
-				
+
 				// Create enhanced error for throw
 				const enhancedError = new Error(errorMessage);
 				(enhancedError as any).httpCode = error.httpCode;

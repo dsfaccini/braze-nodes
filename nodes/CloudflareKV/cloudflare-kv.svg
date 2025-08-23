@@ -1,29 +1,32 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
-  <g fill="none" fill-rule="evenodd">
-    <!-- Background circle -->
-    <circle cx="30" cy="30" r="30" fill="#F38020"/>
+  <!-- background -->
+  <circle cx="30" cy="30" r="30" fill="#F38020"/>
 
-    <!-- KV text -->
-    <text x="30" y="38" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="white">KV</text>
+  <!-- label -->
+  <text x="30" y="12" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="white">KV</text>
 
-    <!-- Key-Value icon -->
-    <g transform="translate(12, 12)">
-      <!-- Key icon -->
-      <g fill="white" opacity="0.9">
-        <circle cx="6" cy="6" r="3"/>
-        <rect x="8" y="5" width="12" height="2"/>
-        <rect x="16" y="3" width="2" height="2"/>
-        <rect x="18" y="5" width="2" height="2"/>
-      </g>
-      <!-- Arrow -->
-      <path d="M24 15 L32 15 M30 13 L32 15 L30 17" stroke="white" stroke-width="1.5" fill="none" opacity="0.8"/>
-      <!-- Value icon (document/data) -->
-      <g fill="white" opacity="0.9">
-        <rect x="34" y="10" width="8" height="10" rx="1"/>
-        <rect x="36" y="12" width="4" height="1"/>
-        <rect x="36" y="14" width="4" height="1"/>
-        <rect x="36" y="16" width="3" height="1"/>
-      </g>
-    </g>
+  <!-- KEY (moved left, larger, with head hole) -->
+  <g>
+    <!-- head -->
+    <circle cx="18" cy="30" r="6.2" fill="white"/>
+    <!-- hole -->
+    <circle cx="18" cy="30" r="2.2" fill="#F38020"/>
+
+    <!-- shaft + rounded tip -->
+    <rect x="23" y="28.2" width="15.5" height="3.6" rx="1.8" fill="white"/>
+    <circle cx="38.5" cy="30" r="1.8" fill="white"/>
+
+    <!-- teeth -->
+    <rect x="27.5" y="31.6" width="2.6" height="4.6" rx="1" fill="white"/>
+    <rect x="31.5" y="31.6" width="2.2" height="3.6" rx="1" fill="white"/>
+  </g>
+
+  <!-- STORE (bigger, left-shifted, with clear gap from key) -->
+  <g fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round">
+    <!-- outer box -->
+    <rect x="46" y="24" width="12" height="12" rx="2.2" stroke-width="2.2"/>
+    <!-- rows -->
+    <line x1="48.5" y1="28" x2="55.0" y2="28" stroke-width="1.8"/>
+    <line x1="48.5" y1="32" x2="53.5" y2="32" stroke-width="1.8"/>
   </g>
 </svg>

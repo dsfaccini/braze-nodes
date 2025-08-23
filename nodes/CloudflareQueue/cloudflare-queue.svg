@@ -1,28 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
-  <g fill="none" fill-rule="evenodd">
-    <!-- Background circle -->
-    <circle cx="30" cy="30" r="30" fill="#F38020"/>
+  <!-- background -->
+  <circle cx="30" cy="30" r="30" fill="#F38020"/>
 
-    <!-- Q text -->
-    <text x="30" y="42" font-family="Arial, sans-serif" font-size="22" font-weight="bold" text-anchor="middle" fill="white">Q</text>
+  <!-- label -->
+  <text x="30" y="12" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="white">Q</text>
 
-    <!-- Queue icon - message flow -->
-    <g transform="translate(8, 8)">
-      <!-- Message boxes in queue -->
-      <rect x="2" y="12" width="8" height="6" rx="1" fill="white" opacity="0.9"/>
-      <rect x="12" y="12" width="8" height="6" rx="1" fill="white" opacity="0.8"/>
-      <rect x="22" y="12" width="8" height="6" rx="1" fill="white" opacity="0.7"/>
-      <rect x="32" y="12" width="8" height="6" rx="1" fill="white" opacity="0.6"/>
-
-      <!-- Flow arrows -->
-      <path d="M10 15 L12 15 M11 14 L12 15 L11 16" stroke="white" stroke-width="1" fill="none" opacity="0.8"/>
-      <path d="M20 15 L22 15 M21 14 L22 15 L21 16" stroke="white" stroke-width="1" fill="none" opacity="0.8"/>
-      <path d="M30 15 L32 15 M31 14 L32 15 L31 16" stroke="white" stroke-width="1" fill="none" opacity="0.8"/>
-
-      <!-- Queue indicators -->
-      <circle cx="6" cy="15" r="1" fill="#F38020"/>
-      <circle cx="16" cy="15" r="1" fill="#F38020"/>
-      <circle cx="26" cy="15" r="1" fill="#F38020"/>
-    </g>
+  <!-- Cloudflare Queue icon, scaled up -->
+  <g transform="translate(14,16) scale(2.0)" fill="white">
+    <path fill-rule="evenodd" d="M13.023 4.131H2.726V3h10.297v1.131ZM9.692 10.92V5.263h1.211v5.656H9.692v.001Zm-4.846 0V5.263h1.211v5.656H4.846v.001Zm2.423 0V5.263H8.48v5.656H7.27l-.001.001ZM2.172 7.525 1.086 6.511l.857-.8 2.548 2.38-2.548 2.38-.857-.8 1.086-1.014H0V7.525h2.172Zm11.509 0-1.086-1.014.857-.8L16 8.091l-2.548 2.38-.857-.8 1.086-1.014h-2.172V7.525h2.172Zm-.658 5.657H2.726V12.05h10.297v1.132Z"/>
   </g>
 </svg>

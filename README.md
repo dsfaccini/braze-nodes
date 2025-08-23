@@ -6,7 +6,7 @@ This is a collection of n8n community nodes for Cloudflare services. Currently s
 
 ## Available Nodes
 
-### 🗄️ Cloudflare R2
+### <img src="./nodes/CloudflareR2/cloudflare-r2.svg" width="24" height="24" style="vertical-align: middle"> Cloudflare R2
 
 Object storage compatible with Amazon S3 API.
 
@@ -18,7 +18,7 @@ Object storage compatible with Amazon S3 API.
 
 **Important Note**: R2 buckets can only be deleted when completely empty. If you encounter a 409 error when trying to delete a bucket, ensure all objects (including hidden files and incomplete multipart uploads) are removed first. You may need to manually verify the bucket is empty in the Cloudflare dashboard.
 
-### 🗃️ Cloudflare KV
+### <img src="./nodes/CloudflareKV/cloudflare-kv.svg" width="24" height="24" style="vertical-align: middle"> Cloudflare KV
 
 Globally distributed key-value store.
 
@@ -29,7 +29,7 @@ Globally distributed key-value store.
 - **Bulk**: Get/set/delete multiple keys at once
 - **Advanced**: Expiration, metadata, prefix filtering
 
-### 📬 Cloudflare Queue
+### <img src="./nodes/CloudflareQueue/cloudflare-queue.svg" width="24" height="24" style="vertical-align: middle"> Cloudflare Queue
 
 Message queue service for asynchronous processing.
 
@@ -39,7 +39,7 @@ Message queue service for asynchronous processing.
 - **Messages**: Send, pull, acknowledge, retry messages
 - **Trigger Mode**: Auto-poll for new messages with configurable intervals
 
-### 🤖 Cloudflare AI
+### <img src="./nodes/CloudflareAI/cloudflare-ai.svg" width="24" height="24" style="vertical-align: middle"> Cloudflare AI
 
 Access to Cloudflare's AI/ML models.
 
@@ -49,7 +49,7 @@ Access to Cloudflare's AI/ML models.
 - **Image Generation**: AI-powered image creation
 - **Speech**: Transcription and text-to-speech
 
-### 🗂️ Cloudflare D1
+### <img src="./nodes/CloudflareD1/cloudflare-d1.svg" width="24" height="24" style="vertical-align: middle"> Cloudflare D1
 
 Serverless SQL database built on SQLite.
 
@@ -63,15 +63,44 @@ Serverless SQL database built on SQLite.
 
 Install directly in n8n:
 
-1. Go to **Settings** > **Community Nodes** ([https://your-n8n-domain.com/settings/community-nodes](https://your-n8n-domain.com/settings/community-nodes))
-2. Enter: `@getalecs/n8n-nodes-cloudflare`
+1. Go to **Settings** > **Community Nodes**
+	- ```https://your-n8n-domain.com/settings/community-nodes```
+2. Enter: 
+	- ```@getalecs/n8n-nodes-cloudflare```
 3. Click **Install**
+
+![Installation](https://cdn.getalecs.com/n8n-nodes-cloudflare/install-cloudflare-nodes.gif)
 
 Or install via npm in your n8n instance:
 
 ```bash
 npm install @getalecs/n8n-nodes-cloudflare
 ```
+
+## Starter Templates
+
+Get started quickly with pre-built workflow templates for each Cloudflare service. These templates demonstrate common use cases and best practices.
+
+### Available Templates
+
+| Template | Description | Status | Import URL |
+|----------|-------------|--------|------------|
+| **R2 Starter** | Basic R2 operations: upload, download, list objects | ✅ Tested | ```https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/r2-starter.json``` |
+| **KV Starter** | Key-value operations with metadata and expiration | ✅ Tested | ```https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/kv-starter.json``` |
+| **D1 Starter** | SQL database operations and query examples | ✅ Tested | ```https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/d1-starter.json``` |
+| **AI Starter** | Text generation, image creation, and speech | ⚠️ Untested | ```https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/ai-starter.json``` |
+| **Queue Starter** | Message sending and processing basics | ⚠️ Untested | ```https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/queue-starter.json``` |
+| **Queue Trigger** | Automated message polling with error handling | ⚠️ Untested | ```https://raw.githubusercontent.com/dsfaccini/cloudflare-nodes/refs/heads/master/starter-templates/queue-trigger-starter.json``` |
+
+### How to Import Templates
+
+1. Copy the template URL from the table above
+2. In n8n, go to **Workflows** → **Add workflow** → **Import from URL...**
+3. Paste the URL and click **Import**
+
+![Import from URL](https://cdn.getalecs.com/n8n-nodes-cloudflare/import-workflow-from-url.gif)
+
+> 💡 **Tip**: After importing, remember to add your Cloudflare credentials in the node settings!
 
 ## Prerequisites
 
@@ -91,13 +120,14 @@ Cloudflare offers two types of API tokens with different scopes:
 #### 1. **User-Level Tokens** (Recommended for most services)
 Perfect for D1, AI, KV, and Queues. Use this pre-configured link:
 
-**[📝 Create User-Level Token](https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%5D&name=custom-n8n-cloudflare-nodes&accountId=%2A&zoneId=all)** *(Pre-configured with required permissions)*
+**[📝 Create user-level token for non R2 services](https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%5D&name=custom-n8n-cloudflare-nodes&accountId=%2A&zoneId=all)** *(Pre-configured with required permissions)*
+
+**[Create a separate user-level token for R2 (Recommended)](https://dash.cloudflare.com/?to=/:account/r2/api-tokens/create&type=user)**
 
 #### 2. **Account-Level Tokens** 
-For account-level permissions, replace `profile` in the URL above with your Account ID:
-```
-https://dash.cloudflare.com/YOUR_ACCOUNT_ID_HERE/api-tokens?...
-```
+**[📝 Or create an account-level token for non R2 services](https://dash.cloudflare.com/?to=/:account/api-tokens&permissionGroupKeys=%5B%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%5D&name=custom-n8n-cloudflare-nodes&accountId=%2A&zoneId=all)** *(Pre-configured with required permissions)*
+
+**[Or a separate account-level token for R2](https://dash.cloudflare.com/?to=/:account/r2/api-tokens/create&type=account)**
 
 ### 🔐 Authentication Modes
 
@@ -117,7 +147,7 @@ https://dash.cloudflare.com/YOUR_ACCOUNT_ID_HERE/api-tokens?...
 ### 🚀 Quick Setup
 
 1. **For most services (D1, AI, KV, Queues):**
-   - Click the [pre-configured token link](https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%5D&name=custom-n8n-cloudflare-nodes&accountId=%2A&zoneId=all)
+   - Create a user or acccount api token with the permissions for the services you want to use. Use the link [above](#-quick-setup) to navigate to cloudflare dashboard to generate the api token with the required permissions pre-selected.
    - Click "Continue to summary" → "Create Token"
    - Copy the token and your Account ID
 
@@ -137,20 +167,17 @@ Need different permissions? Use the [Cloudflare API Token URL Generator](https:/
 
 ## Key Features
 
-- ✅ **Zero External Dependencies**: Uses native HTTP requests instead of heavy SDKs
 - ✅ **Complete API Coverage**: Implements all major operations for each service
 - ✅ **Error Handling**: Comprehensive error messages and continue-on-fail support
-- ✅ **Security**: Implements AWS Signature v4 for R2 authentication
+- ✅ **Security**: Implements a custom AWS Signature v4 for R2 authentication, and uses the official AWS SDK for generating presigned URLs.
 - ✅ **Performance**: Efficient bulk operations and streaming support
 - ✅ **Trigger Support**: Queue trigger node for real-time message processing
 
 ## Documentation
 
-Detailed guides available in the repository:
+A detailed guide for advanced R2 usage is available in the repository:
 
-- [R2 Authentication Guide](./R2_AUTHENTICATION_GUIDE.md) - Why AWS Signature v4 is needed
-- [R2 Operations Guide](./R2_OPERATIONS_GUIDE.md) - Complete operations matrix
-- [R2 Architecture Diagram](./R2_ARCHITECTURE_DIAGRAM.md) - Visual request flow
+- [Cloudflare R2 Advanced Guide](./R2 guide.md) - In-depth look at architecture, authentication, and operations.
 
 ## Examples
 
@@ -204,7 +231,7 @@ Error: Unknown account identifier
 ```
 Error: API token does not have the required permissions
 ```
-**Solution:** Use the [pre-configured token URL](https://dash.cloudflare.com/profile/api-tokens?permissionGroupKeys=%5B%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%5D&name=custom-n8n-cloudflare-nodes&accountId=%2A&zoneId=all) to ensure all required permissions are included.
+**Solution:** Verify that the token you're using has the right permissions for the service you want to use it for. You can use the preconfigured links provided [above](#-quick-setup).
 
 ### 📖 Additional Resources
 
@@ -215,7 +242,7 @@ Error: API token does not have the required permissions
 
 ## Support
 
-- [GitHub Issues](https://github.com/n8n-community/n8n-nodes-cloudflare/issues)
+- [GitHub Issues](https://github.com/dsfaccini/n8n-nodes-cloudflare/issues)
 - [n8n Community Forum](https://community.n8n.io/)
 
 ## License
@@ -224,4 +251,4 @@ n8n original + MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-Built with ❤️ for the n8n community
+Built with ❤️ for the cloudflare and n8n communities
