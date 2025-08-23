@@ -6,7 +6,7 @@
   <text x="30" y="12" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="white">KV</text>
 
   <!-- KEY (moved left, larger, with head hole) -->
-  <g>
+  <g transform="translate(-5,0)">
     <!-- head -->
     <circle cx="18" cy="30" r="6.2" fill="white"/>
     <!-- hole -->
@@ -22,7 +22,7 @@
   </g>
 
   <!-- STORE (bigger, left-shifted, with clear gap from key) -->
-  <g fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round">
+  <g transform="translate(-7,0)" fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round">
     <!-- outer box -->
     <rect x="46" y="24" width="12" height="12" rx="2.2" stroke-width="2.2"/>
     <!-- rows -->
