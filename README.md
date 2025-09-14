@@ -1,4 +1,124 @@
-# Cloudflare Nodes for n8n
+# Braze CRM Nodes for n8n
+
+This is a collection of n8n community nodes for Braze CRM platform. Currently supported services: Campaigns, Message Sending, Email Templates, and Analytics.
+
+**Primary Focus**: Email sending, campaign management, and analytics endpoints for comprehensive Braze integration.
+
+**Disclaimer**: This is a community-developed project and is not officially affiliated with or endorsed by Braze or n8n. This repository is in active development, which means that not all Braze endpoints are implemented as nodes yet and some operations may currently not be available. Please report any issues you find and provide as much context as possible, include screenshots and error messages in code blocks if possible.
+
+## Available Braze Nodes
+
+### 🚀 Braze Campaigns
+
+Campaign management and triggering operations.
+
+**Operations:**
+- **List**: Get all campaigns with filtering and pagination
+- **Details**: Get detailed campaign information
+- **Trigger**: Send API-triggered campaigns
+- **Analytics**: Get campaign performance data and metrics
+
+### ✉️ Braze Send Message
+
+Direct message sending to users across multiple channels.
+
+**Operations:**
+- **Send**: Send immediate messages (email, SMS, push) to specific users
+- **Send Transactional**: Send transactional emails using pre-configured campaigns
+
+**Key Features:**
+- Multi-channel support (email, SMS, push notifications)
+- Batch targeting (up to 50 users per request)
+- Template variable support
+- Subscription state handling
+
+### 📧 Braze Email Template
+
+Email template management operations.
+
+**Operations:**
+- **Create**: Create new email templates with Liquid templating
+- **List**: Get all email templates with filtering and pagination
+- **Update**: Update existing email templates
+- **Info**: Get detailed template information
+
+### 📊 Braze Analytics
+
+Performance metrics and analytics for campaigns and sends.
+
+**Operations:**
+- **Campaign Analytics**: Time-series campaign performance data
+- **Send Analytics**: Performance metrics for specific message sends
+
+**Metrics Include:**
+- Opens, clicks, unsubscribes, bounces
+- Conversions and revenue tracking
+- Delivery and engagement rates
+
+## Installation
+
+Install directly in n8n:
+
+1. Go to **Settings** > **Community Nodes**
+2. Enter: `@braze/n8n-nodes-braze` (coming soon)
+3. Click **Install**
+
+## Authentication
+
+### Braze REST API Key Setup
+
+Braze uses REST API keys for authentication. Each key is scoped with specific permissions.
+
+1. **Create API Key:**
+   - Navigate to Settings > APIs and Identifiers in your Braze dashboard
+   - Select "Create API Key"
+   - Assign required permissions (see table below)
+   - Configure IP allowlisting (optional but recommended)
+
+2. **Required Permissions:**
+   - `messages.send` - For message sending operations
+   - `campaigns.trigger.send` - For campaign triggering
+   - `campaigns.list` - For listing campaigns
+   - `campaigns.data_series` - For campaign analytics
+   - `templates.email.*` - For email template operations
+   - `sends.data_series` - For send analytics
+
+3. **Instance Selection:**
+   Choose your Braze instance based on your dashboard URL:
+   - US instances: US-01 through US-08, US-10
+   - EU instances: EU-01, EU-02
+   - AU instance: AU-01
+   - ID instance: ID-01
+
+### Rate Limits
+
+- **Standard**: 250,000 requests per hour
+- **Message sending**: 250 requests/minute (broadcast) OR 250,000/hour (targeted)
+- **Campaign analytics**: 50,000 requests per minute
+- Monitor rate limit headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
+
+## Examples
+
+### Send Email Campaign
+```
+Manual Trigger → Braze Campaigns (Trigger) → Success Response
+```
+
+### Send Direct Email
+```
+Code Node → Braze Send Message → Analytics Tracking
+```
+
+### Template Management
+```
+HTTP Request → Braze Email Template (Create) → Campaign Setup
+```
+
+---
+
+# Legacy Cloudflare Nodes (Reference)
+
+*The following Cloudflare nodes are maintained as reference during the Braze implementation phase.*
 
 This is a collection of n8n community nodes for Cloudflare services. Currently supported services: R2 object storage, D1 serverless database, Workers AI, KV storage, and Queues.
 
@@ -67,7 +187,7 @@ Install directly in n8n:
 	```
 	https://YOUR_N8N_DOMAIN/settings/community-nodes
 	```
-2. Enter: 
+2. Enter:
 	```
 	@getalecs/n8n-nodes-cloudflare
 	```
@@ -159,7 +279,7 @@ Perfect for D1, AI, KV, and Queues. Use this pre-configured link:
 
 **[Create a separate user-level token for R2 (Recommended)](https://dash.cloudflare.com/?to=/:account/r2/api-tokens/create&type=user)**
 
-#### 2. **Account-Level Tokens** 
+#### 2. **Account-Level Tokens**
 **[📝 Or create an account-level token for non R2 services](https://dash.cloudflare.com/?to=/:account/api-tokens&permissionGroupKeys=%5B%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22ai%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22d1%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22queues%22%2C%22type%22%3A%22edit%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22read%22%7D%2C%7B%22key%22%3A%22workers_kv_storage%22%2C%22type%22%3A%22edit%22%7D%5D&name=custom-n8n-cloudflare-nodes&accountId=%2A&zoneId=all)** *(Pre-configured with required permissions)*
 
 **[Or a separate account-level token for R2](https://dash.cloudflare.com/?to=/:account/r2/api-tokens/create&type=account)**
@@ -171,7 +291,7 @@ Perfect for D1, AI, KV, and Queues. Use this pre-configured link:
 - ✅ Account ID
 
 **R2 Mode** (Object Storage):
-- ✅ Account ID  
+- ✅ Account ID
 - ✅ R2 Access Key ID
 - ✅ R2 Secret Access Key
 - ✅ R2 Jurisdiction (default/eu/fedramp)

@@ -1,23 +1,23 @@
 {
-    "name": "@getalecs/n8n-nodes-cloudflare",
+    "name": "@getalecs/n8n-nodes-braze",
     "version": "0.1.7",
-    "description": "n8n nodes for Cloudflare services including R2, D1, Workers AI, KV and Queues",
+    "description": "n8n nodes for Braze services including Campaigns, Message Sending, Email Templates, and Analytics",
     "keywords": [
         "n8n-community-node-package",
-        "cloudflare",
-        "r2",
-        "d1",
-        "workers-ai",
-        "kv",
-        "queue"
+        "braze",
+        "campaigns",
+        "message-sending",
+        "email-templates",
+        "analytics",
+        "crm"
     ],
-    "homepage": "https://github.com/n8n-community/n8n-nodes-cloudflare",
+    "homepage": "https://www.npmjs.com/package/@getalecs/n8n-nodes-braze",
     "bugs": {
-        "url": "https://github.com/dsfaccini/cloudflare-nodes/issues"
+        "url": "https://github.com/dsfaccini/braze-nodes/issues"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/dsfaccini/cloudflare-nodes.git"
+        "url": "git+https://github.com/dsfaccini/braze-nodes.git"
     },
     "license": "MIT",
     "author": {
@@ -38,21 +38,21 @@
     },
     "dependencies": {},
     "devDependencies": {
-        "@aws-sdk/client-s3": "^3.515.0",
-        "@aws-sdk/s3-request-presigner": "^3.515.0",
-        "@types/node": "^20.0.0",
-        "@typescript-eslint/parser": "~8.32.0",
-        "eslint": "^8.57.0",
+        "@aws-sdk/client-s3": "^3.888.0",
+        "@aws-sdk/s3-request-presigner": "^3.888.0",
+        "@types/node": "^20.19.14",
+        "@typescript-eslint/parser": "~8.32.1",
+        "eslint": "^8.57.1",
         "eslint-plugin-n8n-nodes-base": "^1.16.3",
-        "gulp": "^5.0.0",
-        "prettier": "^3.5.3",
-        "typescript": "^5.8.2",
-        "webpack": "^5.89.0",
+        "gulp": "^5.0.1",
+        "prettier": "^3.6.2",
+        "typescript": "^5.9.2",
+        "webpack": "^5.101.3",
         "webpack-cli": "^5.1.4",
-        "ts-loader": "^9.5.1"
+        "ts-loader": "^9.5.4"
     },
     "peerDependencies": {
-        "n8n-workflow": "*"
+        "n8n-workflow": "^1.82.0"
     },
     "engines": {
         "node": ">=20.15"
@@ -60,15 +60,13 @@
     "n8n": {
         "n8nNodesApiVersion": 1,
         "credentials": [
-            "credentials/CloudflareApi.credentials.js"
+            "credentials/BrazeApi.credentials.js"
         ],
         "nodes": [
-            "nodes/CloudflareR2/CloudflareR2.node.js",
-            "nodes/CloudflareD1/CloudflareD1.node.js",
-            "nodes/CloudflareAI/CloudflareAi.node.js",
-            "nodes/CloudflareKV/CloudflareKv.node.js",
-            "nodes/CloudflareQueue/CloudflareQueue.node.js",
-            "nodes/CloudflareQueue/CloudflareQueueTrigger.node.js"
+            "nodes/BrazeAnalytics/BrazeAnalytics.node.js",
+            "nodes/BrazeCampaigns/BrazeCampaigns.node.js",
+            "nodes/BrazeEmailTemplate/BrazeEmailTemplate.node.js",
+            "nodes/BrazeSendMessage/BrazeSendMessage.node.js"
         ]
     }
 }

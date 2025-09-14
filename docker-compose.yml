@@ -1,6 +1,6 @@
 services:
   n8n:
-    image: docker.n8n.io/n8nio/n8n:1.108.1
+    image: docker.n8n.io/n8nio/n8n:1.111.0
     ports:
       - '5678:5678'
     environment:
@@ -23,7 +23,7 @@ services:
       - N8N_CUSTOM_EXTENSIONS=/home/node/.n8n/custom
     volumes:
       - ./dist:/home/node/.n8n/custom
-      - 'n8n_data:/home/node/.n8n'
+      - 'n8n_braze_data:/home/node/.n8n'
     depends_on:
       postgresql:
         condition: service_healthy
@@ -37,7 +37,7 @@ services:
   postgresql:
     image: 'postgres:16-alpine'
     volumes:
-      - 'n8n-postgres:/var/lib/postgresql/data'
+      - 'n8n-braze-postgres:/var/lib/postgresql/data'
     environment:
       - POSTGRES_USER=$SERVICE_USER_POSTGRES
       - POSTGRES_PASSWORD=$SERVICE_PASSWORD_POSTGRES
@@ -50,7 +50,7 @@ services:
       timeout: 20s
       retries: 10
 volumes:
-  n8n_data:
+  n8n_braze_data:
     external: true
-  n8n-postgres:
+  n8n-braze-postgres:
     external: true

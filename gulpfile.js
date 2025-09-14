@@ -4,7 +4,8 @@ const { task, src, dest } = require('gulp');
 task('build:icons', copyIcons);
 
 function copyIcons() {
-	const nodeSource = path.resolve('nodes', '**', '*.{png,svg}');
+	// Only copy icons from Braze nodes
+	const nodeSource = path.resolve('nodes', 'Braze*', '*.{png,svg}');
 	const nodeDestination = path.resolve('dist', 'nodes');
 
 	src(nodeSource).pipe(dest(nodeDestination));

@@ -1,10 +1,12 @@
 import { INodeType } from 'n8n-workflow';
-import { CloudflareAi } from './nodes/CloudflareAI/CloudflareAi.node';
-import { CloudflareD1 } from './nodes/CloudflareD1/CloudflareD1.node';
-import { CloudflareR2 } from './nodes/CloudflareR2/CloudflareR2.node';
+import { BrazeAnalytics } from './nodes/BrazeAnalytics/BrazeAnalytics.node';
+import { BrazeCampaigns } from './nodes/BrazeCampaigns/BrazeCampaigns.node';
+import { BrazeEmailTemplate } from './nodes/BrazeEmailTemplate/BrazeEmailTemplate.node';
+import { BrazeSendMessage } from './nodes/BrazeSendMessage/BrazeSendMessage.node';
 
 export const nodeTypes: INodeType[] = [
-  new CloudflareAi(),
-	new CloudflareD1(),
-	new CloudflareR2(),
+	new BrazeAnalytics(),
+	new BrazeCampaigns(),
+	new BrazeEmailTemplate(),
+	new BrazeSendMessage(),
 ];

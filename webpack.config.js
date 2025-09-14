@@ -5,22 +5,19 @@ module.exports = {
 	target: 'node',
 	entry: {
 		// Node files
-		'nodes/CloudflareR2/CloudflareR2.node': './nodes/CloudflareR2/CloudflareR2.node.ts',
-		'nodes/CloudflareD1/CloudflareD1.node': './nodes/CloudflareD1/CloudflareD1.node.ts',
-		'nodes/CloudflareAI/CloudflareAi.node': './nodes/CloudflareAI/CloudflareAi.node.ts',
-		'nodes/CloudflareKV/CloudflareKv.node': './nodes/CloudflareKV/CloudflareKv.node.ts',
-		'nodes/CloudflareQueue/CloudflareQueue.node': './nodes/CloudflareQueue/CloudflareQueue.node.ts',
-		'nodes/CloudflareQueue/CloudflareQueueTrigger.node': './nodes/CloudflareQueue/CloudflareQueueTrigger.node.ts',
+		'nodes/BrazeAnalytics/BrazeAnalytics.node': './nodes/BrazeAnalytics/BrazeAnalytics.node.ts',
+		'nodes/BrazeCampaigns/BrazeCampaigns.node': './nodes/BrazeCampaigns/BrazeCampaigns.node.ts',
+		'nodes/BrazeEmailTemplate/BrazeEmailTemplate.node': './nodes/BrazeEmailTemplate/BrazeEmailTemplate.node.ts',
+		'nodes/BrazeSendMessage/BrazeSendMessage.node': './nodes/BrazeSendMessage/BrazeSendMessage.node.ts',
 
 		// Credential files
-		'credentials/CloudflareApi.credentials': './credentials/CloudflareApi.credentials.ts',
+		'credentials/BrazeApi.credentials': './credentials/BrazeApi.credentials.ts',
 
 		// Description files
-		'nodes/CloudflareKV/CloudflareKVDescription': './nodes/CloudflareKV/CloudflareKVDescription.ts',
-		'nodes/CloudflareQueue/CloudflareQueueDescription': './nodes/CloudflareQueue/CloudflareQueueDescription.ts',
-		'nodes/CloudflareR2/CloudflareR2BucketDescription': './nodes/CloudflareR2/CloudflareR2BucketDescription.ts',
-		'nodes/CloudflareR2/CloudflareR2ObjectDescription': './nodes/CloudflareR2/CloudflareR2ObjectDescription.ts',
-		'nodes/CloudflareR2/awsSignatureV4': './nodes/CloudflareR2/awsSignatureV4.ts',
+		'nodes/BrazeAnalytics/BrazeAnalyticsDescription': './nodes/BrazeAnalytics/BrazeAnalyticsDescription.ts',
+		'nodes/BrazeCampaigns/BrazeCampaignsDescription': './nodes/BrazeCampaigns/BrazeCampaignsDescription.ts',
+		'nodes/BrazeEmailTemplate/BrazeEmailTemplateDescription': './nodes/BrazeEmailTemplate/BrazeEmailTemplateDescription.ts',
+		'nodes/BrazeSendMessage/BrazeSendMessageDescription': './nodes/BrazeSendMessage/BrazeSendMessageDescription.ts',
 
 		// Index file
 		'index': './index.ts'

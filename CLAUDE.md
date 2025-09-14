@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an n8n community node package forked from the n8n node starter repository, focused on developing nodes for Cloudflare services including R2 (object storage), KV (key-value storage), Queues (message queuing), D1 (serverless SQL database), and AI modules.
+This is an n8n community node package focused on developing nodes for Braze CRM platform, with priority on email sending, campaign management, and analytics endpoints. The repository includes reference Cloudflare nodes during the transition phase.
 
 ## Development Commands
 
@@ -33,10 +33,104 @@ npm run prepublishOnly
 
 ## Important Folders
 
-- **`credentials/`** - Contains credential type definitions for authenticating with Cloudflare services
-- **`nodes/`** - Contains all the custom n8n node implementations for Cloudflare services
+- **`credentials/`** - Contains credential type definitions for authenticating with Braze CRM and reference Cloudflare services
+- **`nodes/`** - Contains all the custom n8n node implementations for Braze CRM and reference Cloudflare services
 
 These are the two main folders where all the custom n8n package code lives.
+
+## Braze CRM Integration Requirements
+
+### Braze Node Implementation Priority
+
+Based on the research in `braze-research.md`, implement nodes in this order:
+
+#### Phase 1: Core Email & Campaign Operations
+1. **BrazeApi Credentials** - Authentication setup with instance selection
+2. **BrazeCampaigns Node** - Campaign management (`/campaigns/*`)
+3. **BrazeSendMessage Node** - Immediate message sending (`/messages/send`)
+
+#### Phase 2: Template & Analytics
+4. **BrazeEmailTemplate Node** - Template CRUD operations (`/templates/email/*`)
+5. **BrazeAnalytics Node** - Performance metrics (`/campaigns/data_series`, `/sends/data_series`)
+
+### Braze API Authentication
+
+- **REST API Keys**: Bearer token authentication
+- **Instance Support**: US-01 to US-08, US-10, EU-01, EU-02, AU-01, ID-01
+- **Dynamic Endpoints**: Construct URLs based on instance selection
+- **Rate Limiting**: 250,000 requests/hour standard, specific limits per endpoint
+
+### GitHub Issue Tracking for Endpoint Groups
+
+**IMPORTANT**: Create GitHub issues to track implementation progress for all Braze endpoint groups. Each issue should include:
+
+- Endpoint group name (from `braze-all-endpoint-groups.png`)
+- Implementation status (Priority 1-4 or Complete)
+- List of specific API endpoints to implement
+- Links to relevant Braze API documentation
+- Acceptance criteria for completion
+
+**Endpoint Groups to Track**:
+- ✅ Campaigns (Priority 1)
+- ✅ Send Messages (Priority 1)
+- ✅ Email Templates (Priority 1)
+- ✅ Analytics (Priority 1)
+- ⏳ Canvas (Priority 2)
+- ⏳ Email List (Priority 2)
+- ⏳ User Data (Priority 2)
+- ⏳ Segments (Priority 2)
+- ⏳ Custom Events (Priority 3)
+- ⏳ Purchases (Priority 3)
+- ⏳ Content Blocks (Priority 3)
+- ⏳ Subscription Groups (Priority 3)
+- ⏳ Catalogs (Future)
+- ⏳ KPI (Future)
+- ⏳ Preference Center (Future)
+- ⏳ Schedule Messages (Future)
+- ⏳ SMS (Future)
+- ⏳ SCIM (Future)
+- ⏳ SDK Authentication (Future)
+- ⏳ Live Activity (Future)
+- ⏳ Cloud Data Ingestion (Future)
+
+### Braze Error Handling Patterns
+
+Implement enhanced error handling to extract meaningful error messages from Braze API:
+
+```typescript
+} catch (error: any) {
+  // Extract Braze API error message according to their response structure
+  let errorMessage = error.response?.data?.errors?.[0]?.message ||
+                    error.response?.data?.message ||
+                    error.message;
+
+  if (this.continueOnFail()) {
+    returnData.push({
+      json: {
+        error: errorMessage,
+        originalError: error.message,
+        httpCode: error.httpCode,
+        brazeErrorCode: error.response?.data?.errors?.[0]?.code,
+      },
+      pairedItem: { item: i },
+    });
+    continue;
+  }
+
+  // Create enhanced error for throw
+  const enhancedError = new Error(errorMessage);
+  (enhancedError as any).httpCode = error.httpCode;
+  (enhancedError as any).originalError = error.message;
+  (enhancedError as any).brazeErrorCode = error.response?.data?.errors?.[0]?.code;
+  throw enhancedError;
+}
+```
+
+---
+
+# Reference: Cloudflare Integration (Legacy)
+
+*The following Cloudflare documentation is maintained as reference patterns during Braze implementation.*
 
 ## Architecture Overview
 
@@ -180,48 +274,6 @@ Check that the names between folder, file, class and package.json registration a
 
 Example validation prompt: "For my custom n8n node I was asked to implement [task definition], I wrote the following code: [code snippet]. Will the code work correctly, is it safe? If you have conflicting knowledge on the correct implementation of a custom n8n node use the REF mcp to get documentation about n8n or do a websearch for the specific area"
 
-## Advanced Error Handling Patterns
-
-### Cloudflare API Error Extraction
-
-When working with Cloudflare APIs, implement enhanced error handling to extract meaningful error messages:
-
-```typescript
-} catch (error: any) {
-  // Extract Cloudflare API error message
-  let errorMessage = error.response?.data?.errors?.[0]?.message || error.message;
-
-  if (this.continueOnFail()) {
-    returnData.push({
-      json: {
-        error: errorMessage,
-        originalError: error.message,
-        httpCode: error.httpCode,
-      },
-      pairedItem: { item: i },
-    });
-    continue;
-  }
-  
-  // Create enhanced error for throw
-  const enhancedError = new Error(errorMessage);
-  (enhancedError as any).httpCode = error.httpCode;
-  (enhancedError as any).originalError = error.message;
-  throw enhancedError;
-}
-```
-
-### Service-Specific Error Handling
-
-For operations with known failure patterns, add specific error handling:
-
-```typescript
-// Example: R2 bucket deletion 409 error
-if (error.status === 409 || error.httpCode === '409' || error.message?.includes('409')) {
-  throw new Error(`Cannot delete bucket '${bucketName}': Bucket must be completely empty before deletion. Please ensure all objects, including hidden files and incomplete multipart uploads, are removed first.`);
-}
-```
-
 ## Parameter Definition Best Practices
 
 ### Avoiding Parameter Name Conflicts
@@ -245,19 +297,6 @@ When multiple resources use similar parameters, ensure unique naming or proper d
   },
 }
 ```
+### Common Service Limitations
 
-### Expiration vs TTL Parameters
-
-When implementing expiration functionality, clearly distinguish between absolute and relative time:
-
-- **Expiration**: Absolute UNIX timestamp (seconds since epoch)
-- **TTL**: Relative time in seconds from now
-- Always include clear descriptions and realistic placeholder values
-- Document mutual exclusivity when both options are available
-
-### Common Cloudflare Service Limitations
-
-- **R2 Bucket Deletion**: Requires completely empty buckets (no objects, hidden files, or incomplete uploads)
-- **KV Namespaces**: Duplicate names not allowed within same account
-- **Queue Operations**: Requires paid Workers plan for most operations
-- **API Rate Limits**: Implement appropriate error handling for 429 responses
+This section is to document any limitations specific to certain endpoints. Needs to be reflected in the `README.md` for the users.
