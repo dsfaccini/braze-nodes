@@ -17,26 +17,47 @@ export const sendMessageFields: INodeProperties[] = [
 		},
 	},
 	{
-		displayName: 'External User IDs',
-		name: 'externalUserIds',
-		type: 'string',
-		default: '',
-		description: 'Comma-separated list of external user IDs to send to (up to 50 users)',
-		displayOptions: {
-			show: {
-				operation: ['send'],
+		displayName: 'Targeting Options',
+		name: 'targetingOptions',
+		type: 'collection',
+		placeholder: 'Add Targeting Option',
+		default: {},
+		description:
+			'Optional targeting parameters - at least one must be provided. All can be used together.',
+		options: [
+			{
+				displayName: 'External User IDs',
+				name: 'externalUserIds',
+				type: 'string',
+				default: '',
+				description:
+					'Comma-separated list of external user IDs to send to (up to 50 users)',
 			},
-			hide: {
-				broadcast: [true],
+			{
+				displayName: 'User Aliases',
+				name: 'userAliases',
+				type: 'json',
+				default: '[]',
+				description: 'Array of user alias objects for targeting specific users by alias',
+				placeholder: '[{"alias_name": "user_id", "alias_label": "amplitude_id"}]',
 			},
-		},
-	},
-	{
-		displayName: 'Segment ID',
-		name: 'segmentId',
-		type: 'string',
-		default: '',
-		description: 'Segment identifier to target for the message',
+			{
+				displayName: 'Segment ID',
+				name: 'segmentId',
+				type: 'string',
+				default: '',
+				description: 'Segment identifier to target for the message',
+			},
+			{
+				displayName: 'Audience Filter',
+				name: 'audienceFilter',
+				type: 'json',
+				default:
+					'{\n  "AND": [\n    {\n      "custom_attribute": {\n        "custom_attribute_name": "subscription_type",\n        "comparison": "equals",\n        "value": "premium"\n      }\n    }\n  ]\n}',
+				description:
+					'JSON object defining audience targeting rules based on custom attributes',
+			},
+		],
 		displayOptions: {
 			show: {
 				operation: ['send'],
@@ -130,6 +151,31 @@ export const sendMessageFields: INodeProperties[] = [
 
 	// Email fields
 	{
+		displayName: 'Email Content Type',
+		name: 'emailContentType',
+		type: 'options',
+		options: [
+			{
+				name: 'Custom HTML',
+				value: 'custom',
+				description: 'Write custom HTML email content',
+			},
+			{
+				name: 'Email Template',
+				value: 'template',
+				description: 'Use existing Braze email template',
+			},
+		],
+		default: 'custom',
+		description: 'Choose between custom HTML content or using an existing email template',
+		displayOptions: {
+			show: {
+				operation: ['send'],
+				messageChannel: ['email'],
+			},
+		},
+	},
+	{
 		displayName: 'App ID',
 		name: 'emailAppId',
 		type: 'string',
@@ -144,12 +190,28 @@ export const sendMessageFields: INodeProperties[] = [
 		},
 	},
 	{
+		displayName: 'Email Template ID',
+		name: 'emailTemplateId',
+		type: 'string',
+		required: true,
+		default: '',
+		description:
+			'ID of the Braze email template to use. You can find this in your Braze dashboard or via the Braze Email Template node.',
+		displayOptions: {
+			show: {
+				operation: ['send'],
+				messageChannel: ['email'],
+				emailContentType: ['template'],
+			},
+		},
+	},
+	{
 		displayName: 'Subject',
 		name: 'emailSubject',
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'Email subject line',
+		description: 'Email subject line (will override template subject if using template)',
 		displayOptions: {
 			show: {
 				operation: ['send'],
@@ -163,7 +225,8 @@ export const sendMessageFields: INodeProperties[] = [
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'Email sender (e.g., "Company Name &lt;company@example.com&gt;")',
+		description:
+			'Email sender (e.g., "Company Name &lt;company@example.com&gt;") - will override template sender if using template',
 		displayOptions: {
 			show: {
 				operation: ['send'],
@@ -185,44 +248,46 @@ export const sendMessageFields: INodeProperties[] = [
 			show: {
 				operation: ['send'],
 				messageChannel: ['email'],
+				emailContentType: ['custom'],
 			},
 		},
 	},
+	// Additional email options section
 	{
-		displayName: 'Plain Text Body',
-		name: 'emailPlainTextBody',
-		type: 'string',
-		typeOptions: {
-			rows: 4,
-		},
-		default: '',
-		description: 'Plain text version of email content',
-		displayOptions: {
-			show: {
-				operation: ['send'],
-				messageChannel: ['email'],
+		displayName: 'Additional Email Options',
+		name: 'additionalEmailOptions',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		description:
+			'Optional email settings - Braze will auto-generate plain text from HTML if not provided',
+		options: [
+			{
+				displayName: 'Plain Text Body',
+				name: 'plainTextBody',
+				type: 'string',
+				typeOptions: {
+					rows: 4,
+				},
+				default: '',
+				description:
+					'Plain text version of email content (auto-generated from HTML if not provided)',
 			},
-		},
-	},
-	{
-		displayName: 'Reply To',
-		name: 'emailReplyTo',
-		type: 'string',
-		default: '',
-		description: 'Reply-to email address',
-		displayOptions: {
-			show: {
-				operation: ['send'],
-				messageChannel: ['email'],
+			{
+				displayName: 'Reply To',
+				name: 'replyTo',
+				type: 'string',
+				default: '',
+				description: 'Reply-to email address',
 			},
-		},
-	},
-	{
-		displayName: 'Preheader',
-		name: 'emailPreheader',
-		type: 'string',
-		default: '',
-		description: 'Email preheader text (preview text)',
+			{
+				displayName: 'Preheader',
+				name: 'preheader',
+				type: 'string',
+				default: '',
+				description: 'Email preheader text (preview text shown in inbox)',
+			},
+		],
 		displayOptions: {
 			show: {
 				operation: ['send'],

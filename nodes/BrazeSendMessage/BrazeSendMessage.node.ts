@@ -5,6 +5,7 @@ import {
 	INodeTypeDescription,
 	NodeConnectionType,
 	IHttpRequestMethods,
+	ApplicationError,
 } from 'n8n-workflow';
 
 import { sendMessageOperations, sendMessageFields } from './BrazeSendMessageDescription';
@@ -89,15 +90,25 @@ export class BrazeSendMessage implements INodeType {
 					requestOptions.url = `${baseURL}/messages/send`;
 
 					const broadcast = this.getNodeParameter('broadcast', i, false) as boolean;
-					const externalUserIdsString = this.getNodeParameter('externalUserIds', i, '') as string;
-					const externalUserIds = externalUserIdsString ? externalUserIdsString.split(',').map(id => id.trim()).filter(id => id) : [];
-					const segmentId = this.getNodeParameter('segmentId', i, '') as string;
+					const targetingOptions = this.getNodeParameter(
+						'targetingOptions',
+						i,
+						{},
+					) as any;
 					const campaignId = this.getNodeParameter('campaignId', i, '') as string;
 					const sendId = this.getNodeParameter('sendId', i, '') as string;
-					const recipientSubscriptionState = this.getNodeParameter('recipientSubscriptionState', i, 'subscribed') as string;
+					const recipientSubscriptionState = this.getNodeParameter(
+						'recipientSubscriptionState',
+						i,
+						'subscribed',
+					) as string;
 
 					// Message configuration
-					const messageChannel = this.getNodeParameter('messageChannel', i, 'email') as string;
+					const messageChannel = this.getNodeParameter(
+						'messageChannel',
+						i,
+						'email',
+					) as string;
 
 					const messages: any = {};
 
@@ -105,35 +116,74 @@ export class BrazeSendMessage implements INodeType {
 						const appId = this.getNodeParameter('emailAppId', i, '') as string;
 						const subject = this.getNodeParameter('emailSubject', i, '') as string;
 						const from = this.getNodeParameter('emailFrom', i, '') as string;
-						const body = this.getNodeParameter('emailBody', i, '') as string;
-						const plainTextBody = this.getNodeParameter('emailPlainTextBody', i, '') as string;
-						const replyTo = this.getNodeParameter('emailReplyTo', i, '') as string;
-						const preheader = this.getNodeParameter('emailPreheader', i, '') as string;
+						const emailContentType = this.getNodeParameter(
+							'emailContentType',
+							i,
+							'custom',
+						) as string;
+						const additionalOptions = this.getNodeParameter(
+							'additionalEmailOptions',
+							i,
+							{},
+						) as any;
 
-						messages.email = {
+						// Build base email object
+						const emailMessage: any = {
 							app_id: appId,
 							subject,
 							from,
-							body,
-							...(plainTextBody && { plaintext_body: plainTextBody }),
-							...(replyTo && { reply_to: replyTo }),
-							...(preheader && { preheader }),
 						};
+
+						// Add content based on type
+						if (emailContentType === 'template') {
+							const templateId = this.getNodeParameter(
+								'emailTemplateId',
+								i,
+								'',
+							) as string;
+							emailMessage.email_template_id = templateId;
+						} else {
+							const body = this.getNodeParameter('emailBody', i, '') as string;
+							emailMessage.body = body;
+						}
+
+						// Add additional options if provided
+						if (additionalOptions.plainTextBody) {
+							emailMessage.plaintext_body = additionalOptions.plainTextBody;
+						}
+						if (additionalOptions.replyTo) {
+							emailMessage.reply_to = additionalOptions.replyTo;
+						}
+						if (additionalOptions.preheader) {
+							emailMessage.preheader = additionalOptions.preheader;
+						}
+
+						messages.email = emailMessage;
 					} else if (messageChannel === 'sms') {
 						const appId = this.getNodeParameter('smsAppId', i, '') as string;
 						const messageText = this.getNodeParameter('smsMessage', i, '') as string;
-						const subscriptionGroupId = this.getNodeParameter('smsSubscriptionGroupId', i, '') as string;
+						const subscriptionGroupId = this.getNodeParameter(
+							'smsSubscriptionGroupId',
+							i,
+							'',
+						) as string;
 
 						messages.sms = {
 							app_id: appId,
 							body: messageText,
-							...(subscriptionGroupId && { subscription_group_id: subscriptionGroupId }),
+							...(subscriptionGroupId && {
+								subscription_group_id: subscriptionGroupId,
+							}),
 						};
 					} else if (messageChannel === 'push') {
 						const appId = this.getNodeParameter('pushAppId', i, '') as string;
 						const alert = this.getNodeParameter('pushAlert', i, '') as string;
 						const title = this.getNodeParameter('pushTitle', i, '') as string;
-						const pushType = this.getNodeParameter('pushType', i, 'apple_push') as string;
+						const pushType = this.getNodeParameter(
+							'pushType',
+							i,
+							'apple_push',
+						) as string;
 
 						messages[pushType] = {
 							app_id: appId,
@@ -142,28 +192,103 @@ export class BrazeSendMessage implements INodeType {
 						};
 					}
 
-					requestOptions.body = {
+					// Build request body
+					const requestBody: any = {
 						broadcast,
-						...(externalUserIds.length > 0 && { external_user_ids: externalUserIds }),
-						...(segmentId && { segment_id: segmentId }),
-						...(campaignId && { campaign_id: campaignId }),
-						...(sendId && { send_id: sendId }),
 						recipient_subscription_state: recipientSubscriptionState,
 						messages,
+						...(campaignId && { campaign_id: campaignId }),
+						...(sendId && { send_id: sendId }),
 					};
 
+					// Add targeting - multiple targeting methods can be used together
+					let hasTargeting = false;
+
+					// External User IDs
+					if (targetingOptions.externalUserIds) {
+						const externalUserIds = targetingOptions.externalUserIds
+							.split(',')
+							.map((id: string) => id.trim())
+							.filter((id: string) => id);
+						if (externalUserIds.length > 0) {
+							requestBody.external_user_ids = externalUserIds;
+							hasTargeting = true;
+						}
+					}
+
+					// User Aliases
+					if (targetingOptions.userAliases) {
+						try {
+							const userAliases = JSON.parse(targetingOptions.userAliases);
+							if (Array.isArray(userAliases) && userAliases.length > 0) {
+								requestBody.user_aliases = userAliases;
+								hasTargeting = true;
+							}
+						} catch (error) {
+							throw new ApplicationError(
+								`Invalid user aliases JSON: ${error.message}`,
+								{
+									cause: error,
+								},
+							);
+						}
+					}
+
+					// Segment ID
+					if (targetingOptions.segmentId) {
+						requestBody.segment_id = targetingOptions.segmentId;
+						hasTargeting = true;
+					}
+
+					// Audience Filter
+					if (
+						targetingOptions.audienceFilter &&
+						targetingOptions.audienceFilter !== '{}'
+					) {
+						try {
+							requestBody.audience = JSON.parse(targetingOptions.audienceFilter);
+							hasTargeting = true;
+						} catch (error) {
+							throw new ApplicationError(
+								`Invalid audience filter JSON: ${error.message}`,
+								{
+									cause: error,
+								},
+							);
+						}
+					}
+
+					// Ensure at least one targeting method is provided
+					if (!hasTargeting) {
+						throw new ApplicationError(
+							'At least one targeting option must be provided (External User IDs, User Aliases, Segment ID, or Audience Filter)',
+						);
+					}
+
+					requestOptions.body = requestBody;
 				} else if (operation === 'sendTransactional') {
 					// POST /transactional/v1/campaigns/{campaign_id}/send
-					const campaignId = this.getNodeParameter('transactionalCampaignId', i) as string;
-					const externalUserId = this.getNodeParameter('transactionalExternalUserId', i) as string;
-					const triggerProperties = this.getNodeParameter('transactionalTriggerProperties', i, '{}') as string;
+					const campaignId = this.getNodeParameter(
+						'transactionalCampaignId',
+						i,
+					) as string;
+					const externalUserId = this.getNodeParameter(
+						'transactionalExternalUserId',
+						i,
+					) as string;
+					const triggerProperties = this.getNodeParameter(
+						'transactionalTriggerProperties',
+						i,
+						'{}',
+					) as string;
 
 					requestOptions.url = `${baseURL}/transactional/v1/campaigns/${campaignId}/send`;
 					requestOptions.body = {
 						external_user_id: externalUserId,
-						...(triggerProperties && triggerProperties !== '{}' && {
-							trigger_properties: JSON.parse(triggerProperties)
-						}),
+						...(triggerProperties &&
+							triggerProperties !== '{}' && {
+								trigger_properties: JSON.parse(triggerProperties),
+							}),
 					};
 				}
 
@@ -173,12 +298,12 @@ export class BrazeSendMessage implements INodeType {
 					json: response,
 					pairedItem: { item: i },
 				});
-
 			} catch (error: any) {
 				// Extract Braze API error message according to their response structure
-				let errorMessage = error.response?.data?.errors?.[0]?.message ||
-								error.response?.data?.message ||
-								error.message;
+				let errorMessage =
+					error.response?.data?.errors?.[0]?.message ||
+					error.response?.data?.message ||
+					error.message;
 
 				if (this.continueOnFail()) {
 					returnData.push({
