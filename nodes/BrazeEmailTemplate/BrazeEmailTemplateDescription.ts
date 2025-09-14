@@ -188,7 +188,7 @@ export const emailTemplateFields: INodeProperties[] = [
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'The email template\'s API identifier',
+		description: "The email template's API identifier",
 		displayOptions: {
 			show: {
 				operation: ['update', 'info'],

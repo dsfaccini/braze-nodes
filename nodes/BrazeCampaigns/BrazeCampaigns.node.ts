@@ -107,17 +107,29 @@ export class BrazeCampaigns implements INodeType {
 						queryParams.push(`page=${page}`);
 					}
 
-					const includeArchived = this.getNodeParameter('includeArchived', i, false) as boolean;
+					const includeArchived = this.getNodeParameter(
+						'includeArchived',
+						i,
+						false,
+					) as boolean;
 					if (includeArchived) {
 						queryParams.push('include_archived=true');
 					}
 
-					const sortDirection = this.getNodeParameter('sortDirection', i, 'asc') as string;
+					const sortDirection = this.getNodeParameter(
+						'sortDirection',
+						i,
+						'asc',
+					) as string;
 					if (sortDirection && sortDirection !== 'asc') {
 						queryParams.push(`sort_direction=${sortDirection}`);
 					}
 
-					const lastEditTime = this.getNodeParameter('lastEditTime', i, undefined) as string;
+					const lastEditTime = this.getNodeParameter(
+						'lastEditTime',
+						i,
+						undefined,
+					) as string;
 					if (lastEditTime) {
 						queryParams.push(`last_edit.time[gt]=${encodeURIComponent(lastEditTime)}`);
 					}
@@ -125,45 +137,66 @@ export class BrazeCampaigns implements INodeType {
 					if (queryParams.length > 0) {
 						requestOptions.url += `?${queryParams.join('&')}`;
 					}
-
 				} else if (operation === 'details') {
 					// GET /campaigns/details
 					const campaignId = this.getNodeParameter('campaignId', i) as string;
 					requestOptions.url = `${baseURL}/campaigns/details?campaign_id=${encodeURIComponent(campaignId)}`;
 
-					const postLaunchDraft = this.getNodeParameter('postLaunchDraftVersion', i, false) as boolean;
+					const postLaunchDraft = this.getNodeParameter(
+						'postLaunchDraftVersion',
+						i,
+						false,
+					) as boolean;
 					if (postLaunchDraft) {
 						requestOptions.url += '&post_launch_draft_version=true';
 					}
-
 				} else if (operation === 'trigger') {
 					// POST /campaigns/trigger/send
 					const campaignId = this.getNodeParameter('campaignId', i) as string;
 					const sendId = this.getNodeParameter('sendId', i, undefined) as string;
 					const broadcast = this.getNodeParameter('broadcast', i, false) as boolean;
-					const externalUserIdsString = this.getNodeParameter('externalUserIds', i, '') as string;
-					const externalUserIds = externalUserIdsString ? externalUserIdsString.split(',').map(id => id.trim()).filter(id => id) : [];
+					const externalUserIdsString = this.getNodeParameter(
+						'externalUserIds',
+						i,
+						'',
+					) as string;
+					const externalUserIds = externalUserIdsString
+						? externalUserIdsString
+								.split(',')
+								.map((id) => id.trim())
+								.filter((id) => id)
+						: [];
 					const segmentId = this.getNodeParameter('segmentId', i, undefined) as string;
-					const triggerProperties = this.getNodeParameter('triggerProperties', i, {}) as object;
+					const triggerProperties = this.getNodeParameter(
+						'triggerProperties',
+						i,
+						{},
+					) as object;
 
 					requestOptions.method = 'POST';
 					requestOptions.url = `${baseURL}/campaigns/trigger/send`;
 					requestOptions.body = {
 						campaign_id: campaignId,
 						...(sendId && { send_id: sendId }),
-						...(Object.keys(triggerProperties).length > 0 && { trigger_properties: triggerProperties }),
+						...(Object.keys(triggerProperties).length > 0 && {
+							trigger_properties: triggerProperties,
+						}),
 						broadcast,
-						...(externalUserIds.length > 0 && { recipients: externalUserIds.map(id => ({ external_user_id: id })) }),
+						...(externalUserIds.length > 0 && {
+							recipients: externalUserIds.map((id) => ({ external_user_id: id })),
+						}),
 						...(segmentId && { audience: { AND: [{ segment: segmentId }] } }),
 					};
-
 				} else if (operation === 'analytics') {
 					// GET /campaigns/data_series
 					const campaignId = this.getNodeParameter('campaignId', i) as string;
 					const length = this.getNodeParameter('length', i, 14) as number;
 					const endingAt = this.getNodeParameter('endingAt', i, undefined) as string;
 
-					const queryParams = [`campaign_id=${encodeURIComponent(campaignId)}`, `length=${length}`];
+					const queryParams = [
+						`campaign_id=${encodeURIComponent(campaignId)}`,
+						`length=${length}`,
+					];
 					if (endingAt) {
 						queryParams.push(`ending_at=${encodeURIComponent(endingAt)}`);
 					}
@@ -177,12 +210,12 @@ export class BrazeCampaigns implements INodeType {
 					json: response,
 					pairedItem: { item: i },
 				});
-
 			} catch (error: any) {
 				// Extract Braze API error message according to their response structure
-				let errorMessage = error.response?.data?.errors?.[0]?.message ||
-								error.response?.data?.message ||
-								error.message;
+				let errorMessage =
+					error.response?.data?.errors?.[0]?.message ||
+					error.response?.data?.message ||
+					error.message;
 
 				if (this.continueOnFail()) {
 					returnData.push({

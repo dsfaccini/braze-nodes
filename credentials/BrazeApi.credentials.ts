@@ -100,7 +100,8 @@ export class BrazeApi implements ICredentialType {
 	// The test endpoint uses the campaigns list endpoint with minimal permissions
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: '={{$credentials.instance && $self.getInstanceEndpoint($credentials.instance)}}',
+			baseURL:
+				'={{$credentials.instance && $self.getInstanceEndpoint($credentials.instance)}}',
 			url: '/campaigns/list',
 			method: 'GET',
 			headers: {

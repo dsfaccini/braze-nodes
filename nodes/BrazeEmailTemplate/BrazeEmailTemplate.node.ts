@@ -104,9 +104,18 @@ export class BrazeEmailTemplate implements INodeType {
 					const plainTextBody = this.getNodeParameter('plainTextBody', i, '') as string;
 					const preheader = this.getNodeParameter('preheader', i, '') as string;
 					const tagsString = this.getNodeParameter('tags', i, '') as string;
-					const shouldInlineCss = this.getNodeParameter('shouldInlineCss', i, false) as boolean;
+					const shouldInlineCss = this.getNodeParameter(
+						'shouldInlineCss',
+						i,
+						false,
+					) as boolean;
 
-					const tags = tagsString ? tagsString.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+					const tags = tagsString
+						? tagsString
+								.split(',')
+								.map((tag) => tag.trim())
+								.filter((tag) => tag)
+						: [];
 
 					requestOptions.method = 'POST';
 					requestOptions.url = `${baseURL}/templates/email/create`;
@@ -119,19 +128,26 @@ export class BrazeEmailTemplate implements INodeType {
 						...(tags.length > 0 && { tags }),
 						...(shouldInlineCss && { should_inline_css: shouldInlineCss }),
 					};
-
 				} else if (operation === 'list') {
 					// GET /templates/email/list
 					requestOptions.url = `${baseURL}/templates/email/list`;
 
 					const queryParams: string[] = [];
 
-					const modifiedAfter = this.getNodeParameter('modifiedAfter', i, undefined) as string;
+					const modifiedAfter = this.getNodeParameter(
+						'modifiedAfter',
+						i,
+						undefined,
+					) as string;
 					if (modifiedAfter) {
 						queryParams.push(`modified_after=${encodeURIComponent(modifiedAfter)}`);
 					}
 
-					const modifiedBefore = this.getNodeParameter('modifiedBefore', i, undefined) as string;
+					const modifiedBefore = this.getNodeParameter(
+						'modifiedBefore',
+						i,
+						undefined,
+					) as string;
 					if (modifiedBefore) {
 						queryParams.push(`modified_before=${encodeURIComponent(modifiedBefore)}`);
 					}
@@ -149,7 +165,6 @@ export class BrazeEmailTemplate implements INodeType {
 					if (queryParams.length > 0) {
 						requestOptions.url += `?${queryParams.join('&')}`;
 					}
-
 				} else if (operation === 'update') {
 					// POST /templates/email/update
 					const emailTemplateId = this.getNodeParameter('emailTemplateId', i) as string;
@@ -159,9 +174,18 @@ export class BrazeEmailTemplate implements INodeType {
 					const plainTextBody = this.getNodeParameter('plainTextBody', i, '') as string;
 					const preheader = this.getNodeParameter('preheader', i, '') as string;
 					const tagsString = this.getNodeParameter('tags', i, '') as string;
-					const shouldInlineCss = this.getNodeParameter('shouldInlineCss', i, undefined) as boolean;
+					const shouldInlineCss = this.getNodeParameter(
+						'shouldInlineCss',
+						i,
+						undefined,
+					) as boolean;
 
-					const tags = tagsString ? tagsString.split(',').map(tag => tag.trim()).filter(tag => tag) : [];
+					const tags = tagsString
+						? tagsString
+								.split(',')
+								.map((tag) => tag.trim())
+								.filter((tag) => tag)
+						: [];
 
 					requestOptions.method = 'POST';
 					requestOptions.url = `${baseURL}/templates/email/update`;
@@ -173,9 +197,10 @@ export class BrazeEmailTemplate implements INodeType {
 						...(plainTextBody && { plaintext_body: plainTextBody }),
 						...(preheader && { preheader }),
 						...(tags.length > 0 && { tags }),
-						...(shouldInlineCss !== undefined && { should_inline_css: shouldInlineCss }),
+						...(shouldInlineCss !== undefined && {
+							should_inline_css: shouldInlineCss,
+						}),
 					};
-
 				} else if (operation === 'info') {
 					// GET /templates/email/info
 					const emailTemplateId = this.getNodeParameter('emailTemplateId', i) as string;
@@ -188,12 +213,12 @@ export class BrazeEmailTemplate implements INodeType {
 					json: response,
 					pairedItem: { item: i },
 				});
-
 			} catch (error: any) {
 				// Extract Braze API error message according to their response structure
-				let errorMessage = error.response?.data?.errors?.[0]?.message ||
-								error.response?.data?.message ||
-								error.message;
+				let errorMessage =
+					error.response?.data?.errors?.[0]?.message ||
+					error.response?.data?.message ||
+					error.message;
 
 				if (this.continueOnFail()) {
 					returnData.push({

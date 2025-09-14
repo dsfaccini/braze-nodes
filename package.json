@@ -1,6 +1,6 @@
 {
     "name": "@getalecs/n8n-nodes-braze",
-    "version": "0.1.7",
+    "version": "0.1.0",
     "description": "n8n nodes for Braze services including Campaigns, Message Sending, Email Templates, and Analytics",
     "keywords": [
         "n8n-community-node-package",

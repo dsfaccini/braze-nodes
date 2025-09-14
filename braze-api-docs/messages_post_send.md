@@ -3,6 +3,10 @@
 ## Overview
 Send immediate messages to designated users using the Braze API. This endpoint allows you to send messages across multiple channels (email, SMS, push notifications, etc.) immediately without requiring a pre-configured campaign.
 
+**Documentation Links:**
+- [Send Messages API Reference](https://www.braze.com/docs/api/endpoints/messaging/send_messages/post_send_messages/#request-body)
+- [Email Object Documentation](https://www.braze.com/docs/api/objects_filters/messaging/email_object)
+
 ## Endpoint Details
 - **HTTP Method**: POST
 - **Endpoint URL**: `https://rest.{instance}.braze.com/messages/send`
@@ -87,7 +91,7 @@ Content-Type: application/json
 
 ### Message Channel Payloads
 
-#### Email Message
+#### Email Message (Custom Content)
 ```json
 "email": {
   "app_id": "your_app_identifier",
@@ -100,6 +104,18 @@ Content-Type: application/json
   "message_variation_id": "message_variation_uuid"
 }
 ```
+
+#### Email Message (Using Template)
+```json
+"email": {
+  "app_id": "your_app_identifier",
+  "email_template_id": "your_email_template_id",
+  "subject": "Override Template Subject",
+  "from": "Override Template Sender <sender@company.com>"
+}
+```
+
+**Note:** When using `email_template_id`, you can still override template settings by providing `subject`, `from`, `reply_to`, etc.
 
 #### SMS Message
 ```json
@@ -276,6 +292,59 @@ Content-Type: application/json
 - **Primary Source**: https://www.braze.com/docs/api/endpoints/messaging/send_messages/post_send_messages
 - **API Basics**: https://www.braze.com/docs/api/basics
 - **Authentication**: https://www.braze.com/docs/api/basics#authentication
+
+## Advanced Targeting Examples
+
+### Audience Filtering with Custom Attributes
+Target users based on custom attributes instead of user IDs:
+
+```json
+{
+  "audience": {
+    "AND": [
+      {
+        "custom_attribute": {
+          "custom_attribute_name": "subscription_type",
+          "comparison": "equals",
+          "value": "premium"
+        }
+      },
+      {
+        "custom_attribute": {
+          "custom_attribute_name": "last_purchase_days_ago",
+          "comparison": "less_than",
+          "value": 30
+        }
+      }
+    ]
+  },
+  "messages": {
+    "email": {
+      "app_id": "your-app-id",
+      "subject": "Exclusive Premium Offer!",
+      "from": "Company <offers@company.com>",
+      "body": "<h1>Thanks for being a premium customer!</h1>"
+    }
+  }
+}
+```
+
+### Using Email Templates
+Send using pre-configured email templates:
+
+```json
+{
+  "external_user_ids": ["user123"],
+  "messages": {
+    "email": {
+      "app_id": "your-app-id",
+      "email_template_id": "template_abc123",
+      "subject": "Custom Subject Override",
+      "from": "Custom Sender <custom@company.com>"
+    }
+  }
+}
+```
 
 ## Code Examples
 

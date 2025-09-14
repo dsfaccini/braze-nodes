@@ -1,2 +1,1 @@
-- [x] add GIF of importing a starter via URL
-- [ ] add GIF of creating API key and setting up credential
+- [ ] add GIF of importing a starter via URL

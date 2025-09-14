@@ -25,7 +25,8 @@ export const analyticsFields: INodeProperties[] = [
 		name: 'endingAt',
 		type: 'dateTime',
 		default: '',
-		description: 'End date for data series (ISO 8601 format). Defaults to current time if not specified.',
+		description:
+			'End date for data series (ISO 8601 format). Defaults to current time if not specified.',
 		displayOptions: {
 			show: {
 				operation: ['campaignAnalytics', 'sendAnalytics', 'customEvents', 'revenue'],

@@ -1,0 +1,29 @@
+{
+	"node": "n8n-nodes-base.brazeCampaigns",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Marketing & Content", "Communication"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://www.braze.com/docs/api/basics/#rest-api-key"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://www.braze.com/docs/api/endpoints/campaigns/"
+			}
+		],
+		"endpointDocumentation": [
+			{
+				"url": "https://www.braze.com/docs/api/endpoints/campaigns/get_campaigns/"
+			},
+			{
+				"url": "https://www.braze.com/docs/api/endpoints/campaigns/get_campaign_details/"
+			},
+			{
+				"url": "https://www.braze.com/docs/api/endpoints/campaigns/post_campaign_trigger/"
+			}
+		]
+	}
+}

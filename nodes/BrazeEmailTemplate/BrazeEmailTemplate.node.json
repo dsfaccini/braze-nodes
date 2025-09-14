@@ -1,0 +1,32 @@
+{
+	"node": "n8n-nodes-base.brazeEmailTemplate",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Marketing & Content", "Development"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://www.braze.com/docs/api/basics/#rest-api-key"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://www.braze.com/docs/api/endpoints/templates/"
+			}
+		],
+		"endpointDocumentation": [
+			{
+				"url": "https://www.braze.com/docs/api/endpoints/templates/email_templates/get_list_email_templates/"
+			},
+			{
+				"url": "https://www.braze.com/docs/api/endpoints/templates/email_templates/get_see_email_template_information/"
+			},
+			{
+				"url": "https://www.braze.com/docs/api/endpoints/templates/email_templates/post_create_email_template/"
+			},
+			{
+				"url": "https://www.braze.com/docs/api/endpoints/templates/email_templates/post_update_email_template/"
+			}
+		]
+	}
+}

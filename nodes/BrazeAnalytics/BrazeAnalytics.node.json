@@ -1,0 +1,26 @@
+{
+	"node": "n8n-nodes-base.brazeAnalytics",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Analytics", "Marketing & Content"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://www.braze.com/docs/api/basics/#rest-api-key"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://www.braze.com/docs/api/endpoints/export/"
+			}
+		],
+		"endpointDocumentation": [
+			{
+				"url": "https://www.braze.com/docs/api/endpoints/export/campaigns/get_campaign_analytics/"
+			},
+			{
+				"url": "https://www.braze.com/docs/api/endpoints/export/campaigns/get_send_analytics/"
+			}
+		]
+	}
+}

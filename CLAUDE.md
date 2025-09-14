@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an n8n community node package focused on developing nodes for Braze CRM platform, with priority on email sending, campaign management, and analytics endpoints. The repository includes reference Cloudflare nodes during the transition phase.
+This is an n8n community node package focused on developing nodes for Braze CRM platform, with priority on email sending, campaign management, and analytics endpoints.
 
 ## Development Commands
 
@@ -33,8 +33,8 @@ npm run prepublishOnly
 
 ## Important Folders
 
-- **`credentials/`** - Contains credential type definitions for authenticating with Braze CRM and reference Cloudflare services
-- **`nodes/`** - Contains all the custom n8n node implementations for Braze CRM and reference Cloudflare services
+- **`credentials/`** - Contains credential type definitions for authenticating with Braze CRM
+- **`nodes/`** - Contains all the custom n8n node implementations for Braze CRM
 
 These are the two main folders where all the custom n8n package code lives.
 
@@ -93,6 +93,14 @@ Based on the research in `braze-research.md`, implement nodes in this order:
 - ⏳ Live Activity (Future)
 - ⏳ Cloud Data Ingestion (Future)
 
+### Braze Node UI/UX Guidelines
+
+- **Make parameters optional by default**: Use n8n's `collection` type for optional parameters - don't show fields unless needed. Required fields pollute the UI.
+- **Read API docs carefully**: Braze API parameters can often be used together (not mutually exclusive) - verify actual API behavior before implementing exclusivity logic.
+- **Simplify initial UI**: Hide advanced options (like plain text body for emails) that have API defaults, use sensible dropdown defaults, and group related optional parameters in collections.
+
+**Reference Example**: The BrazeSendMessage node demonstrates optimal UI design with targeting parameters grouped in an optional collection and advanced email options hidden by default.
+
 ### Braze Error Handling Patterns
 
 Implement enhanced error handling to extract meaningful error messages from Braze API:
@@ -127,126 +135,6 @@ Implement enhanced error handling to extract meaningful error messages from Braz
 ```
 
 ---
-
-# Reference: Cloudflare Integration (Legacy)
-
-*The following Cloudflare documentation is maintained as reference patterns during Braze implementation.*
-
-## Architecture Overview
-
-### Node Structure
-
-- Nodes are located in `nodes/[NodeName]/[NodeName].node.ts`
-- Each node implements the `INodeType` interface from `n8n-workflow`
-- Nodes must be registered in `package.json` under `n8n.nodes`
-- Icons (.svg or .png) should be placed alongside the node file
-- Use `requestDefaults` for API base configuration
-
-**Important**: Be very careful with the naming of files and classes. Everything must match exactly:
-
-- Folder name: `nodes/[NodeName]`
-- File name: `[NodeName].node.ts`
-- Class name: `[NodeName]`
-- Registration in `package.json` must use the exact same naming
-
-### Credentials Structure
-
-- Credentials are in `credentials/[ServiceName]Api.credentials.ts`
-- Implement `ICredentialType` interface
-- Must be registered in `package.json` under `n8n.credentials`
-- Include `authenticate` property for request authentication
-- Add `test` property for credential validation
-
-### Build Process
-
-- TypeScript compiles to `dist/` directory
-- Gulp task copies icons to dist structure
-- Only `dist/` folder is published to npm
-- Source maps and declarations are generated
-
-## Cloudflare Integration Requirements
-
-### R2 Node
-
-- Support all REST operations (list, get, create, delete)
-- Option to create bucket if it doesn't exist
-- Handle private/public bucket configuration
-- Note: R2 buckets are private by default
-
-### D1 Node
-
-- CRUD operations for serverless SQL database
-- Similar to existing Supabase/SQL database nodes
-- Handle D1-specific connection patterns
-
-### AI Modules Node
-
-- Integrate with Cloudflare AI services
-- Support completions, image generation, and transcription
-- Handle multiple model options
-
-### CloudflareKV Node (Implemented)
-
-#### Namespace Operations
-
-- **List**: Lists all KV namespaces in the account
-- **Create**: Creates a new KV namespace with a title
-- **Delete**: Deletes a KV namespace by ID
-
-#### Key-Value Operations
-
-- **Get**: Retrieves a single value by key (with metadata support)
-- **Set**: Stores a value with optional expiration, TTL, and metadata
-- **Delete**: Deletes a single key-value pair
-- **List Keys**: Lists all keys with optional prefix filtering and pagination
-- **Get Multiple**: Retrieves multiple values by comma-separated keys
-- **Set Multiple**: Bulk sets multiple key-value pairs with individual settings
-- **Delete Multiple**: Bulk deletes multiple keys
-
-#### Key Features
-
-- Metadata support for storing arbitrary JSON with each key-value pair
-- TTL and absolute expiration time support
-- Proper URL encoding for special characters in keys
-- Bulk operations for efficiency
-- Cursor-based pagination for listing keys
-- Prefix filtering capabilities
-
-### CloudflareQueue Nodes (Implemented)
-
-#### Queue Management Operations
-
-- **List**: Lists all queues in the account
-- **Create**: Creates a new queue with configurable settings
-- **Update**: Updates queue settings
-- **Delete**: Deletes a queue
-- **Get Info**: Retrieves information about a specific queue
-
-#### Message Operations
-
-- **Send**: Sends a single message with optional delay
-- **Send Batch**: Sends multiple messages in a single request
-- **Pull**: Pulls messages with configurable batch size and visibility timeout
-- **Acknowledge**: Acknowledges processed messages by lease IDs
-- **Retry**: Retries failed messages with optional delay
-
-#### Queue Configuration Options
-
-- Delivery delay for messages
-- Message retention period (default: 4 days)
-- Maximum retry attempts
-- Dead letter queue configuration
-
-#### CloudflareQueue Trigger Node
-
-- Polling-based message consumption
-- Auto-acknowledgment option for successful messages
-- Exponential backoff retry logic (capped at 5 minutes)
-- Configurable polling interval (minimum 5 seconds)
-- Batch message pulling (1-100 messages)
-- Visibility timeout configuration
-- Manual trigger support for testing
-- Graceful error handling and recovery
 
 ## n8n Node Patterns
 
@@ -297,6 +185,7 @@ When multiple resources use similar parameters, ensure unique naming or proper d
   },
 }
 ```
+
 ### Common Service Limitations
 
 This section is to document any limitations specific to certain endpoints. Needs to be reflected in the `README.md` for the users.

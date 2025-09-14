@@ -102,13 +102,15 @@ export class BrazeAnalytics implements INodeType {
 					const length = this.getNodeParameter('length', i, 14) as number;
 					const endingAt = this.getNodeParameter('endingAt', i, undefined) as string;
 
-					const queryParams = [`campaign_id=${encodeURIComponent(campaignId)}`, `length=${length}`];
+					const queryParams = [
+						`campaign_id=${encodeURIComponent(campaignId)}`,
+						`length=${length}`,
+					];
 					if (endingAt) {
 						queryParams.push(`ending_at=${encodeURIComponent(endingAt)}`);
 					}
 
 					requestOptions.url = `${baseURL}/campaigns/data_series?${queryParams.join('&')}`;
-
 				} else if (operation === 'sendAnalytics') {
 					// GET /sends/data_series
 					const campaignId = this.getNodeParameter('campaignId', i) as string;
@@ -119,14 +121,13 @@ export class BrazeAnalytics implements INodeType {
 					const queryParams = [
 						`campaign_id=${encodeURIComponent(campaignId)}`,
 						`send_id=${encodeURIComponent(sendId)}`,
-						`length=${length}`
+						`length=${length}`,
 					];
 					if (endingAt) {
 						queryParams.push(`ending_at=${encodeURIComponent(endingAt)}`);
 					}
 
 					requestOptions.url = `${baseURL}/sends/data_series?${queryParams.join('&')}`;
-
 				} else if (operation === 'customEvents') {
 					// GET /events/data_series
 					const event = this.getNodeParameter('eventName', i) as string;
@@ -136,7 +137,11 @@ export class BrazeAnalytics implements INodeType {
 					const appId = this.getNodeParameter('appId', i, undefined) as string;
 					const segmentId = this.getNodeParameter('segmentId', i, undefined) as string;
 
-					const queryParams = [`event=${encodeURIComponent(event)}`, `length=${length}`, `unit=${unit}`];
+					const queryParams = [
+						`event=${encodeURIComponent(event)}`,
+						`length=${length}`,
+						`unit=${unit}`,
+					];
 					if (endingAt) {
 						queryParams.push(`ending_at=${encodeURIComponent(endingAt)}`);
 					}
@@ -148,7 +153,6 @@ export class BrazeAnalytics implements INodeType {
 					}
 
 					requestOptions.url = `${baseURL}/events/data_series?${queryParams.join('&')}`;
-
 				} else if (operation === 'revenue') {
 					// GET /purchases/revenue_series
 					const length = this.getNodeParameter('length', i, 14) as number;
@@ -176,12 +180,12 @@ export class BrazeAnalytics implements INodeType {
 					json: response,
 					pairedItem: { item: i },
 				});
-
 			} catch (error: any) {
 				// Extract Braze API error message according to their response structure
-				let errorMessage = error.response?.data?.errors?.[0]?.message ||
-								error.response?.data?.message ||
-								error.message;
+				let errorMessage =
+					error.response?.data?.errors?.[0]?.message ||
+					error.response?.data?.message ||
+					error.message;
 
 				if (this.continueOnFail()) {
 					returnData.push({
