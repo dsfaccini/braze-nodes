@@ -2,6 +2,20 @@
 
 This guide outlines the step-by-step process for implementing new Braze API endpoints in the n8n Braze nodes package, based on our successful implementation of high-priority endpoints.
 
+## Node Architecture Principles
+
+Before implementing any new operation, ensure you understand the fundamental architecture:
+
+1. **One node per API endpoint group**: Each Braze API endpoint group (see `braze-all-endpoint-groups.png`) must have its own dedicated node
+2. **Operations stay within their API group**: Never add operations from one API group to a node dedicated to another group
+3. **Check existing nodes first**: Verify if a node already exists for your API group before creating a new one
+
+Examples of correct node-to-API mappings:
+- BrazeCanvas → Canvas endpoints only
+- BrazeSegments → Segments endpoints only
+- BrazeContentBlocks → Content Blocks endpoints only
+- BrazeAnalytics → Analytics endpoints only (not segments or canvas analytics)
+
 ## Overview
 
 The implementation process follows a structured approach: Research → Implementation → Testing → Documentation. This ensures consistent code quality and maintains the existing patterns established in the codebase.
@@ -12,8 +26,10 @@ The implementation process follows a structured approach: Research → Implement
 
 1. **Identify target endpoints** from `issue-missing-endpoints.md`
 2. **Check priority level** (HIGH, MEDIUM, LOW)
-3. **Determine target node** (BrazeCampaigns, BrazeSendMessage, BrazeEmailTemplate, BrazeAnalytics)
-4. **Verify endpoint documentation** exists in `/braze-api-docs/` folder
+3. **Verify the operation belongs in the target node** by checking against `braze-all-endpoint-groups.png`
+4. **If the API group doesn't have a node yet**, create a new node instead of adding to an existing one
+5. **Determine target node** (BrazeCampaigns, BrazeSendMessage, BrazeEmailTemplate, BrazeAnalytics, BrazeCanvas, BrazeSegments, BrazeContentBlocks)
+6. **Verify endpoint documentation** exists in `/braze-api-docs/` folder
 
 ### **Step 2: Research & Documentation**
 
@@ -113,8 +129,10 @@ operation: ['campaignAnalytics', 'sendAnalytics', 'customEvents', 'revenue', 'pu
 ```bash
 npm run build
 ```
+- Uses TypeScript compiler directly (no webpack)
 - Check for TypeScript compilation errors
 - Fix any type issues or missing imports
+- Note: `gulp build:icons` runs automatically to copy SVG files
 
 #### **B. Linting**
 ```bash

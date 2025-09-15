@@ -40,6 +40,12 @@ These are the two main folders where all the custom n8n package code lives.
 
 ## Braze CRM Integration Requirements
 
+### Node Architecture Principles
+
+- **One node per API endpoint group**: Each Braze API endpoint group (as shown in `braze-all-endpoint-groups.png`) should have its own dedicated n8n node
+- **No operation mixing**: Operations must stay within their logical API group - don't mix operations across different API contexts
+- **Clear separation of concerns**: For example, Canvas operations belong in BrazeCanvas node, not in BrazeSendMessage or BrazeAnalytics
+
 ### Braze Node Implementation Priority
 
 Based on the research in `braze-research.md`, implement nodes in this order:
@@ -70,18 +76,18 @@ Based on the research in `braze-research.md`, implement nodes in this order:
 - Links to relevant Braze API documentation
 - Acceptance criteria for completion
 
-**Endpoint Groups to Track**:
-- ✅ Campaigns (Priority 1)
-- ✅ Send Messages (Priority 1)
-- ✅ Email Templates (Priority 1)
-- ✅ Analytics (Priority 1)
-- ⏳ Canvas (Priority 2)
+**Endpoint Groups** (see `braze-all-endpoint-groups.png` for visual reference):
+- ✅ Campaigns (Complete)
+- ✅ Send Messages (Complete)
+- ✅ Email Templates (Complete)
+- ✅ Analytics (Complete)
+- ✅ Canvas (Complete)
+- ✅ Segments (Complete)
+- ✅ Content Blocks (Complete)
 - ⏳ Email List (Priority 2)
 - ⏳ User Data (Priority 2)
-- ⏳ Segments (Priority 2)
 - ⏳ Custom Events (Priority 3)
 - ⏳ Purchases (Priority 3)
-- ⏳ Content Blocks (Priority 3)
 - ⏳ Subscription Groups (Priority 3)
 - ⏳ Catalogs (Future)
 - ⏳ KPI (Future)
@@ -143,6 +149,12 @@ Implement enhanced error handling to extract meaningful error messages from Braz
 - Properties can be separated into description files for clarity
 - Use `typeOptions: { password: true }` for sensitive credential fields
 - Include `usableAsTool: true` for nodes that can be used as tools
+
+## Documentation Guidelines
+
+- **Avoid documenting one-off fixes**: Don't add documentation for temporary issues or one-time migrations
+- **Focus on persistent patterns**: Document only patterns and practices that will be relevant for ongoing development
+- **Reference visual assets**: When mentioning endpoint groups, reference `braze-all-endpoint-groups.png` for clarity
 
 ## Development Best Practices
 
