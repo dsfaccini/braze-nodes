@@ -73,7 +73,7 @@ export const campaignsFields: INodeProperties[] = [
 		description: 'The campaign identifier (API identifier from campaign details)',
 		displayOptions: {
 			show: {
-				operation: ['details', 'trigger', 'analytics', 'scheduleTrigger'],
+				operation: ['details', 'trigger', 'analytics', 'scheduleTrigger', 'cancelScheduledCampaign'],
 			},
 		},
 	},
@@ -226,6 +226,21 @@ export const campaignsFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['analytics'],
+			},
+		},
+	},
+
+	// Cancel Scheduled Campaign operation fields
+	{
+		displayName: 'Schedule ID',
+		name: 'scheduleId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'The schedule identifier returned when the campaign was scheduled',
+		displayOptions: {
+			show: {
+				operation: ['cancelScheduledCampaign'],
 			},
 		},
 	},

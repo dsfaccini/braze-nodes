@@ -1,13 +1,16 @@
 {
     "name": "@getalecs/n8n-nodes-braze",
     "version": "0.1.0",
-    "description": "n8n nodes for Braze services including Campaigns, Message Sending, Email Templates, and Analytics",
+    "description": "n8n nodes for Braze services including Campaigns, Canvas, Message Sending, Email Templates, Content Blocks, Segments, and Analytics",
     "keywords": [
         "n8n-community-node-package",
         "braze",
         "campaigns",
+        "canvas",
         "message-sending",
         "email-templates",
+        "content-blocks",
+        "segments",
         "analytics",
         "crm"
     ],
@@ -38,8 +41,6 @@
     },
     "dependencies": {},
     "devDependencies": {
-        "@aws-sdk/client-s3": "^3.888.0",
-        "@aws-sdk/s3-request-presigner": "^3.888.0",
         "@types/node": "^20.19.14",
         "@typescript-eslint/parser": "~8.32.1",
         "eslint": "^8.57.1",
@@ -65,7 +66,10 @@
         "nodes": [
             "nodes/BrazeAnalytics/BrazeAnalytics.node.js",
             "nodes/BrazeCampaigns/BrazeCampaigns.node.js",
+            "nodes/BrazeCanvas/BrazeCanvas.node.js",
+            "nodes/BrazeContentBlocks/BrazeContentBlocks.node.js",
             "nodes/BrazeEmailTemplate/BrazeEmailTemplate.node.js",
+            "nodes/BrazeSegments/BrazeSegments.node.js",
             "nodes/BrazeSendMessage/BrazeSendMessage.node.js"
         ]
     }

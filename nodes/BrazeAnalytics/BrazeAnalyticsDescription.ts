@@ -16,7 +16,7 @@ export const analyticsFields: INodeProperties[] = [
 		},
 		displayOptions: {
 			show: {
-				operation: ['campaignAnalytics', 'sendAnalytics', 'customEvents', 'revenue', 'purchaseAnalytics', 'canvasAnalytics', 'segmentAnalytics'],
+				operation: ['campaignAnalytics', 'sendAnalytics', 'customEvents', 'revenue', 'purchaseAnalytics', 'sessionAnalytics'],
 			},
 		},
 	},
@@ -29,7 +29,7 @@ export const analyticsFields: INodeProperties[] = [
 			'End date for data series (ISO 8601 format). Defaults to current time if not specified.',
 		displayOptions: {
 			show: {
-				operation: ['campaignAnalytics', 'sendAnalytics', 'customEvents', 'revenue', 'purchaseAnalytics', 'canvasAnalytics', 'segmentAnalytics'],
+				operation: ['campaignAnalytics', 'sendAnalytics', 'customEvents', 'revenue', 'purchaseAnalytics', 'sessionAnalytics'],
 			},
 		},
 	},
@@ -49,20 +49,6 @@ export const analyticsFields: INodeProperties[] = [
 		},
 	},
 
-	// Canvas Analytics fields
-	{
-		displayName: 'Canvas ID',
-		name: 'canvasId',
-		type: 'string',
-		required: true,
-		default: '',
-		description: 'Canvas API identifier',
-		displayOptions: {
-			show: {
-				operation: ['canvasAnalytics', 'canvasDetails'],
-			},
-		},
-	},
 
 	// Send Analytics fields
 	{
@@ -111,7 +97,7 @@ export const analyticsFields: INodeProperties[] = [
 		description: 'Time granularity for data series',
 		displayOptions: {
 			show: {
-				operation: ['customEvents'],
+				operation: ['customEvents', 'sessionAnalytics'],
 			},
 		},
 	},
@@ -123,7 +109,7 @@ export const analyticsFields: INodeProperties[] = [
 		description: 'App identifier to filter results',
 		displayOptions: {
 			show: {
-				operation: ['customEvents', 'revenue', 'purchaseAnalytics'],
+				operation: ['customEvents', 'revenue', 'purchaseAnalytics', 'sessionAnalytics'],
 			},
 		},
 	},
@@ -135,46 +121,11 @@ export const analyticsFields: INodeProperties[] = [
 		description: 'Segment identifier to filter results',
 		displayOptions: {
 			show: {
-				operation: ['customEvents'],
+				operation: ['customEvents', 'sessionAnalytics'],
 			},
 		},
 	},
 
-	// Segment List fields
-	{
-		displayName: 'Page',
-		name: 'page',
-		type: 'number',
-		default: 0,
-		description: 'Page of segments to return (0-indexed)',
-		displayOptions: {
-			show: {
-				operation: ['segmentList'],
-			},
-		},
-	},
-	{
-		displayName: 'Sort Direction',
-		name: 'sortDirection',
-		type: 'options',
-		options: [
-			{
-				name: 'Ascending (Oldest First)',
-				value: 'asc',
-			},
-			{
-				name: 'Descending (Newest First)',
-				value: 'desc',
-			},
-		],
-		default: 'asc',
-		description: 'Sort order for segments',
-		displayOptions: {
-			show: {
-				operation: ['segmentList'],
-			},
-		},
-	},
 
 	// Revenue Analytics fields
 	{
@@ -190,32 +141,5 @@ export const analyticsFields: INodeProperties[] = [
 		},
 	},
 
-	// Canvas Details fields
-	{
-		displayName: 'Post Launch Draft Version',
-		name: 'postLaunchDraftVersion',
-		type: 'boolean',
-		default: false,
-		description: 'Whether to show draft changes for Canvases with post-launch drafts',
-		displayOptions: {
-			show: {
-				operation: ['canvasDetails'],
-			},
-		},
-	},
 
-	// Segment Analytics and Details fields
-	{
-		displayName: 'Segment ID',
-		name: 'segmentId',
-		type: 'string',
-		required: true,
-		default: '',
-		description: 'Segment API identifier',
-		displayOptions: {
-			show: {
-				operation: ['segmentAnalytics', 'segmentDetails'],
-			},
-		},
-	},
 ];

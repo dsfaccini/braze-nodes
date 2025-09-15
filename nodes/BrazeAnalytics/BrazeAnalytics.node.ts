@@ -46,18 +46,6 @@ export class BrazeAnalytics implements INodeType {
 						action: 'Get campaign analytics',
 					},
 					{
-						name: 'Canvas Analytics',
-						value: 'canvasAnalytics',
-						description: 'Get time-series analytics data for Canvas campaigns',
-						action: 'Get canvas analytics',
-					},
-					{
-						name: 'Canvas Details',
-						value: 'canvasDetails',
-						description: 'Get detailed information about Canvas campaigns',
-						action: 'Get canvas details',
-					},
-					{
 						name: 'Custom Events',
 						value: 'customEvents',
 						description: 'Get time-series custom event data',
@@ -76,28 +64,16 @@ export class BrazeAnalytics implements INodeType {
 						action: 'Get revenue analytics',
 					},
 					{
-						name: 'Segment Analytics',
-						value: 'segmentAnalytics',
-						description: 'Get time-series segment size analytics',
-						action: 'Get segment analytics',
-					},
-					{
-						name: 'Segment Details',
-						value: 'segmentDetails',
-						description: 'Get detailed information about specific segments',
-						action: 'Get segment details',
-					},
-					{
-						name: 'Segment List',
-						value: 'segmentList',
-						description: 'Get list of all segments for analytics filtering',
-						action: 'Get segment list',
-					},
-					{
 						name: 'Send Analytics',
 						value: 'sendAnalytics',
 						description: 'Get analytics data for specific sends',
 						action: 'Get send analytics',
+					},
+					{
+						name: 'Session Analytics',
+						value: 'sessionAnalytics',
+						description: 'Get time-series app session data',
+						action: 'Get session analytics',
 					},
 				],
 				default: 'campaignAnalytics',
@@ -227,66 +203,26 @@ export class BrazeAnalytics implements INodeType {
 					}
 
 					requestOptions.url = `${baseURL}/purchases/quantity_series?${queryParams.join('&')}`;
-				} else if (operation === 'canvasAnalytics') {
-					// GET /canvas/data_series
-					const canvasId = this.getNodeParameter('canvasId', i) as string;
+				} else if (operation === 'sessionAnalytics') {
+					// GET /sessions/data_series
 					const length = this.getNodeParameter('length', i, 14) as number;
+					const unit = this.getNodeParameter('unit', i, 'day') as string;
 					const endingAt = this.getNodeParameter('endingAt', i, undefined) as string;
+					const appId = this.getNodeParameter('appId', i, undefined) as string;
+					const segmentId = this.getNodeParameter('segmentId', i, undefined) as string;
 
-					const queryParams = [
-						`canvas_id=${encodeURIComponent(canvasId)}`,
-						`length=${length}`,
-					];
+					const queryParams = [`length=${length}`, `unit=${unit}`];
 					if (endingAt) {
 						queryParams.push(`ending_at=${encodeURIComponent(endingAt)}`);
 					}
-
-					requestOptions.url = `${baseURL}/canvas/data_series?${queryParams.join('&')}`;
-				} else if (operation === 'canvasDetails') {
-					// GET /canvas/details
-					const canvasId = this.getNodeParameter('canvasId', i) as string;
-					const postLaunchDraftVersion = this.getNodeParameter('postLaunchDraftVersion', i, false) as boolean;
-
-					const queryParams = [`canvas_id=${encodeURIComponent(canvasId)}`];
-					if (postLaunchDraftVersion) {
-						queryParams.push(`post_launch_draft_version=${postLaunchDraftVersion}`);
+					if (appId) {
+						queryParams.push(`app_id=${encodeURIComponent(appId)}`);
+					}
+					if (segmentId) {
+						queryParams.push(`segment_id=${encodeURIComponent(segmentId)}`);
 					}
 
-					requestOptions.url = `${baseURL}/canvas/details?${queryParams.join('&')}`;
-				} else if (operation === 'segmentAnalytics') {
-					// GET /segments/data_series
-					const segmentId = this.getNodeParameter('segmentId', i) as string;
-					const length = this.getNodeParameter('length', i, 14) as number;
-					const endingAt = this.getNodeParameter('endingAt', i, undefined) as string;
-
-					const queryParams = [
-						`segment_id=${encodeURIComponent(segmentId)}`,
-						`length=${length}`,
-					];
-					if (endingAt) {
-						queryParams.push(`ending_at=${encodeURIComponent(endingAt)}`);
-					}
-
-					requestOptions.url = `${baseURL}/segments/data_series?${queryParams.join('&')}`;
-				} else if (operation === 'segmentDetails') {
-					// GET /segments/details
-					const segmentId = this.getNodeParameter('segmentId', i) as string;
-
-					requestOptions.url = `${baseURL}/segments/details?segment_id=${encodeURIComponent(segmentId)}`;
-				} else if (operation === 'segmentList') {
-					// GET /segments/list
-					const page = this.getNodeParameter('page', i, undefined) as number;
-					const sortDirection = this.getNodeParameter('sortDirection', i, 'asc') as string;
-
-					const queryParams = [];
-					if (page !== undefined) {
-						queryParams.push(`page=${page}`);
-					}
-					if (sortDirection && sortDirection !== 'asc') {
-						queryParams.push(`sort_direction=${sortDirection}`);
-					}
-
-					requestOptions.url = `${baseURL}/segments/list${queryParams.length > 0 ? '?' + queryParams.join('&') : ''}`;
+					requestOptions.url = `${baseURL}/sessions/data_series?${queryParams.join('&')}`;
 				}
 
 				response = await this.helpers.httpRequest(requestOptions);

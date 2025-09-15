@@ -46,6 +46,12 @@ export class BrazeCampaigns implements INodeType {
 						action: 'Get campaign analytics',
 					},
 					{
+						name: 'Cancel Scheduled Campaign',
+						value: 'cancelScheduledCampaign',
+						description: 'Cancel a scheduled API-triggered campaign before it is sent',
+						action: 'Cancel scheduled campaign',
+					},
+					{
 						name: 'Details',
 						value: 'details',
 						description: 'Get detailed information about a specific campaign',
@@ -208,6 +214,17 @@ export class BrazeCampaigns implements INodeType {
 					}
 
 					requestOptions.url = `${baseURL}/campaigns/data_series?${queryParams.join('&')}`;
+				} else if (operation === 'cancelScheduledCampaign') {
+					// POST /campaigns/trigger/schedule/delete
+					const campaignId = this.getNodeParameter('campaignId', i) as string;
+					const scheduleId = this.getNodeParameter('scheduleId', i) as string;
+
+					requestOptions.method = 'POST';
+					requestOptions.url = `${baseURL}/campaigns/trigger/schedule/delete`;
+					requestOptions.body = {
+						campaign_id: campaignId,
+						schedule_id: scheduleId,
+					};
 				} else if (operation === 'scheduleTrigger') {
 					// POST /campaigns/trigger/schedule/create
 					const campaignId = this.getNodeParameter('campaignId', i) as string;

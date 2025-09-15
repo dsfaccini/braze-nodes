@@ -47,6 +47,12 @@ export class BrazeSendMessage implements INodeType {
 						action: 'Create send ID',
 					},
 					{
+						name: 'Delete Scheduled Message',
+						value: 'deleteScheduledMessage',
+						description: 'Delete a scheduled message before it is sent',
+						action: 'Delete scheduled message',
+					},
+					{
 						name: 'List Scheduled Messages',
 						value: 'listScheduledMessages',
 						description: 'View all scheduled messages and campaigns',
@@ -59,28 +65,22 @@ export class BrazeSendMessage implements INodeType {
 						action: 'Schedule message',
 					},
 					{
-						name: 'Schedule Canvas',
-						value: 'scheduleCanvas',
-						description: 'Schedule Canvas messages for future delivery',
-						action: 'Schedule canvas message',
-					},
-					{
 						name: 'Send',
 						value: 'send',
 						description: 'Send immediate messages to users (email, SMS, push)',
 						action: 'Send message',
 					},
 					{
-						name: 'Send Canvas',
-						value: 'sendCanvas',
-						description: 'Send Canvas (multi-step campaign) messages via API',
-						action: 'Send canvas message',
-					},
-					{
 						name: 'Send Transactional',
 						value: 'sendTransactional',
 						description: 'Send transactional messages using pre-configured campaign',
 						action: 'Send transactional message',
+					},
+					{
+						name: 'Update Scheduled Message',
+						value: 'updateScheduledMessage',
+						description: 'Update a scheduled message before it is sent',
+						action: 'Update scheduled message',
 					},
 				],
 				default: 'send',
@@ -445,96 +445,40 @@ export class BrazeSendMessage implements INodeType {
 						campaign_id: campaignId,
 						...(customSendId && { send_id: customSendId }),
 					};
-				} else if (operation === 'sendCanvas') {
-					// POST /canvas/trigger/send
-					requestOptions.url = `${baseURL}/canvas/trigger/send`;
-
-					const canvasId = this.getNodeParameter('canvasId', i) as string;
-					const sendId = this.getNodeParameter('sendId', i, '') as string;
-					const broadcast = this.getNodeParameter('broadcast', i, false) as boolean;
-
-					const externalUserIdsString = this.getNodeParameter(
-						'externalUserIds',
-						i,
-						'',
-					) as string;
-					const externalUserIds = externalUserIdsString
-						? externalUserIdsString
-								.split(',')
-								.map((id) => id.trim())
-								.filter((id) => id)
-						: [];
-					const segmentId = this.getNodeParameter('segmentId', i, '') as string;
-					const triggerProperties = this.getNodeParameter(
-						'triggerProperties',
-						i,
-						{},
-					) as object;
-
-					requestOptions.body = {
-						canvas_id: canvasId,
-						...(sendId && { send_id: sendId }),
-						...(Object.keys(triggerProperties).length > 0 && {
-							trigger_properties: triggerProperties,
-						}),
-						broadcast,
-						...(externalUserIds.length > 0 && {
-							recipients: externalUserIds.map((id) => ({ external_user_id: id })),
-						}),
-						...(segmentId && { audience: { AND: [{ segment: segmentId }] } }),
-					};
-				} else if (operation === 'scheduleCanvas') {
-					// POST /canvas/trigger/schedule/create
-					requestOptions.url = `${baseURL}/canvas/trigger/schedule/create`;
-
-					const canvasId = this.getNodeParameter('canvasId', i) as string;
-					const sendId = this.getNodeParameter('sendId', i, '') as string;
-					const scheduleTime = this.getNodeParameter('scheduleTime', i) as string;
-					const inLocalTime = this.getNodeParameter('inLocalTime', i, false) as boolean;
-					const atOptimalTime = this.getNodeParameter('atOptimalTime', i, false) as boolean;
-					const broadcast = this.getNodeParameter('broadcast', i, false) as boolean;
-
-					const externalUserIdsString = this.getNodeParameter(
-						'externalUserIds',
-						i,
-						'',
-					) as string;
-					const externalUserIds = externalUserIdsString
-						? externalUserIdsString
-								.split(',')
-								.map((id) => id.trim())
-								.filter((id) => id)
-						: [];
-					const segmentId = this.getNodeParameter('segmentId', i, '') as string;
-					const triggerProperties = this.getNodeParameter(
-						'triggerProperties',
-						i,
-						{},
-					) as object;
-
-					requestOptions.body = {
-						canvas_id: canvasId,
-						...(sendId && { send_id: sendId }),
-						schedule: {
-							time: scheduleTime,
-							...(inLocalTime && { in_local_time: inLocalTime }),
-							...(atOptimalTime && { at_optimal_time: atOptimalTime }),
-						},
-						...(Object.keys(triggerProperties).length > 0 && {
-							canvas_entry_properties: triggerProperties,
-						}),
-						broadcast,
-						...(externalUserIds.length > 0 && {
-							recipients: externalUserIds.map((id) => ({ external_user_id: id })),
-						}),
-						...(segmentId && { audience: { AND: [{ segment: segmentId }] } }),
-					};
 				} else if (operation === 'listScheduledMessages') {
 					// GET /messages/scheduled_broadcasts
 					const endTime = this.getNodeParameter('endTime', i) as string;
 
 					requestOptions.method = 'GET';
 					requestOptions.url = `${baseURL}/messages/scheduled_broadcasts?end_time=${encodeURIComponent(endTime)}`;
+				} else if (operation === 'updateScheduledMessage') {
+					// POST /messages/schedule/update
+					const scheduleId = this.getNodeParameter('scheduleId', i) as string;
+					const newScheduleTime = this.getNodeParameter('newScheduleTime', i, '') as string;
+					const updateMessages = this.getNodeParameter('updateMessages', i, false) as boolean;
+
+					requestOptions.method = 'POST';
+					requestOptions.url = `${baseURL}/messages/schedule/update`;
+					requestOptions.body = {
+						schedule_id: scheduleId,
+						...(newScheduleTime && {
+							schedule: {
+								time: newScheduleTime,
+							},
+						}),
+						...(updateMessages && {
+							messages: this.getNodeParameter('messages', i, {}) as object,
+						}),
+					};
+				} else if (operation === 'deleteScheduledMessage') {
+					// POST /messages/schedule/delete
+					const scheduleId = this.getNodeParameter('scheduleId', i) as string;
+
+					requestOptions.method = 'POST';
+					requestOptions.url = `${baseURL}/messages/schedule/delete`;
+					requestOptions.body = {
+						schedule_id: scheduleId,
+					};
 				}
 
 				response = await this.helpers.httpRequest(requestOptions);

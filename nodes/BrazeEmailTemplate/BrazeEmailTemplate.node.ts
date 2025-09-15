@@ -46,18 +46,6 @@ export class BrazeEmailTemplate implements INodeType {
 						action: 'Create email template',
 					},
 					{
-						name: 'Create Content Block',
-						value: 'createContentBlock',
-						description: 'Create a new reusable content block',
-						action: 'Create content block',
-					},
-					{
-						name: 'Get Content Block Info',
-						value: 'getContentBlockInfo',
-						description: 'Get detailed information about a specific content block',
-						action: 'Get content block info',
-					},
-					{
 						name: 'Get Info',
 						value: 'info',
 						description: 'Get detailed information about a specific email template',
@@ -70,22 +58,10 @@ export class BrazeEmailTemplate implements INodeType {
 						action: 'List email templates',
 					},
 					{
-						name: 'List Content Blocks',
-						value: 'listContentBlocks',
-						description: 'Get all content blocks with filtering options',
-						action: 'List content blocks',
-					},
-					{
 						name: 'Update',
 						value: 'update',
 						description: 'Update an existing email template',
 						action: 'Update email template',
-					},
-					{
-						name: 'Update Content Block',
-						value: 'updateContentBlock',
-						description: 'Update an existing content block',
-						action: 'Update content block',
 					},
 				],
 				default: 'list',
@@ -225,97 +201,10 @@ export class BrazeEmailTemplate implements INodeType {
 							should_inline_css: shouldInlineCss,
 						}),
 					};
-				} else if (operation === 'getContentBlockInfo') {
-					// GET /content_blocks/info
-					const contentBlockId = this.getNodeParameter('contentBlockId', i) as string;
-					const includeInclusionData = this.getNodeParameter('includeInclusionData', i, false) as boolean;
-
-					const queryParams = [`content_block_id=${encodeURIComponent(contentBlockId)}`];
-					if (includeInclusionData) {
-						queryParams.push(`include_inclusion_data=${includeInclusionData}`);
-					}
-
-					requestOptions.url = `${baseURL}/content_blocks/info?${queryParams.join('&')}`;
 				} else if (operation === 'info') {
 					// GET /templates/email/info
 					const emailTemplateId = this.getNodeParameter('emailTemplateId', i) as string;
 					requestOptions.url = `${baseURL}/templates/email/info?email_template_id=${encodeURIComponent(emailTemplateId)}`;
-				} else if (operation === 'listContentBlocks') {
-					// GET /content_blocks/list
-					requestOptions.url = `${baseURL}/content_blocks/list`;
-
-					const queryParams = [];
-					const modifiedAfter = this.getNodeParameter('modifiedAfter', i, undefined) as string;
-					const modifiedBefore = this.getNodeParameter('modifiedBefore', i, undefined) as string;
-					const limit = this.getNodeParameter('limit', i, undefined) as number;
-					const offset = this.getNodeParameter('offset', i, undefined) as number;
-
-					if (modifiedAfter) {
-						queryParams.push(`modified_after=${encodeURIComponent(modifiedAfter)}`);
-					}
-					if (modifiedBefore) {
-						queryParams.push(`modified_before=${encodeURIComponent(modifiedBefore)}`);
-					}
-					if (limit !== undefined) {
-						queryParams.push(`limit=${limit}`);
-					}
-					if (offset !== undefined) {
-						queryParams.push(`offset=${offset}`);
-					}
-
-					if (queryParams.length > 0) {
-						requestOptions.url += `?${queryParams.join('&')}`;
-					}
-				} else if (operation === 'createContentBlock') {
-					// POST /content_blocks/create
-					requestOptions.method = 'POST';
-					requestOptions.url = `${baseURL}/content_blocks/create`;
-
-					const name = this.getNodeParameter('contentBlockName', i) as string;
-					const content = this.getNodeParameter('contentBlockContent', i) as string;
-					const description = this.getNodeParameter('contentBlockDescription', i, '') as string;
-					const state = this.getNodeParameter('contentBlockState', i, 'active') as string;
-					const tagsString = this.getNodeParameter('contentBlockTags', i, '') as string;
-					const tags = tagsString
-						? tagsString
-								.split(',')
-								.map((tag) => tag.trim())
-								.filter((tag) => tag)
-						: [];
-
-					requestOptions.body = {
-						name,
-						content,
-						...(description && { description }),
-						state,
-						...(tags.length > 0 && { tags }),
-					};
-				} else if (operation === 'updateContentBlock') {
-					// POST /content_blocks/update
-					requestOptions.method = 'POST';
-					requestOptions.url = `${baseURL}/content_blocks/update`;
-
-					const contentBlockId = this.getNodeParameter('contentBlockId', i) as string;
-					const name = this.getNodeParameter('contentBlockName', i, '') as string;
-					const content = this.getNodeParameter('contentBlockContent', i, '') as string;
-					const description = this.getNodeParameter('contentBlockDescription', i, '') as string;
-					const state = this.getNodeParameter('contentBlockState', i, 'active') as string;
-					const tagsString = this.getNodeParameter('contentBlockTags', i, '') as string;
-					const tags = tagsString
-						? tagsString
-								.split(',')
-								.map((tag) => tag.trim())
-								.filter((tag) => tag)
-						: [];
-
-					requestOptions.body = {
-						content_block_id: contentBlockId,
-						...(name && { name }),
-						...(content && { content }),
-						...(description && { description }),
-						state,
-						...(tags.length > 0 && { tags }),
-					};
 				}
 
 				response = await this.helpers.httpRequest(requestOptions);

@@ -1,6 +1,6 @@
 # Braze CRM Nodes for n8n
 
-This is a collection of n8n community nodes for Braze CRM platform. Currently supported services: Campaigns, Message Sending, Email Templates, and Analytics.
+This is a collection of n8n community nodes for Braze CRM platform. Currently supported services: Campaigns, Canvas, Message Sending, Email Templates, Content Blocks, Segments, and Analytics.
 
 **Primary Focus**: Email sending, campaign management, and analytics endpoints for comprehensive Braze integration.
 
@@ -13,11 +13,12 @@ This is a collection of n8n community nodes for Braze CRM platform. Currently su
 Campaign management and triggering operations.
 
 **Operations:**
-- **List**: Get all campaigns with filtering and pagination
-- **Details**: Get detailed campaign information
-- **Trigger**: Send API-triggered campaigns immediately
-- **Schedule Trigger**: Schedule API-triggered campaigns for future delivery
 - **Analytics**: Get campaign performance data and metrics
+- **Cancel Scheduled Campaign**: Cancel previously scheduled campaigns before they are sent
+- **Details**: Get detailed campaign information
+- **List**: Get all campaigns with filtering and pagination
+- **Schedule Trigger**: Schedule API-triggered campaigns for future delivery
+- **Trigger**: Send API-triggered campaigns immediately
 
 ### ✉️ Braze Send Message
 
@@ -25,22 +26,39 @@ Direct message sending to users across multiple channels.
 
 **Operations:**
 - **Create Send ID**: Generate send identifiers for tracking and analytics
+- **Delete Scheduled Message**: Cancel scheduled messages before delivery
 - **List Scheduled Messages**: View all scheduled messages and campaigns
 - **Schedule**: Schedule messages for future delivery across all channels
-- **Schedule Canvas**: Schedule Canvas messages for future delivery
 - **Send**: Send immediate messages (email, SMS, push) to specific users
-- **Send Canvas**: Send Canvas (multi-step campaign) messages via API
 - **Send Transactional**: Send transactional emails using pre-configured campaigns
+- **Update Scheduled Message**: Modify scheduled messages before they are sent
 
 **Key Features:**
 - Multi-channel support (email, SMS, push notifications)
 - Message scheduling with local time and optimal delivery time options
-- Canvas (multi-step campaign) message support with scheduling
 - Send ID generation for advanced tracking and analytics
 - Scheduled message management and viewing
 - Batch targeting (up to 50 users per request)
 - Template variable support
 - Subscription state handling
+
+### 🎨 Braze Canvas
+
+Multi-step campaign management and triggering operations.
+
+**Operations:**
+- **Canvas Analytics**: Get time-series analytics data for Canvas campaigns
+- **Canvas Details**: Get detailed information about Canvas campaigns
+- **Schedule Canvas**: Schedule Canvas messages for future delivery
+- **Send Canvas**: Send Canvas (multi-step campaign) messages via API
+
+**Key Features:**
+- Multi-step campaign support with complex user journeys
+- Canvas scheduling for future delivery with advanced targeting
+- Canvas analytics and performance tracking
+- Flexible targeting (external user IDs, segments, audience filters)
+- Canvas entry properties for personalization
+- Local time and optimal delivery time options for scheduling
 
 ### 📧 Braze Email Template
 
@@ -48,13 +66,49 @@ Email template management operations.
 
 **Operations:**
 - **Create**: Create new email templates with Liquid templating
-- **Create Content Block**: Create reusable content blocks for templates
-- **Get Content Block Info**: Get detailed information about specific content blocks
 - **Get Info**: Get detailed template information
 - **List**: Get all email templates with filtering and pagination
-- **List Content Blocks**: Get all content blocks with filtering options
 - **Update**: Update existing email templates
+
+**Key Features:**
+- Full CRUD operations for email templates
+- Advanced filtering with date-based queries and pagination
+- Liquid templating engine support
+- Template tag management
+- Template preview and modification tracking
+
+### 🧱 Braze Content Blocks
+
+Reusable content block management for email templates.
+
+**Operations:**
+- **Create Content Block**: Create new reusable content blocks
+- **Get Content Block Info**: Get detailed information about specific content blocks
+- **List Content Blocks**: Get all content blocks with filtering options
 - **Update Content Block**: Update existing content blocks
+
+**Key Features:**
+- Complete content block management for reusable content across campaigns
+- Content block details and inclusion tracking
+- Advanced filtering with date-based queries and pagination
+- Content block tag management
+- State management (active/draft)
+- Bulk operations and filtering capabilities
+
+### 👥 Braze Segments
+
+User segment management and analytics operations.
+
+**Operations:**
+- **Segment Analytics**: Get time-series segment size analytics
+- **Segment Details**: Get detailed information about specific segments
+- **Segment List**: Get list of all segments for analytics filtering
+
+**Key Features:**
+- Segment size analytics over time
+- Detailed segment information and configuration
+- Segment filtering and listing for analytics purposes
+- Pagination and sorting support
 
 ### 📊 Braze Analytics
 
@@ -62,23 +116,18 @@ Performance metrics and analytics for campaigns and sends.
 
 **Operations:**
 - **Campaign Analytics**: Time-series campaign performance data
-- **Canvas Analytics**: Time-series analytics data for Canvas campaigns
-- **Canvas Details**: Get detailed information about Canvas campaigns
 - **Custom Events**: Time-series custom event data and tracking
 - **Purchase Analytics**: Purchase event counts and quantity analytics
 - **Revenue Data**: Purchase and revenue analytics over time
-- **Segment Analytics**: Time-series segment size analytics
-- **Segment Details**: Get detailed information about specific segments
-- **Segment List**: Get list of all segments for analytics filtering
 - **Send Analytics**: Performance metrics for specific message sends
+- **Session Analytics**: App session data and user activity analytics
 
 **Metrics Include:**
 - Opens, clicks, unsubscribes, bounces
 - Conversions and revenue tracking
 - Purchase event counts and quantities
-- Canvas campaign performance data and details
-- Segment analytics, filtering, and size tracking
 - Custom event analytics
+- Session analytics and user activity tracking
 - Delivery and engagement rates
 
 ## Installation
@@ -154,6 +203,7 @@ Braze uses REST API keys for authentication. Each key is scoped with specific pe
 - `GET /campaigns/details` - Get detailed campaign information by ID
 - `POST /campaigns/trigger/send` - Trigger API-triggered campaigns with user targeting
 - `POST /campaigns/trigger/schedule/create` - Schedule API-triggered campaigns for future delivery
+- `POST /campaigns/trigger/schedule/delete` - Cancel scheduled API-triggered campaigns
 - `GET /campaigns/data_series` - Retrieve campaign performance analytics
 
 **Key Features:**
@@ -168,6 +218,8 @@ Braze uses REST API keys for authentication. Each key is scoped with specific pe
 **Implemented Endpoints:**
 - `POST /messages/send` - Send immediate messages across channels (email, SMS, push)
 - `POST /messages/schedule/create` - Schedule messages for future delivery across all channels
+- `POST /messages/schedule/update` - Update scheduled messages before they are sent
+- `POST /messages/schedule/delete` - Cancel scheduled messages before delivery
 - `GET /messages/scheduled_broadcasts` - List upcoming scheduled messages and campaigns
 - `POST /transactional/v1/campaigns/{campaign_id}/send` - Send transactional messages
 - `POST /canvas/trigger/send` - Send Canvas (multi-step campaign) messages via API
@@ -221,6 +273,7 @@ Braze uses REST API keys for authentication. Each key is scoped with specific pe
 - `GET /segments/data_series` - Segment size analytics over time
 - `GET /segments/details` - Detailed segment information and configuration
 - `GET /sends/data_series` - Send-specific analytics and performance data
+- `GET /sessions/data_series` - App session data and user activity analytics
 
 **Metrics Available:**
 - Email metrics: opens, clicks, unsubscribes, bounces, deliveries
@@ -230,6 +283,7 @@ Braze uses REST API keys for authentication. Each key is scoped with specific pe
 - Canvas campaign performance and configuration details
 - Segment size tracking and detailed information
 - Custom event performance data
+- Session data and user activity tracking
 - Time-series data with configurable date ranges
 
 ## Examples & Workflows
