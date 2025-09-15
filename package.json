@@ -32,8 +32,8 @@
         "dist"
     ],
     "scripts": {
-        "build": "npx rimraf dist && webpack && gulp build:icons",
-        "dev": "webpack --watch",
+        "build": "npx rimraf dist && tsc && gulp build:icons",
+        "dev": "tsc --watch",
         "format": "prettier nodes credentials --write",
         "lint": "eslint nodes credentials package.json",
         "lintfix": "eslint nodes credentials package.json --fix",
@@ -47,10 +47,7 @@
         "eslint-plugin-n8n-nodes-base": "^1.16.3",
         "gulp": "^5.0.1",
         "prettier": "^3.6.2",
-        "typescript": "^5.9.2",
-        "webpack": "^5.101.3",
-        "webpack-cli": "^5.1.4",
-        "ts-loader": "^9.5.4"
+        "typescript": "^5.9.2"
     },
     "peerDependencies": {
         "n8n-workflow": "^1.82.0"
