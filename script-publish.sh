@@ -3,7 +3,18 @@
 # Exit on error
 set -e
 
-echo "🚀 Starting n8n-nodes-cloudflare publish process..."
+# Load NPM_TOKEN from .env file
+if [ -f .env ]; then
+    echo "📋 Loading NPM_TOKEN from .env..."
+    export NPM_TOKEN=$(grep '^NPM_TOKEN=' .env | cut -d '=' -f2)
+    if [ -z "$NPM_TOKEN" ]; then
+        echo "⚠️  Warning: NPM_TOKEN not found in .env file"
+    fi
+else
+    echo "⚠️  Warning: .env file not found"
+fi
+
+echo "🚀 Starting n8n-nodes-braze publish process..."
 
 # Build the project
 echo "📦 Building project..."
