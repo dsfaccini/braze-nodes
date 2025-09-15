@@ -16,7 +16,7 @@ export const analyticsFields: INodeProperties[] = [
 		},
 		displayOptions: {
 			show: {
-				operation: ['campaignAnalytics', 'sendAnalytics', 'customEvents', 'revenue'],
+				operation: ['campaignAnalytics', 'sendAnalytics', 'customEvents', 'revenue', 'purchaseAnalytics', 'canvasAnalytics', 'segmentAnalytics'],
 			},
 		},
 	},
@@ -29,7 +29,7 @@ export const analyticsFields: INodeProperties[] = [
 			'End date for data series (ISO 8601 format). Defaults to current time if not specified.',
 		displayOptions: {
 			show: {
-				operation: ['campaignAnalytics', 'sendAnalytics', 'customEvents', 'revenue'],
+				operation: ['campaignAnalytics', 'sendAnalytics', 'customEvents', 'revenue', 'purchaseAnalytics', 'canvasAnalytics', 'segmentAnalytics'],
 			},
 		},
 	},
@@ -45,6 +45,21 @@ export const analyticsFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['campaignAnalytics', 'sendAnalytics'],
+			},
+		},
+	},
+
+	// Canvas Analytics fields
+	{
+		displayName: 'Canvas ID',
+		name: 'canvasId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Canvas API identifier',
+		displayOptions: {
+			show: {
+				operation: ['canvasAnalytics', 'canvasDetails'],
 			},
 		},
 	},
@@ -108,7 +123,7 @@ export const analyticsFields: INodeProperties[] = [
 		description: 'App identifier to filter results',
 		displayOptions: {
 			show: {
-				operation: ['customEvents', 'revenue'],
+				operation: ['customEvents', 'revenue', 'purchaseAnalytics'],
 			},
 		},
 	},
@@ -125,16 +140,81 @@ export const analyticsFields: INodeProperties[] = [
 		},
 	},
 
+	// Segment List fields
+	{
+		displayName: 'Page',
+		name: 'page',
+		type: 'number',
+		default: 0,
+		description: 'Page of segments to return (0-indexed)',
+		displayOptions: {
+			show: {
+				operation: ['segmentList'],
+			},
+		},
+	},
+	{
+		displayName: 'Sort Direction',
+		name: 'sortDirection',
+		type: 'options',
+		options: [
+			{
+				name: 'Ascending (Oldest First)',
+				value: 'asc',
+			},
+			{
+				name: 'Descending (Newest First)',
+				value: 'desc',
+			},
+		],
+		default: 'asc',
+		description: 'Sort order for segments',
+		displayOptions: {
+			show: {
+				operation: ['segmentList'],
+			},
+		},
+	},
+
 	// Revenue Analytics fields
 	{
 		displayName: 'Product ID',
 		name: 'productId',
 		type: 'string',
 		default: '',
-		description: 'Product identifier to filter revenue data',
+		description: 'Product identifier to filter purchase data',
 		displayOptions: {
 			show: {
-				operation: ['revenue'],
+				operation: ['revenue', 'purchaseAnalytics'],
+			},
+		},
+	},
+
+	// Canvas Details fields
+	{
+		displayName: 'Post Launch Draft Version',
+		name: 'postLaunchDraftVersion',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to show draft changes for Canvases with post-launch drafts',
+		displayOptions: {
+			show: {
+				operation: ['canvasDetails'],
+			},
+		},
+	},
+
+	// Segment Analytics and Details fields
+	{
+		displayName: 'Segment ID',
+		name: 'segmentId',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Segment API identifier',
+		displayOptions: {
+			show: {
+				operation: ['segmentAnalytics', 'segmentDetails'],
 			},
 		},
 	},

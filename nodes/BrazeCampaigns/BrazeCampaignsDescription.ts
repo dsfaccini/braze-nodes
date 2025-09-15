@@ -73,7 +73,7 @@ export const campaignsFields: INodeProperties[] = [
 		description: 'The campaign identifier (API identifier from campaign details)',
 		displayOptions: {
 			show: {
-				operation: ['details', 'trigger', 'analytics'],
+				operation: ['details', 'trigger', 'analytics', 'scheduleTrigger'],
 			},
 		},
 	},
@@ -99,7 +99,7 @@ export const campaignsFields: INodeProperties[] = [
 		description: 'Optional send identifier for tracking purposes',
 		displayOptions: {
 			show: {
-				operation: ['trigger'],
+				operation: ['trigger', 'scheduleTrigger'],
 			},
 		},
 	},
@@ -112,7 +112,7 @@ export const campaignsFields: INodeProperties[] = [
 			'Whether to send to the entire segment defined in the campaign (must be true when recipients and audience are omitted)',
 		displayOptions: {
 			show: {
-				operation: ['trigger'],
+				operation: ['trigger', 'scheduleTrigger'],
 			},
 		},
 	},
@@ -125,7 +125,7 @@ export const campaignsFields: INodeProperties[] = [
 			'Comma-separated list of external user IDs to send the campaign to (up to 50 users)',
 		displayOptions: {
 			show: {
-				operation: ['trigger'],
+				operation: ['trigger', 'scheduleTrigger'],
 			},
 			hide: {
 				broadcast: [true],
@@ -140,7 +140,7 @@ export const campaignsFields: INodeProperties[] = [
 		description: 'Segment identifier to target for the campaign',
 		displayOptions: {
 			show: {
-				operation: ['trigger'],
+				operation: ['trigger', 'scheduleTrigger'],
 			},
 			hide: {
 				broadcast: [true],
@@ -155,7 +155,46 @@ export const campaignsFields: INodeProperties[] = [
 		description: 'JSON object of key-value pairs for personalization in the message',
 		displayOptions: {
 			show: {
-				operation: ['trigger'],
+				operation: ['trigger', 'scheduleTrigger'],
+			},
+		},
+	},
+
+	// Schedule Trigger operation fields
+	{
+		displayName: 'Schedule Time',
+		name: 'scheduleTime',
+		type: 'dateTime',
+		required: true,
+		default: '',
+		description: 'ISO 8601 datetime string when the campaign should be sent',
+		displayOptions: {
+			show: {
+				operation: ['scheduleTrigger'],
+			},
+		},
+	},
+	{
+		displayName: 'Send in Local Time',
+		name: 'inLocalTime',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to send the message in each recipient\'s local time zone',
+		displayOptions: {
+			show: {
+				operation: ['scheduleTrigger'],
+			},
+		},
+	},
+	{
+		displayName: 'Send at Optimal Time',
+		name: 'atOptimalTime',
+		type: 'boolean',
+		default: false,
+		description: 'Whether to send the message at the optimal time for each user (based on when they typically engage)',
+		displayOptions: {
+			show: {
+				operation: ['scheduleTrigger'],
 			},
 		},
 	},

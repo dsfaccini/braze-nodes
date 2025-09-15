@@ -40,10 +40,10 @@ export class BrazeCampaigns implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
-						name: 'List',
-						value: 'list',
-						description: 'Get all campaigns with optional filtering',
-						action: 'List campaigns',
+						name: 'Analytics',
+						value: 'analytics',
+						description: 'Get campaign performance analytics',
+						action: 'Get campaign analytics',
 					},
 					{
 						name: 'Details',
@@ -52,16 +52,22 @@ export class BrazeCampaigns implements INodeType {
 						action: 'Get campaign details',
 					},
 					{
+						name: 'List',
+						value: 'list',
+						description: 'Get all campaigns with optional filtering',
+						action: 'List campaigns',
+					},
+					{
+						name: 'Schedule Trigger',
+						value: 'scheduleTrigger',
+						description: 'Schedule an API-triggered campaign for future delivery',
+						action: 'Schedule campaign trigger',
+					},
+					{
 						name: 'Trigger',
 						value: 'trigger',
 						description: 'Trigger sending of an API-triggered campaign',
 						action: 'Trigger campaign',
-					},
-					{
-						name: 'Analytics',
-						value: 'analytics',
-						description: 'Get campaign performance analytics',
-						action: 'Get campaign analytics',
 					},
 				],
 				default: 'list',
@@ -202,6 +208,52 @@ export class BrazeCampaigns implements INodeType {
 					}
 
 					requestOptions.url = `${baseURL}/campaigns/data_series?${queryParams.join('&')}`;
+				} else if (operation === 'scheduleTrigger') {
+					// POST /campaigns/trigger/schedule/create
+					const campaignId = this.getNodeParameter('campaignId', i) as string;
+					const scheduleTime = this.getNodeParameter('scheduleTime', i) as string;
+					const sendId = this.getNodeParameter('sendId', i, undefined) as string;
+					const broadcast = this.getNodeParameter('broadcast', i, false) as boolean;
+					const inLocalTime = this.getNodeParameter('inLocalTime', i, false) as boolean;
+					const atOptimalTime = this.getNodeParameter('atOptimalTime', i, false) as boolean;
+
+					const externalUserIdsString = this.getNodeParameter(
+						'externalUserIds',
+						i,
+						'',
+					) as string;
+					const externalUserIds = externalUserIdsString
+						? externalUserIdsString
+								.split(',')
+								.map((id) => id.trim())
+								.filter((id) => id)
+						: [];
+					const segmentId = this.getNodeParameter('segmentId', i, undefined) as string;
+					const triggerProperties = this.getNodeParameter(
+						'triggerProperties',
+						i,
+						{},
+					) as object;
+
+					requestOptions.method = 'POST';
+					requestOptions.url = `${baseURL}/campaigns/trigger/schedule/create`;
+					requestOptions.body = {
+						campaign_id: campaignId,
+						schedule: {
+							time: scheduleTime,
+							...(inLocalTime && { in_local_time: inLocalTime }),
+							...(atOptimalTime && { at_optimal_time: atOptimalTime }),
+						},
+						...(sendId && { send_id: sendId }),
+						...(Object.keys(triggerProperties).length > 0 && {
+							trigger_properties: triggerProperties,
+						}),
+						broadcast,
+						...(externalUserIds.length > 0 && {
+							recipients: externalUserIds.map((id) => ({ external_user_id: id })),
+						}),
+						...(segmentId && { audience: { AND: [{ segment: segmentId }] } }),
+					};
 				}
 
 				response = await this.helpers.httpRequest(requestOptions);

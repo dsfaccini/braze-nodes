@@ -41,10 +41,40 @@ export class BrazeSendMessage implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
+						name: 'Create Send ID',
+						value: 'createSendId',
+						description: 'Generate send identifiers for tracking and analytics',
+						action: 'Create send ID',
+					},
+					{
+						name: 'List Scheduled Messages',
+						value: 'listScheduledMessages',
+						description: 'View all scheduled messages and campaigns',
+						action: 'List scheduled messages',
+					},
+					{
+						name: 'Schedule',
+						value: 'schedule',
+						description: 'Schedule messages for future delivery',
+						action: 'Schedule message',
+					},
+					{
+						name: 'Schedule Canvas',
+						value: 'scheduleCanvas',
+						description: 'Schedule Canvas messages for future delivery',
+						action: 'Schedule canvas message',
+					},
+					{
 						name: 'Send',
 						value: 'send',
 						description: 'Send immediate messages to users (email, SMS, push)',
 						action: 'Send message',
+					},
+					{
+						name: 'Send Canvas',
+						value: 'sendCanvas',
+						description: 'Send Canvas (multi-step campaign) messages via API',
+						action: 'Send canvas message',
 					},
 					{
 						name: 'Send Transactional',
@@ -290,6 +320,221 @@ export class BrazeSendMessage implements INodeType {
 								trigger_properties: JSON.parse(triggerProperties),
 							}),
 					};
+				} else if (operation === 'schedule') {
+					// POST /messages/schedule/create
+					requestOptions.url = `${baseURL}/messages/schedule/create`;
+
+					const scheduleTime = this.getNodeParameter('scheduleTime', i) as string;
+					const inLocalTime = this.getNodeParameter('inLocalTime', i, false) as boolean;
+					const atOptimalTime = this.getNodeParameter('atOptimalTime', i, false) as boolean;
+
+					const broadcast = this.getNodeParameter('broadcast', i, false) as boolean;
+					const targetingOptions = this.getNodeParameter(
+						'targetingOptions',
+						i,
+						{},
+					) as any;
+					const campaignId = this.getNodeParameter('campaignId', i, '') as string;
+					const sendId = this.getNodeParameter('sendId', i, '') as string;
+					const recipientSubscriptionState = this.getNodeParameter(
+						'recipientSubscriptionState',
+						i,
+						'subscribed',
+					) as string;
+
+					// Message configuration (reuse same logic as send operation)
+					const messageChannel = this.getNodeParameter(
+						'messageChannel',
+						i,
+						'email',
+					) as string;
+
+					const messages: any = {};
+
+					if (messageChannel === 'email') {
+						const appId = this.getNodeParameter('emailAppId', i, '') as string;
+						const subject = this.getNodeParameter('emailSubject', i, '') as string;
+						const from = this.getNodeParameter('emailFrom', i, '') as string;
+						const emailContentType = this.getNodeParameter(
+							'emailContentType',
+							i,
+							'custom',
+						) as string;
+						const additionalOptions = this.getNodeParameter(
+							'additionalEmailOptions',
+							i,
+							{},
+						) as any;
+
+						const emailMessage: any = {
+							app_id: appId,
+							subject,
+							from,
+						};
+
+						if (emailContentType === 'template') {
+							const templateId = this.getNodeParameter(
+								'emailTemplateId',
+								i,
+								'',
+							) as string;
+							emailMessage.email_template_id = templateId;
+						} else {
+							const body = this.getNodeParameter('emailBody', i, '') as string;
+							emailMessage.body = body;
+						}
+
+						if (additionalOptions.plainTextBody) {
+							emailMessage.plaintext_body = additionalOptions.plainTextBody;
+						}
+						if (additionalOptions.replyTo) {
+							emailMessage.reply_to = additionalOptions.replyTo;
+						}
+						if (additionalOptions.preheader) {
+							emailMessage.preheader = additionalOptions.preheader;
+						}
+
+						messages.email = emailMessage;
+					}
+
+					// Build request body for schedule
+					const requestBody: any = {
+						broadcast,
+						schedule: {
+							time: scheduleTime,
+							...(inLocalTime && { in_local_time: inLocalTime }),
+							...(atOptimalTime && { at_optimal_time: atOptimalTime }),
+						},
+						messages,
+						...(campaignId && { campaign_id: campaignId }),
+						...(sendId && { send_id: sendId }),
+						recipient_subscription_state: recipientSubscriptionState,
+					};
+
+					// Add targeting if not broadcasting
+					if (!broadcast) {
+						if (targetingOptions.externalUserIds) {
+							const userIds = targetingOptions.externalUserIds
+								.split(',')
+								.map((id: string) => id.trim())
+								.filter((id: string) => id);
+							if (userIds.length > 0) {
+								requestBody.external_user_ids = userIds;
+							}
+						}
+						if (targetingOptions.segmentId) {
+							requestBody.segment_id = targetingOptions.segmentId;
+						}
+						if (targetingOptions.userAliases) {
+							requestBody.user_aliases = targetingOptions.userAliases;
+						}
+						if (targetingOptions.audienceFilter) {
+							requestBody.audience = targetingOptions.audienceFilter;
+						}
+					}
+
+					requestOptions.body = requestBody;
+				} else if (operation === 'createSendId') {
+					// POST /sends/id/create
+					requestOptions.url = `${baseURL}/sends/id/create`;
+
+					const campaignId = this.getNodeParameter('createSendIdCampaignId', i) as string;
+					const customSendId = this.getNodeParameter('customSendId', i, '') as string;
+
+					requestOptions.body = {
+						campaign_id: campaignId,
+						...(customSendId && { send_id: customSendId }),
+					};
+				} else if (operation === 'sendCanvas') {
+					// POST /canvas/trigger/send
+					requestOptions.url = `${baseURL}/canvas/trigger/send`;
+
+					const canvasId = this.getNodeParameter('canvasId', i) as string;
+					const sendId = this.getNodeParameter('sendId', i, '') as string;
+					const broadcast = this.getNodeParameter('broadcast', i, false) as boolean;
+
+					const externalUserIdsString = this.getNodeParameter(
+						'externalUserIds',
+						i,
+						'',
+					) as string;
+					const externalUserIds = externalUserIdsString
+						? externalUserIdsString
+								.split(',')
+								.map((id) => id.trim())
+								.filter((id) => id)
+						: [];
+					const segmentId = this.getNodeParameter('segmentId', i, '') as string;
+					const triggerProperties = this.getNodeParameter(
+						'triggerProperties',
+						i,
+						{},
+					) as object;
+
+					requestOptions.body = {
+						canvas_id: canvasId,
+						...(sendId && { send_id: sendId }),
+						...(Object.keys(triggerProperties).length > 0 && {
+							trigger_properties: triggerProperties,
+						}),
+						broadcast,
+						...(externalUserIds.length > 0 && {
+							recipients: externalUserIds.map((id) => ({ external_user_id: id })),
+						}),
+						...(segmentId && { audience: { AND: [{ segment: segmentId }] } }),
+					};
+				} else if (operation === 'scheduleCanvas') {
+					// POST /canvas/trigger/schedule/create
+					requestOptions.url = `${baseURL}/canvas/trigger/schedule/create`;
+
+					const canvasId = this.getNodeParameter('canvasId', i) as string;
+					const sendId = this.getNodeParameter('sendId', i, '') as string;
+					const scheduleTime = this.getNodeParameter('scheduleTime', i) as string;
+					const inLocalTime = this.getNodeParameter('inLocalTime', i, false) as boolean;
+					const atOptimalTime = this.getNodeParameter('atOptimalTime', i, false) as boolean;
+					const broadcast = this.getNodeParameter('broadcast', i, false) as boolean;
+
+					const externalUserIdsString = this.getNodeParameter(
+						'externalUserIds',
+						i,
+						'',
+					) as string;
+					const externalUserIds = externalUserIdsString
+						? externalUserIdsString
+								.split(',')
+								.map((id) => id.trim())
+								.filter((id) => id)
+						: [];
+					const segmentId = this.getNodeParameter('segmentId', i, '') as string;
+					const triggerProperties = this.getNodeParameter(
+						'triggerProperties',
+						i,
+						{},
+					) as object;
+
+					requestOptions.body = {
+						canvas_id: canvasId,
+						...(sendId && { send_id: sendId }),
+						schedule: {
+							time: scheduleTime,
+							...(inLocalTime && { in_local_time: inLocalTime }),
+							...(atOptimalTime && { at_optimal_time: atOptimalTime }),
+						},
+						...(Object.keys(triggerProperties).length > 0 && {
+							canvas_entry_properties: triggerProperties,
+						}),
+						broadcast,
+						...(externalUserIds.length > 0 && {
+							recipients: externalUserIds.map((id) => ({ external_user_id: id })),
+						}),
+						...(segmentId && { audience: { AND: [{ segment: segmentId }] } }),
+					};
+				} else if (operation === 'listScheduledMessages') {
+					// GET /messages/scheduled_broadcasts
+					const endTime = this.getNodeParameter('endTime', i) as string;
+
+					requestOptions.method = 'GET';
+					requestOptions.url = `${baseURL}/messages/scheduled_broadcasts?end_time=${encodeURIComponent(endTime)}`;
 				}
 
 				response = await this.helpers.httpRequest(requestOptions);
