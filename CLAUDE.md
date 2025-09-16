@@ -109,11 +109,11 @@ Based on the research in `braze-research.md`, implement nodes in this order:
 
 ### Braze Error Handling Patterns
 
-Implement enhanced error handling to extract meaningful error messages from Braze API:
+As n8n nodes it's important to bubble up any errors from the api to the user so the user can take action. Therefore, we implement enhanced error handling to extract meaningful error messages from Braze API:
 
 ```typescript
 } catch (error: any) {
-  // Extract Braze API error message according to their response structure
+  // Extract Braze API error message according to their response structure, might be different from this example, please update if so
   let errorMessage = error.response?.data?.errors?.[0]?.message ||
                     error.response?.data?.message ||
                     error.message;

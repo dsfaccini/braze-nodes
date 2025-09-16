@@ -14,7 +14,7 @@ Examples of correct node-to-API mappings:
 - BrazeCanvas → Canvas endpoints only
 - BrazeSegments → Segments endpoints only
 - BrazeContentBlocks → Content Blocks endpoints only
-- BrazeAnalytics → Analytics endpoints only (not segments or canvas analytics)
+- BrazeAnalytics → Analytics endpoints only (time-series data, like /data-series endpoints and similar)
 
 ## Overview
 

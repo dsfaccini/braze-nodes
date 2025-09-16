@@ -135,8 +135,13 @@ Performance metrics and analytics for campaigns and sends.
 Install directly in n8n:
 
 1. Go to **Settings** > **Community Nodes**
-2. Enter: `@getalecs/n8n-nodes-braze`
+2. Enter:
+```text
+@getalecs/n8n-nodes-braze
+```
 3. Click **Install**
+
+---
 
 Or install via npm in your n8n instance:
 

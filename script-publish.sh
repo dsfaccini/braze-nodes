@@ -34,7 +34,7 @@ cd dist
 
 # Publish from dist directory
 echo "🎉 Publishing package..."
-npm publish
+npm publish --access public
 
 # Go back to root
 cd ..

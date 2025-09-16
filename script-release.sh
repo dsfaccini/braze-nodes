@@ -19,7 +19,7 @@ gh release create "v${VERSION}" \
   --generate-notes
 
 echo "Release created! Download with:"
-echo "wget https://github.com/dsfaccini/cloudflare-nodes/releases/download/v${VERSION}/${ARCHIVE_NAME}"
+echo "wget https://github.com/dsfaccini/braze-nodes/releases/download/v${VERSION}/${ARCHIVE_NAME}"
 echo "Extract with: (assuming folder exists)"
 echo "tar -xzf ${ARCHIVE_NAME} -C ${PACKAGE_NAME}"
 # Cleanup
